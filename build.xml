@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project
+    name="execute Orange on Jenkins"
+    basedir="."
+    default="doxygen" >
+
+    <path id="cpath" >
+
+        <fileset dir="libs" >
+
+            <include name="*.jar" />
+
+            <include name="**/*.jar" />
+        </fileset>
+    </path>
+	
+
+    <!-- doxygen in Linux -->
+    <taskdef name="doxygen" classname="org.doxygen.tools.DoxygenTask" classpath="libs/ant_doxygen.jar"/>
+    <target name="doxygen">
+        <delete dir="doxygen" />
+        <mkdir dir="doxygen" />
+        <doxygen>
+            <property  name="PROJECT_NAME" value="Emmagee" />
+            <property  name="PROJECT_NUMBER" value="0.1.0" />
+            <property  name="OUTPUT_DIRECTORY" value="doxygen" />
+            <property  name="JAVADOC_AUTOBRIEF" value="YES" />
+            <property  name="TAB_SIZE" value="4" />
+            <property  name="OPTIMIZE_OUTPUT_JAVA" value="YES" />
+            <property  name="INPUT" value="src" />
+            <property  name="RECURSIVE" value="YES" />
+            <property  name="HAVE_DOT" value="YES" />
+            <property  name="UML_LOOK" value="YES" />
+            <property  name="CLASS_GRAPH" value="NO" />
+            <property  name="COLLABORATION_GRAPH" value="NO" />
+            <property  name="GROUP_GRAPHS" value="YES" />
+            <property  name="DIRECTORY_GRAPH" value="YES" />
+            <property  name="SHOW_DIRECTORIES" value="YES" />
+            <property  name="SOURCE_BROWSER" value="YES" />
+            <property  name="STRIP_CODE_COMMENTS" value="NO" />
+            <property  name="GENERATE_LATEX" value="NO" />
+            <property  name="GENERATE_TREEVIEW" value="YES" />
+            <property  name="INPUT_ENCODING" value="utf-8" />
+            <property  name="DOXYFILE" value="utf-8" />
+            <property  name="OUTPUT_LANGUAGE" value="CHINESE" />
+            <property  name="SEARCHENGINE" value="YES" />
+            <property  name="SHOW_NAMESPACES" value="NO" />
+        </doxygen>
+    </target>
+
+</project>

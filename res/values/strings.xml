@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="hello">Hello World, RunningTaskActivity!</string>
+    <string name="app_name">Emmagee</string>
+    <string name="app_name1">Main</string>
+    <string name="app_name2">系统信息</string>
+    <string name="app_name3">测试</string>
+    <string name="app_name4">设置</string>
+    <string name="system">检测系统信息</string>
+    <string name="start">启动程序</string>
+    <string name="cpu">开始测试</string>
+    <string name="bg">开始测试</string>
+    <string name="testmemory">测试内存</string>
+    <string name="memoryinfo">memoryInfo</string>
+    <string name="collect">采集频率：</string>
+    <string name="seconds"> 秒</string>
+    <string name="window"> 是否显示浮窗</string>
+    <string name="ok">保存</string>
+    <string name="openwifi">开启wifi</string>
+    <string name="closewifi">关闭wifi</string>
+
+</resources>
