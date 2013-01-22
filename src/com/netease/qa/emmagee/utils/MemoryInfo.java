@@ -15,7 +15,9 @@ public class MemoryInfo {
 			+ MemoryInfo.class.getSimpleName();
 
 	/**
-	 * read the total memory of certain device 读取当前机器的内存总数，返回值为KB
+	 * read the total memory of certain device
+	 * 
+	 * @return total memory of device
 	 */
 	public long getTotalMemory() {
 		String memInfoPath = "/proc/meminfo";
@@ -43,6 +45,9 @@ public class MemoryInfo {
 
 	/**
 	 * get free memory
+	 * 
+	 * @return free memory of device
+	 * 
 	 */
 	public long getFreeMemorySize(Context context) {
 		ActivityManager.MemoryInfo outInfo = new ActivityManager.MemoryInfo();
@@ -54,30 +59,31 @@ public class MemoryInfo {
 	}
 
 	/**
-	 * get the memory of process with certain pid 获取指定pid的进程，当前占用的内存，返回值为KB
+	 * get the memory of process with certain pid
 	 * 
 	 * @param pid
-	 *            进程pid
+	 *            pid of process
 	 * @param context
-	 *            activity上下文
-	 * @return
+	 *            context of certain activity
+	 * @return memory usage of certain process
 	 */
 	public int getPidMemorySize(int pid, Context context) {
 		ActivityManager am = (ActivityManager) context
 				.getSystemService(Context.ACTIVITY_SERVICE);
 		int[] myMempid = new int[] { pid };
-		// 此MemoryInfo位于android.os.Debug.MemoryInfo包中，用来统计进程的内存信息
 		Debug.MemoryInfo[] memoryInfo = am.getProcessMemoryInfo(myMempid);
 		memoryInfo[0].getTotalSharedDirty();
 		// int memSize = memoryInfo[0].dalvikPrivateDirty;
 		// TODO 不一定是PSS，可能是其他的
 		int memSize = memoryInfo[0].getTotalPss();
-//		int memSize = memoryInfo[0].getTotalPrivateDirty();
+		// int memSize = memoryInfo[0].getTotalPrivateDirty();
 		return memSize;
 	}
 
 	/**
 	 * get the sdk version of phone
+	 * 
+	 * @return sdk version
 	 */
 	public String getSDKVersion() {
 		return android.os.Build.VERSION.RELEASE;
@@ -85,6 +91,8 @@ public class MemoryInfo {
 
 	/**
 	 * get phone type
+	 * 
+	 * @return phone type
 	 */
 	public String getPhoneType() {
 		return android.os.Build.MODEL;

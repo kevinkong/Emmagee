@@ -17,7 +17,13 @@ public class TrafficInfo {
 		this.uid = uid;
 	}
 
+	/**
+	 * get traffic information include received and send traffic
+	 * 
+	 * @return total traffic include received and send traffic
+	 */
 	public long getTrafficInfo() {
+		Log.i(LOG_TAG,"get traffic information");
 		String rcvPath = "/proc/uid_stat/" + uid + "/tcp_rcv";
 		String sndPath = "/proc/uid_stat/" + uid + "/tcp_snd";
 		long rcvTraffic = -1;

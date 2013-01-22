@@ -39,6 +39,7 @@ import com.netease.qa.emmagee.utils.MyApplication;
 import com.netease.qa.emmagee.R;
 
 public class EmmageeService extends Service {
+	
 	private final static String LOG_TAG = "Emmagee-"
 			+ EmmageeService.class.getSimpleName();
 
@@ -51,7 +52,6 @@ public class EmmageeService extends Service {
 	private float startY;
 	private float x;
 	private float y;
-	
 	private TextView txtTotalMem;
 	private TextView txtUnusedMem;
 	private TextView txtTraffic;
@@ -98,7 +98,6 @@ public class EmmageeService extends Service {
 		cpuInfo = new CpuInfo(getBaseContext(), pid,Integer.toString(uid));
 		readSettingInfo(intent);
 		delaytime = Integer.parseInt(time) * 1000;
-		// 如果设置选项是显示浮窗的这里才展示出来
 		if (isFloating) {
 			viFloatingWindow = LayoutInflater.from(this).inflate(
 					R.layout.floating, null);
@@ -213,7 +212,8 @@ public class EmmageeService extends Service {
 			public boolean onTouch(View v, MotionEvent event) {
 				// 获取相对屏幕的坐标，即以屏幕左上角为原点
 				x = event.getRawX();
-				y = event.getRawY() - 25; // 25是系统状态栏的高度
+				// 25是系统状态栏的高度
+				y = event.getRawY() - 25; 
 				switch (event.getAction()) {
 				case MotionEvent.ACTION_DOWN:
 					// state = MotionEvent.ACTION_DOWN;
@@ -230,7 +230,7 @@ public class EmmageeService extends Service {
 					break;
 
 				case MotionEvent.ACTION_UP:
-//					 state = MotionEvent.ACTION_UP;
+					//state = MotionEvent.ACTION_UP;
 					updateViewPosition();
 					showImg();
 					mTouchStartX = mTouchStartY = 0;
@@ -285,7 +285,7 @@ public class EmmageeService extends Service {
 	};
 
 	/**
-	 * refresh data
+	 * refresh the data displayed in floating window
 	 * 
 	 * @throws FileNotFoundException
 	 * 
