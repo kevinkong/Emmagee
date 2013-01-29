@@ -184,7 +184,6 @@ public class EmmageeService extends Service {
 		} catch (IOException e) {
 			Log.e(LOG_TAG, e.getMessage());
 		}
-
 	}
 
 	/**
