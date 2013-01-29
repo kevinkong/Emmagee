@@ -42,6 +42,8 @@ public class MainPageActivity extends Activity {
 	private final String LOG_TAG = "Emmagee-"
 			+ MainPageActivity.class.getSimpleName();
 
+	private final int TIMEOUT = 20000;
+	
 	private List<Programe> processList;
 	private ProcessInfo processInfo;
 	private Intent MonitorService;
@@ -49,7 +51,6 @@ public class MainPageActivity extends Activity {
 	private Button btnTest;
 	private boolean isTesting = true;
 	private boolean isRadioChecked = false;
-
 	private int pid, uid;
 	private String processName, packageName, settingTempFile;
 
@@ -61,7 +62,6 @@ public class MainPageActivity extends Activity {
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		setContentView(R.layout.mainpage);
-
 		createNewFile();
 		processInfo = new ProcessInfo();
 		lstViProgramme = (ListView) findViewById(R.id.processList);
@@ -71,8 +71,8 @@ public class MainPageActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				MonitorService = new Intent();
-				MonitorService
-						.setClass(MainPageActivity.this, EmmageeService.class);
+				MonitorService.setClass(MainPageActivity.this,
+						EmmageeService.class);
 				if (isTesting) {
 					if (isRadioChecked == true) {
 						Intent intent = getPackageManager()
@@ -112,7 +112,7 @@ public class MainPageActivity extends Activity {
 		settingTempFile = getBaseContext().getFilesDir().getPath()
 				+ "\\Emmagee_Settings.txt";
 		File settingFile = new File(settingTempFile);
-		if (!settingFile.exists()) // 若文件不存在
+		if (!settingFile.exists()) 
 			try {
 				settingFile.createNewFile();
 				BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(
@@ -125,23 +125,31 @@ public class MainPageActivity extends Activity {
 	}
 
 	/**
-	 * wait for test app start
+	 * wait for test app start , timeout is 20s
 	 * 
 	 * @param packageName
 	 *            the package name of test app
 	 */
 	private void waitForAppStart(String packageName) {
 		Log.d(LOG_TAG, "wait for app start");
-		processList = processInfo.getRunningProcess(getBaseContext());
-		for (Programe programe : processList) {
-			if ((programe.getPackageName() != null)
-					&& (programe.getPackageName().equals(packageName))) {
-				pid = programe.getPid();
-				uid = programe.getUid();
-				if (pid != 0) {
-					break;
+		boolean isProcessStarted = false;
+		long startTime = System.currentTimeMillis();
+		while (System.currentTimeMillis() < startTime + TIMEOUT) {
+			processList = processInfo.getRunningProcess(getBaseContext());
+			for (Programe programe : processList) {
+				if ((programe.getPackageName() != null)
+						&& (programe.getPackageName().equals(packageName))) {
+					pid = programe.getPid();
+					Log.d(LOG_TAG, "pid:" + pid);
+					uid = programe.getUid();
+					if (pid != 0) {
+						isProcessStarted = true;
+						break;
+					}
 				}
 			}
+			if (isProcessStarted)
+				break;
 		}
 	}
 
@@ -163,7 +171,6 @@ public class MainPageActivity extends Activity {
 				android.R.drawable.ic_menu_delete);
 		menu.add(0, Menu.FIRST, 1, "设置").setIcon(
 				android.R.drawable.ic_menu_directions);
-
 		return true;
 	}
 
@@ -291,7 +298,7 @@ public class MainPageActivity extends Activity {
 			return convertView;
 		}
 	}
-	
+
 	@Override
 	public void finish() {
 		super.finish();

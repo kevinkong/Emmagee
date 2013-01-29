@@ -38,7 +38,7 @@ public class CpuInfo {
 	private String totalCpuRatio = "";
 	private int pid;
 
-	public CpuInfo(Context context,int pid,String uid) {
+	public CpuInfo(Context context, int pid, String uid) {
 		this.pid = pid;
 		this.context = context;
 		trafficInfo = new TrafficInfo(uid);
@@ -143,8 +143,7 @@ public class CpuInfo {
 						.format(100 * ((double) (processCpu - processCpu2) / (double) (totalCpu - totalCpu2)));
 				totalCpuRatio = fomart
 						.format(100 * ((double) ((totalCpu - idleCpu) - (totalCpu2 - idleCpu2)) / (double) (totalCpu - totalCpu2)));
-				long pidMemory = mi.getPidMemorySize(pid,
-						context);
+				long pidMemory = mi.getPidMemorySize(pid, context);
 				String pMemory = fomart.format((double) pidMemory / 1024);
 				long freeMemory = mi.getFreeMemorySize(context);
 				String fMemory = fomart.format((double) freeMemory / 1024);
