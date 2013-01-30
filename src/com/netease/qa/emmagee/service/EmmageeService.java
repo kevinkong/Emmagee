@@ -178,13 +178,12 @@ public class EmmageeService extends Service {
 					+ memoryInfo.getSDKVersion() + "\r\n" + "手机型号：,"
 					+ memoryInfo.getPhoneType() + "\r\n" + "UID：,"
 					+ uid + "\r\n");
-			bw.write("时间" + "," + "应用占用内存(MB)" + "," + "应用占用内存比(%)" + ","
+			bw.write("时间" + "," + "应用占用内存PSS(MB)" + "," + "应用占用内存比(%)" + ","
 					+ " 机器剩余内存(MB)" + "," + "应用占用CPU率(%)" + "," + "CPU总使用率(%)"
 					+ "," + "流量(KB)：" + "\r\n");
 		} catch (IOException e) {
 			Log.e(LOG_TAG, e.getMessage());
 		}
-
 	}
 
 	/**
