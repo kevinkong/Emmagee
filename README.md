@@ -5,9 +5,9 @@ app in android, which can monitor the stat of certain process ,include CPU,Memor
 Traffic ,besides , you can custom the frequency of collecting data,and show the realtime
 stat of certain process in a floating window
 
- * Homepage: <http://Emmagee.netease.com/>
- * Wiki: <https://github.com/NetEase/Emmagee/wiki/>
- * Issues: <https://github.com/NetEase/Emmagee/issues/>
+ * Homepage: 
+ * Wiki: 
+ * Issues: 
  * Tags: android,java 
 
 ## Features
@@ -29,9 +29,6 @@ you should not ignore:
 
 ## How to use Emmagee?
 Start your Emmagee Style with the following references:
-* [Quick Start](https://github.com/NetEase/Emmagee/wiki/Quick-start)
-* [Tutorial](https://github.com/NetEase/Emmagee/wiki/Tutorial)
-* [FAQ](https://github.com/NetEase/Emmagee/wiki/FAQ)
 
 ## Contributors
 * NetEase, Inc.
