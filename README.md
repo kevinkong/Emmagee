@@ -1,34 +1,40 @@
-##Emmagee - a practical,handy performance test tool aimed at monitoring specified app in android
+##Emmagee - a practical, handy performance test tool for specified Android App
 
-Emmagee is a practical,handy performance test tool aimed at monitoring specified 
-app in android, which can monitor the stat of certain process ,include CPU,Memory and 
-Traffic ,besides , you can custom the frequency of collecting data,and show the realtime
-stat of certain process in a floating window
+Emmagee is a practical, handy performance test tool for specified Android App, which can monitor CPU, memory and 
+network traffic. Addtionally, it also provides several cool features such as customizling interval of collecting data,
+rendering real-time process status in a floating window, and much more.
 
  * Homepage: 
  * Wiki: 
  * Issues: 
- * Tags: android,java 
+ * Tags: Android, Java 
 
 ## Features
 
-* Specificity:aiming at monitoring specified app 
-* Realtime data displaying
-* User-defined collecting frequency
+* Process-specific monitoring 
+* Real-time data displaying
+* User-defined collecting interval
 
 ## Why should I use Emmagee?
 
-Unlike other performance test tools , Emmagee is aimed at monitoring specified app,it has the following advantages that
-you should not ignore:
-* Specificity.Tools aimed at specified app is quite rare ,especially open source.
-* Easy to use.It can not be much easier to   
-* Floating window showing realtime data about CPU and Memory
-* User-defined, you can decide the collecting frequency of  
-* CSV result report.Follow our tutorial to display 
+Unlike other performance test tools which only monitor system level status, Emmagee provides the ability to monitor any single App. Other advantages that
+you should not miss:
+* Open source
+* Easy to use
+* Floating window redenring  real-time process status  
+* CSV format report that can be converted into any other format you want
 * Fully support Android 2.2 and above
 
 ## How to use Emmagee?
-Start your Emmagee Style with the following references:
+
+1. Start Emmagee App
+2. Configure interval
+3. Select a target process 
+4. Click Start button
+
+And Enjoy!
+
+If you want to stop the test, just go back to Emmagee and click Stop button.
 
 ## Contributors
 * NetEase, Inc.
