@@ -144,7 +144,7 @@ public class EmmageeService extends Service {
 	}
 
 	/**
-	 * write the test result to csv service第一次执行的时候需要创建一个csv文件，同时写入一些数据
+	 * write the test result to csv format report
 	 */
 	private void createResultCsv() {
 		Calendar cal = Calendar.getInstance();
@@ -202,16 +202,13 @@ public class EmmageeService extends Service {
 		wmParams.gravity = Gravity.LEFT | Gravity.TOP; 
 		wmParams.x = 0;
 		wmParams.y = 0;
-		// 设置悬浮窗口长宽数据
 		wmParams.width = WindowManager.LayoutParams.WRAP_CONTENT;
 		wmParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
 		wmParams.format = 1;
 		windowManager.addView(viFloatingWindow, wmParams);
 		viFloatingWindow.setOnTouchListener(new OnTouchListener() {
 			public boolean onTouch(View v, MotionEvent event) {
-				// 获取相对屏幕的坐标，即以屏幕左上角为原点
 				x = event.getRawX();
-				// 25是系统状态栏的高度
 				y = event.getRawY() - 25; 
 				switch (event.getAction()) {
 				case MotionEvent.ACTION_DOWN:

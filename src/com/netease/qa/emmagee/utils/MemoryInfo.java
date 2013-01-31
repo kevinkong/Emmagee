@@ -75,7 +75,7 @@ public class MemoryInfo {
 		memoryInfo[0].getTotalSharedDirty();
 		
 		// int memSize = memoryInfo[0].dalvikPrivateDirty;
-		// TODO 不一定是PSS，可能是其他的
+		// TODO PSS
 		int memSize = memoryInfo[0].getTotalPss();
 		// int memSize = memoryInfo[0].getTotalPrivateDirty();
 		return memSize;

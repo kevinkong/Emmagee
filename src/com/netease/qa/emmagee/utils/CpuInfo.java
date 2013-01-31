@@ -122,7 +122,6 @@ public class CpuInfo {
 		fomart.setMinimumFractionDigits(2);
 
 		readCpuStat();
-		// 清除arraylist中的值
 		CpuUsedRatio.clear();
 
 		try {
@@ -179,6 +178,7 @@ public class CpuInfo {
 
 	}
 
+	//TODO coming soon
 	// public String cpuinfo() {
 	// String sys_info = "";
 	// String s;
@@ -293,5 +293,4 @@ public class CpuInfo {
 	// }
 	// return "0";
 	// }
-
 }

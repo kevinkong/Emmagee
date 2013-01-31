@@ -65,7 +65,7 @@ public class SettingsActivity extends Activity {
 
 		edtTime.setText(time);
 		chkFloat.setChecked(floatingTag);
-		// edtTime.setInputType(InputType.TYPE_CLASS_NUMBER); //设置只能输入数字其他不能输入
+		// edtTime.setInputType(InputType.TYPE_CLASS_NUMBER); 
 		btnSave.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {

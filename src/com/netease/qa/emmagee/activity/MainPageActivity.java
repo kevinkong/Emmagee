@@ -164,7 +164,7 @@ public class MainPageActivity extends Activity {
 	}
 
 	/**
-	 * set menu options 设置菜单，初始化程序中的menu选项，可以进行设置，使程序退出
+	 * set menu options
 	 */
 	public boolean onCreateOptionsMenu(Menu menu) {
 		menu.add(0, Menu.FIRST, 0, "退出").setIcon(
@@ -192,7 +192,7 @@ public class MainPageActivity extends Activity {
 	}
 
 	/**
-	 * create a dialog 创建对话框
+	 * create a dialog
 	 */
 	protected Dialog onCreateDialog(int id) {
 		switch (id) {

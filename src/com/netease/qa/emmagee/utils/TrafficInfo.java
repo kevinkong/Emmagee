@@ -29,10 +29,10 @@ public class TrafficInfo {
 		long rcvTraffic = -1;
 		long sndTraffic = -1;
 		try {
-			RandomAccessFile raf_r = new RandomAccessFile(rcvPath, "r");
-			RandomAccessFile raf_s = new RandomAccessFile(sndPath, "r");
-			rcvTraffic = Long.parseLong(raf_r.readLine());
-			sndTraffic = Long.parseLong(raf_s.readLine());
+			RandomAccessFile rafRcv = new RandomAccessFile(rcvPath, "r");
+			RandomAccessFile rafSnd = new RandomAccessFile(sndPath, "r");
+			rcvTraffic = Long.parseLong(rafRcv.readLine());
+			sndTraffic = Long.parseLong(rafSnd.readLine());
 		} catch (FileNotFoundException e) {
 			rcvTraffic = -1;
 			sndTraffic = -1;
@@ -47,9 +47,5 @@ public class TrafficInfo {
 			return -1;
 		} else
 			return (rcvTraffic + sndTraffic);
-		/*
-		 * traf_r = TrafficStats.getUidRxBytes(ActivityMain.uid); traf_s =
-		 * TrafficStats.getUidTxBytes(ActivityMain.uid);
-		 */
 	}
 }
