@@ -1,7 +1,7 @@
 ##Emmagee - a practical, handy performance test tool for specified Android App
 
 Emmagee is a practical, handy performance test tool for specified Android App, which can monitor CPU, memory and 
-network traffic. Addtionally, it also provides several cool features such as customizling interval of collecting data,
+network traffic. Additionally, it also provides several cool features such as customizing interval of collecting data,
 rendering real-time process status in a floating window, and much more.
 
  * Homepage: 
@@ -17,11 +17,11 @@ rendering real-time process status in a floating window, and much more.
 
 ## Why should I use Emmagee?
 
-Unlike other performance test tools which only monitor system level status, Emmagee provides the ability to monitor any single App. Other advantages that
+Unlike other performance test tools that only do system-level monitoring, Emmagee provides the ability to monitor any single App. Other advantages that
 you should not miss:
 * Open source
 * Easy to use
-* Floating window redenring  real-time process status  
+* Floating window rendering real-time process status  
 * CSV format report that can be converted into any other format you want
 * Fully support Android 2.2 and above
 
