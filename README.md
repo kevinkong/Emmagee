@@ -4,9 +4,9 @@ Emmagee is a practical, handy performance test tool for specified Android App, w
 network traffic. Additionally, it also provides several cool features such as customizing interval of collecting data,
 rendering real-time process status in a floating window, and much more.
 
- * Homepage: 
- * Wiki: 
- * Issues: 
+ * Homepage: https://github.com/NetEase/Emmagee
+ * Wiki: https://github.com/NetEase/Emmagee/wiki
+ * Issues: https://github.com/NetEase/Emmagee/issues
  * Tags: Android, Java 
 
 
