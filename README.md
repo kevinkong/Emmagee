@@ -24,6 +24,8 @@ you should not miss:
 
 ## How to use Emmagee?
 
+First of all ,you should have Emmagee.apk,download [here](http://emmagee.googlecode.com/files/Emmagee.apk) or build the apk file youself [here](),then :
+
 1. Start Emmagee App
 2. Configure interval
 3. Select a target process 
