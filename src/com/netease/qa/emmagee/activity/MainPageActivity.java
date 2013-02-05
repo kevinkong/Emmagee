@@ -142,7 +142,7 @@ public class MainPageActivity extends Activity {
 	}
 
 	/**
-	 * wait for test application started , timeout is 20s
+	 * wait for test application started 
 	 * 
 	 * @param packageName
 	 *             package name of test application
@@ -171,7 +171,7 @@ public class MainPageActivity extends Activity {
 	}
 
 	/**
-	 * override return key to show a dialog 
+	 * show a dialog when click return key
 	 */
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {

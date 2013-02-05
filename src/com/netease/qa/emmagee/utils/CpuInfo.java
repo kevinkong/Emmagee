@@ -170,7 +170,7 @@ public class CpuInfo {
 							.format(((double) pidMemory / (double) totalMemorySize) * 100);
 				}
 
-				// whether certain device supports traffic statics
+				// whether certain device supports traffic statics or not
 				if (traffic == -1) {
 					EmmageeService.bw.write(mDateTime2 + "," + pMemory + ","
 							+ percent + "," + fMemory + "," + processCpuRatio

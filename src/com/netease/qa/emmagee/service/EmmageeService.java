@@ -203,7 +203,7 @@ public class EmmageeService extends Service {
 	}
 
 	/**
-	 * create floating window
+	 * create a floating window to show real-time data
 	 */
 	private void createFloatingWindow() {
 		SharedPreferences shared = getSharedPreferences("float_flag",
@@ -299,7 +299,7 @@ public class EmmageeService extends Service {
 	};
 
 	/**
-	 * refresh the data showing in floating window
+	 * refresh the performance data showing in floating window
 	 * 
 	 * @throws FileNotFoundException
 	 * 

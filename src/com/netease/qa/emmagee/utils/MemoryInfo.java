@@ -31,7 +31,7 @@ public class MemoryInfo {
 			+ MemoryInfo.class.getSimpleName();
 
 	/**
-	 * read the total memory of certain device
+	 * get total memory of certain device
 	 * 
 	 * @return total memory of device
 	 */
