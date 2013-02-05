@@ -17,7 +17,7 @@ you should not miss:
 * Open source
 * Easy to use
 * Process-specific monitoring
-* Floating window rendering real-time process status
+* Floating window that renders real-time process status
 * CSV format report that can be converted into any other format you want
 * User-defined collecting interval
 * Fully support Android 2.2 and above
