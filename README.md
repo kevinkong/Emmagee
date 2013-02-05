@@ -9,20 +9,17 @@ rendering real-time process status in a floating window, and much more.
  * Issues: 
  * Tags: Android, Java 
 
-## Features
-
-* Process-specific monitoring 
-* Real-time data displaying
-* User-defined collecting interval
 
 ## Why should I use Emmagee?
 
-Unlike other performance test tools that only do system-level monitoring, Emmagee provides the ability to monitor any single App. Other advantages that
+Unlike most other performance test tools that only do system-level monitoring, Emmagee provides the ability to monitor any single App. Other advantages that
 you should not miss:
 * Open source
 * Easy to use
-* Floating window rendering real-time process status  
+* Process-specific monitoring
+* Floating window rendering real-time process status
 * CSV format report that can be converted into any other format you want
+* User-defined collecting interval
 * Fully support Android 2.2 and above
 
 ## How to use Emmagee?
