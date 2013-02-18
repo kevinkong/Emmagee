@@ -157,7 +157,7 @@ public class EmmageeService extends Service {
 			time = "5";
 			isFloating = true;
 			Log.e(LOG_TAG, e.getMessage());
-		} 
+		}
 	}
 
 	/**
@@ -300,9 +300,9 @@ public class EmmageeService extends Service {
 
 	/**
 	 * refresh the performance data showing in floating window.
-	 * 
+	 *
 	 * @throws FileNotFoundException
-	 * 
+	 *
 	 * @throws IOException
 	 */
 	private void dataRefresh() {

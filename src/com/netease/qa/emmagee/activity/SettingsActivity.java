@@ -59,7 +59,7 @@ public class SettingsActivity extends Activity {
 		edtTime = (EditText) findViewById(R.id.time);
 		Button btnSave = (Button) findViewById(R.id.save);
 		boolean floatingTag = true;
-		RandomAccessFile raf ;
+		RandomAccessFile raf;
 
 		try {
 			raf = new RandomAccessFile(settingTempFile, "r");
@@ -81,7 +81,6 @@ public class SettingsActivity extends Activity {
 			Log.e(LOG_TAG, "IOException: " + e.getMessage());
 			e.printStackTrace();
 		}
-		
 		edtTime.setText(time);
 		chkFloat.setChecked(floatingTag);
 		// edtTime.setInputType(InputType.TYPE_CLASS_NUMBER);
@@ -135,7 +134,7 @@ public class SettingsActivity extends Activity {
 
 	/**
 	 * is input a number.
-	 * 
+	 *
 	 * @param inputStr
 	 *            input string
 	 * @return true is numeric

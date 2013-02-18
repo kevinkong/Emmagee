@@ -62,7 +62,7 @@ public class MainPageActivity extends Activity {
 
 	private List<Programe> processList;
 	private ProcessInfo processInfo;
-	private Intent MonitorService;
+	private Intent monitorService;
 	private ListView lstViProgramme;
 	private Button btnTest;
 	private boolean isTesting = true;
@@ -86,8 +86,8 @@ public class MainPageActivity extends Activity {
 		btnTest.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				MonitorService = new Intent();
-				MonitorService.setClass(MainPageActivity.this,
+				monitorService = new Intent();
+				monitorService.setClass(MainPageActivity.this,
 						EmmageeService.class);
 				if (isTesting) {
 					if (isRadioChecked) {
@@ -96,13 +96,13 @@ public class MainPageActivity extends Activity {
 						Log.d(LOG_TAG, packageName);
 						startActivity(intent);
 						waitForAppStart(packageName);
-						MonitorService.putExtra("processName", processName);
-						MonitorService.putExtra("pid", pid);
-						MonitorService.putExtra("uid", uid);
-						MonitorService.putExtra("packageName", packageName);
-						MonitorService.putExtra("settingTempFile",
+						monitorService.putExtra("processName", processName);
+						monitorService.putExtra("pid", pid);
+						monitorService.putExtra("uid", uid);
+						monitorService.putExtra("packageName", packageName);
+						monitorService.putExtra("settingTempFile",
 								settingTempFile);
-						startService(MonitorService);
+						startService(monitorService);
 						btnTest.setText("停止测试");
 						isTesting = false;
 					} else {
@@ -115,14 +115,14 @@ public class MainPageActivity extends Activity {
 					Toast.makeText(MainPageActivity.this,
 							"测试结果文件：" + EmmageeService.resultFilePath,
 							Toast.LENGTH_LONG).show();
-					stopService(MonitorService);
+					stopService(monitorService);
 				}
 			}
 		});
 	}
 
 	/**
-	 * create new file to reserve setting data
+	 * create new file to reserve setting data.
 	 */
 	private void createNewFile() {
 		Log.i(LOG_TAG, "create new file to save setting data");
@@ -174,6 +174,10 @@ public class MainPageActivity extends Activity {
 
 	/**
 	 * show a dialog when click return key.
+	 * 
+	 * @return Return true to prevent this event from being propagated further,
+	 *         or false to indicate that you have not handled this event and it
+	 *         should continue to be propagated.
 	 */
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
@@ -183,8 +187,8 @@ public class MainPageActivity extends Activity {
 	}
 
 	/**
-	 * set menu options.
-	 * 
+	 * set menu options,including cancel and setting options.
+	 *
 	 * @return true
 	 */
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -197,7 +201,7 @@ public class MainPageActivity extends Activity {
 
 	/**
 	 * trigger menu options.
-	 * 
+	 *
 	 * @return false
 	 */
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -219,7 +223,7 @@ public class MainPageActivity extends Activity {
 
 	/**
 	 * create a dialog.
-	 * 
+	 *
 	 * @return a dialog
 	 */
 	protected Dialog onCreateDialog(int id) {
@@ -233,9 +237,9 @@ public class MainPageActivity extends Activity {
 								@Override
 								public void onClick(DialogInterface dialog,
 										int which) {
-									if (MonitorService != null) {
+									if (monitorService != null) {
 										Log.d(LOG_TAG, "stop service");
-										stopService(MonitorService);
+										stopService(monitorService);
 									}
 									Log.d(LOG_TAG, "exit Emmagee");
 									EmmageeService.closeOpenedStream();
@@ -250,7 +254,7 @@ public class MainPageActivity extends Activity {
 
 	/**
 	 * customizing adapter.
-	 * 
+	 *
 	 */
 	private class ListAdapter extends BaseAdapter {
 		List<Programe> programe;

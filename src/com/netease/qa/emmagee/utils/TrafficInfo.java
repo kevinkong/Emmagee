@@ -36,7 +36,7 @@ public class TrafficInfo {
 	/**
 	 * get total network traffic, which is the sum of upload and download
 	 * traffic.
-	 * 
+	 *
 	 * @return total traffic include received and send traffic
 	 */
 	public long getTrafficInfo() {

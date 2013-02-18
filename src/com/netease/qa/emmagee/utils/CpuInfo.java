@@ -148,7 +148,7 @@ public class CpuInfo {
 			String mDateTime2 = formatterFile.format(cal.getTime().getTime()
 					+ 8 * 60 * 60 * 1000);
 
-			if (isInitialStatics == true) {
+			if (isInitialStatics) {
 				initialTraffic = trafficInfo.getTrafficInfo();
 				isInitialStatics = false;
 			} else {

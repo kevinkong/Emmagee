@@ -90,7 +90,7 @@ public class MemoryInfo {
 		int[] myMempid = new int[] { pid };
 		Debug.MemoryInfo[] memoryInfo = am.getProcessMemoryInfo(myMempid);
 		memoryInfo[0].getTotalSharedDirty();
-		
+
 		// int memSize = memoryInfo[0].dalvikPrivateDirty;
 		// TODO PSS
 		int memSize = memoryInfo[0].getTotalPss();
@@ -100,7 +100,7 @@ public class MemoryInfo {
 
 	/**
 	 * get the sdk version of phone.
-	 * 
+	 *
 	 * @return sdk version
 	 */
 	public String getSDKVersion() {
@@ -109,7 +109,7 @@ public class MemoryInfo {
 
 	/**
 	 * get phone type.
-	 * 
+	 *
 	 * @return phone type
 	 */
 	public String getPhoneType() {
