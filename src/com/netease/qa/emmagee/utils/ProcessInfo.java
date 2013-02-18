@@ -37,7 +37,7 @@ public class ProcessInfo {
 
 	/**
 	 * get information of all running processes,including package name ,process
-	 * name ,icon ,pid and uid
+	 * name ,icon ,pid and uid.
 	 * 
 	 * @param context
 	 *            context of activity
@@ -73,7 +73,7 @@ public class ProcessInfo {
 			}
 			programe.setPackageName(appinfo.processName);
 			programe.setProcessName(appinfo.loadLabel(pm).toString());
-			if (launchTag == true) {
+			if (launchTag) {
 				programe.setIcon(appinfo.loadIcon(pm));
 			}
 			progressList.add(programe);
@@ -82,7 +82,7 @@ public class ProcessInfo {
 	}
 
 	/**
-	 * get information of all applications
+	 * get information of all applications.
 	 * 
 	 * @param context
 	 *            context of activity

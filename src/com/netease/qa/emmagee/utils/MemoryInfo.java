@@ -31,7 +31,7 @@ public class MemoryInfo {
 			+ MemoryInfo.class.getSimpleName();
 
 	/**
-	 * get total memory of certain device
+	 * get total memory of certain device.
 	 * 
 	 * @return total memory of device
 	 */
@@ -49,6 +49,7 @@ public class MemoryInfo {
 					memTotal = total[1].trim();
 				}
 			}
+			localBufferedReader.close();
 			String[] memKb = memTotal.split(" ");
 			memTotal = memKb[0].trim();
 			Log.d(LOG_TAG, "memTotal: " + memTotal);
@@ -60,7 +61,7 @@ public class MemoryInfo {
 	}
 
 	/**
-	 * get free memory
+	 * get free memory.
 	 * 
 	 * @return free memory of device
 	 * 
@@ -75,7 +76,7 @@ public class MemoryInfo {
 	}
 
 	/**
-	 * get the memory of process with certain pid
+	 * get the memory of process with certain pid.
 	 * 
 	 * @param pid
 	 *            pid of process
@@ -98,7 +99,7 @@ public class MemoryInfo {
 	}
 
 	/**
-	 * get the sdk version of phone
+	 * get the sdk version of phone.
 	 * 
 	 * @return sdk version
 	 */
@@ -107,7 +108,7 @@ public class MemoryInfo {
 	}
 
 	/**
-	 * get phone type
+	 * get phone type.
 	 * 
 	 * @return phone type
 	 */

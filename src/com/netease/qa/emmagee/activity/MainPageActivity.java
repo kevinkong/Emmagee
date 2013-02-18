@@ -59,7 +59,7 @@ public class MainPageActivity extends Activity {
 			+ MainPageActivity.class.getSimpleName();
 
 	private final int TIMEOUT = 20000;
-	
+
 	private List<Programe> processList;
 	private ProcessInfo processInfo;
 	private Intent MonitorService;
@@ -90,7 +90,7 @@ public class MainPageActivity extends Activity {
 				MonitorService.setClass(MainPageActivity.this,
 						EmmageeService.class);
 				if (isTesting) {
-					if (isRadioChecked == true) {
+					if (isRadioChecked) {
 						Intent intent = getPackageManager()
 								.getLaunchIntentForPackage(packageName);
 						Log.d(LOG_TAG, packageName);
@@ -129,7 +129,7 @@ public class MainPageActivity extends Activity {
 		settingTempFile = getBaseContext().getFilesDir().getPath()
 				+ "\\Emmagee_Settings.txt";
 		File settingFile = new File(settingTempFile);
-		if (!settingFile.exists()) 
+		if (!settingFile.exists()) {
 			try {
 				settingFile.createNewFile();
 				BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(
@@ -139,13 +139,14 @@ public class MainPageActivity extends Activity {
 			} catch (IOException e) {
 				Log.d(LOG_TAG, "create new file exception :" + e.getMessage());
 			}
+		}
 	}
 
 	/**
-	 * wait for test application started 
+	 * wait for test application started.
 	 * 
 	 * @param packageName
-	 *             package name of test application
+	 *            package name of test application
 	 */
 	private void waitForAppStart(String packageName) {
 		Log.d(LOG_TAG, "wait for app start");
@@ -165,13 +166,14 @@ public class MainPageActivity extends Activity {
 					}
 				}
 			}
-			if (isProcessStarted)
+			if (isProcessStarted) {
 				break;
+			}
 		}
 	}
 
 	/**
-	 * show a dialog when click return key
+	 * show a dialog when click return key.
 	 */
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
@@ -181,7 +183,9 @@ public class MainPageActivity extends Activity {
 	}
 
 	/**
-	 * set menu options
+	 * set menu options.
+	 * 
+	 * @return true
 	 */
 	public boolean onCreateOptionsMenu(Menu menu) {
 		menu.add(0, Menu.FIRST, 0, "退出").setIcon(
@@ -191,6 +195,11 @@ public class MainPageActivity extends Activity {
 		return true;
 	}
 
+	/**
+	 * trigger menu options.
+	 * 
+	 * @return false
+	 */
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getOrder()) {
 		case 0:
@@ -209,7 +218,9 @@ public class MainPageActivity extends Activity {
 	}
 
 	/**
-	 * create a dialog
+	 * create a dialog.
+	 * 
+	 * @return a dialog
 	 */
 	protected Dialog onCreateDialog(int id) {
 		switch (id) {
@@ -238,7 +249,7 @@ public class MainPageActivity extends Activity {
 	}
 
 	/**
-	 * customizing adapter
+	 * customizing adapter.
 	 * 
 	 */
 	private class ListAdapter extends BaseAdapter {

@@ -40,7 +40,7 @@ public class SettingsActivity extends Activity {
 
 	private final String LOG_TAG = "Emmagee-"
 			+ SettingsActivity.class.getSimpleName();
-	
+
 	private CheckBox chkFloat;
 	private EditText edtTime;
 	private String time;
@@ -54,34 +54,37 @@ public class SettingsActivity extends Activity {
 
 		Intent intent = this.getIntent();
 		settingTempFile = intent.getStringExtra("settingTempFile");
-		
+
 		chkFloat = (CheckBox) findViewById(R.id.floating);
 		edtTime = (EditText) findViewById(R.id.time);
 		Button btnSave = (Button) findViewById(R.id.save);
 		boolean floatingTag = true;
+		RandomAccessFile raf ;
 
 		try {
-			RandomAccessFile raf = new RandomAccessFile(settingTempFile, "r");
+			raf = new RandomAccessFile(settingTempFile, "r");
 			String f = raf.readLine();
 			if (f == null || (f != null && f.equals(""))) {
 				time = "5";
-			} else
+			} else {
 				time = f;
+			}
 			String tag = raf.readLine();
-			if (tag != null && tag.equals("false"))
+			if (tag != null && tag.equals("false")) {
 				floatingTag = false;
+			}
+			raf.close();
 		} catch (FileNotFoundException e) {
-			Log.e(LOG_TAG,
-					"FileNotFoundException: " + e.getMessage());
+			Log.e(LOG_TAG, "FileNotFoundException: " + e.getMessage());
 			e.printStackTrace();
 		} catch (IOException e) {
 			Log.e(LOG_TAG, "IOException: " + e.getMessage());
 			e.printStackTrace();
 		}
-
+		
 		edtTime.setText(time);
 		chkFloat.setChecked(floatingTag);
-		// edtTime.setInputType(InputType.TYPE_CLASS_NUMBER); 
+		// edtTime.setInputType(InputType.TYPE_CLASS_NUMBER);
 		btnSave.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -131,11 +134,11 @@ public class SettingsActivity extends Activity {
 	}
 
 	/**
-	 * is input a number
+	 * is input a number.
 	 * 
 	 * @param inputStr
 	 *            input string
-	 * @return
+	 * @return true is numeric
 	 */
 	private boolean isNumeric(String inputStr) {
 		for (int i = inputStr.length(); --i >= 0;) {

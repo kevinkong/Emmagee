@@ -65,7 +65,7 @@ public class CpuInfo {
 	}
 
 	/**
-	 * read the status of CPU
+	 * read the status of CPU.
 	 * 
 	 * @throws FileNotFoundException
 	 */
@@ -110,15 +110,16 @@ public class CpuInfo {
 	}
 
 	/**
-	 * get CPU name
+	 * get CPU name.
 	 * 
 	 * @return CPU name
 	 */
 	public String getCpuName() {
 		try {
-			RandomAccessFile cpu_stat = new RandomAccessFile("/proc/cpuinfo",
+			RandomAccessFile cpuStat = new RandomAccessFile("/proc/cpuinfo",
 					"r");
-			String[] cpu = cpu_stat.readLine().split(":"); // cpu信息的前一段是含有processor字符串，此处替换为不显示
+			String[] cpu = cpuStat.readLine().split(":"); // cpu信息的前一段是含有processor字符串，此处替换为不显示
+			cpuStat.close();
 			return cpu[1];
 		} catch (IOException e) {
 			Log.e(LOG_TAG, "IOException: " + e.getMessage());
@@ -128,7 +129,7 @@ public class CpuInfo {
 
 	/**
 	 * reserve used ratio of process CPU and total CPU, meanwhile collect
-	 * network traffic
+	 * network traffic.
 	 * 
 	 * @return network traffic ,used ratio of process CPU and total CPU in
 	 *         certain interval

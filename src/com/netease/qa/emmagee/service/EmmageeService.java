@@ -18,7 +18,6 @@ package com.netease.qa.emmagee.service;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -143,7 +142,7 @@ public class EmmageeService extends Service {
 	}
 
 	/**
-	 * read configuration file
+	 * read configuration file.
 	 * 
 	 * @throws IOException
 	 */
@@ -153,15 +152,16 @@ public class EmmageeService extends Service {
 					settingTempFile), "r");
 			time = raf.readLine();
 			isFloating = raf.readLine().equals("true") ? true : false;
+			raf.close();
 		} catch (IOException e) {
 			time = "5";
 			isFloating = true;
 			Log.e(LOG_TAG, e.getMessage());
-		}
+		} 
 	}
 
 	/**
-	 * write the test result to csv format report
+	 * write the test result to csv format report.
 	 */
 	private void createResultCsv() {
 		Calendar cal = Calendar.getInstance();
@@ -203,7 +203,7 @@ public class EmmageeService extends Service {
 	}
 
 	/**
-	 * create a floating window to show real-time data
+	 * create a floating window to show real-time data.
 	 */
 	private void createFloatingWindow() {
 		SharedPreferences shared = getSharedPreferences("float_flag",
@@ -278,7 +278,7 @@ public class EmmageeService extends Service {
 	}
 
 	/**
-	 * show the image
+	 * show the image.
 	 */
 	private void showImg() {
 		if (Math.abs(x - startX) < 1.5 && Math.abs(y - startY) < 1.5
@@ -299,7 +299,7 @@ public class EmmageeService extends Service {
 	};
 
 	/**
-	 * refresh the performance data showing in floating window
+	 * refresh the performance data showing in floating window.
 	 * 
 	 * @throws FileNotFoundException
 	 * 
@@ -348,7 +348,7 @@ public class EmmageeService extends Service {
 	}
 
 	/**
-	 * update the position of floating window
+	 * update the position of floating window.
 	 */
 	private void updateViewPosition() {
 		wmParams.x = (int) (x - mTouchStartX);
@@ -357,7 +357,7 @@ public class EmmageeService extends Service {
 	}
 
 	/**
-	 * close all opened stream
+	 * close all opened stream.
 	 */
 	public static void closeOpenedStream() {
 		try {

@@ -26,27 +26,29 @@ public class TrafficInfo {
 
 	private static final String LOG_TAG = "Emmagee-"
 			+ TrafficInfo.class.getSimpleName();
-	
+
 	private String uid;
-	
-	public TrafficInfo(String uid){
+
+	public TrafficInfo(String uid) {
 		this.uid = uid;
 	}
 
 	/**
-	 * get total network traffic, which is the sum of upload and download traffic
+	 * get total network traffic, which is the sum of upload and download
+	 * traffic.
 	 * 
 	 * @return total traffic include received and send traffic
 	 */
 	public long getTrafficInfo() {
-		Log.i(LOG_TAG,"get traffic information");
+		Log.i(LOG_TAG, "get traffic information");
+		RandomAccessFile rafRcv = null, rafSnd = null;
 		String rcvPath = "/proc/uid_stat/" + uid + "/tcp_rcv";
 		String sndPath = "/proc/uid_stat/" + uid + "/tcp_snd";
 		long rcvTraffic = -1;
 		long sndTraffic = -1;
 		try {
-			RandomAccessFile rafRcv = new RandomAccessFile(rcvPath, "r");
-			RandomAccessFile rafSnd = new RandomAccessFile(sndPath, "r");
+			rafRcv = new RandomAccessFile(rcvPath, "r");
+			rafSnd = new RandomAccessFile(sndPath, "r");
 			rcvTraffic = Long.parseLong(rafRcv.readLine());
 			sndTraffic = Long.parseLong(rafSnd.readLine());
 		} catch (FileNotFoundException e) {
@@ -58,6 +60,14 @@ public class TrafficInfo {
 		} catch (IOException e) {
 			Log.e(LOG_TAG, "IOException: " + e.getMessage());
 			e.printStackTrace();
+		} finally {
+			try {
+				rafRcv.close();
+				rafSnd.close();
+			} catch (IOException e) {
+				Log.i(LOG_TAG,
+						"close randomAccessFile exception: " + e.getMessage());
+			}
 		}
 		if (rcvTraffic == -1 || sndTraffic == -1) {
 			return -1;
