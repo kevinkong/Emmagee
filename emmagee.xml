@@ -10,7 +10,7 @@
             executable="cmd"
             failonerror="true" >
 
-            <arg line="android update project -n Emmagee -p ." />
+            <arg line="/C android update project -n Emmagee -p ." />
         </exec>
     </target>
 
@@ -22,7 +22,7 @@
             executable="cmd"
             failonerror="true" >
 
-            <arg line="ant debug" />
+            <arg line="/C ant debug" />
         </exec>
     </target>
 
