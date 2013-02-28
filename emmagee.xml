@@ -7,10 +7,10 @@
     <target name="update_project" >
 
         <exec
-            executable="android"
+            executable="cmd"
             failonerror="true" >
 
-            <arg line="update project -n Emmagee -p ." />
+            <arg line="/C android update project -n Emmagee -p ." />
         </exec>
     </target>
 
@@ -19,10 +19,10 @@
         depends="update_project" >
 
         <exec
-            executable="ant"
+            executable="cmd"
             failonerror="true" >
 
-            <arg line="debug" />
+            <arg line="/C ant debug" />
         </exec>
     </target>
 
