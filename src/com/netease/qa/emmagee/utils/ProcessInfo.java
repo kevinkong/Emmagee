@@ -28,12 +28,16 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.util.Log;
 
+/**
+ * get information of processes
+ *
+ */
 public class ProcessInfo {
 
-	private final String LOG_TAG = "Emmagee-"
+	private static final String LOG_TAG = "Emmagee-"
 			+ ProcessInfo.class.getSimpleName();
 
-	private final String PACKAGE_NAME = "com.netease.qa.emmagee";
+	private static final String PACKAGE_NAME = "com.netease.qa.emmagee";
 
 	/**
 	 * get information of all running processes,including package name ,process

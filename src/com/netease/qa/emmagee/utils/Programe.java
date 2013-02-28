@@ -18,6 +18,11 @@ package com.netease.qa.emmagee.utils;
 
 import android.graphics.drawable.Drawable;
 
+/**
+ * details of installed processes ,including
+ * icon,packagename,pid,uid,processname
+ * 
+ */
 public class Programe {
 	private Drawable icon;
 	private String processName;

@@ -54,16 +54,15 @@ import com.netease.qa.emmagee.utils.Programe;
 import com.netease.qa.emmagee.R;
 
 /**
- * Main Page of Emmagee.
- * @author andrewleo
+ * Main Page of Emmagee
  *
  */
 public class MainPageActivity extends Activity {
 
-	private final String LOG_TAG = "Emmagee-"
+	private static final String LOG_TAG = "Emmagee-"
 			+ MainPageActivity.class.getSimpleName();
 
-	private final int TIMEOUT = 20000;
+	private static final int TIMEOUT = 20000;
 
 	private List<Programe> processList;
 	private ProcessInfo processInfo;
@@ -265,6 +264,9 @@ public class MainPageActivity extends Activity {
 		List<Programe> programe;
 		int tempPosition = -1;
 
+		/**
+		 * save status of all installed processes
+		 */
 		class Viewholder {
 			TextView txtAppName;
 			ImageView imgViAppIcon;

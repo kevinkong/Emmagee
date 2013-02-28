@@ -22,6 +22,10 @@ import java.io.RandomAccessFile;
 
 import android.util.Log;
 
+/**
+ * information of network traffic
+ *
+ */
 public class TrafficInfo {
 
 	private static final String LOG_TAG = "Emmagee-"
@@ -72,6 +76,6 @@ public class TrafficInfo {
 		if (rcvTraffic == -1 || sndTraffic == -1) {
 			return -1;
 		} else
-			return (rcvTraffic + sndTraffic);
+			return rcvTraffic + sndTraffic;
 	}
 }

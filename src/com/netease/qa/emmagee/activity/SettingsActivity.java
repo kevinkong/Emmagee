@@ -36,9 +36,13 @@ import android.widget.Toast;
 
 import com.netease.qa.emmagee.R;
 
+/**
+ * Setting Page of Emmagee
+ *
+ */
 public class SettingsActivity extends Activity {
 
-	private final String LOG_TAG = "Emmagee-"
+	private static final String LOG_TAG = "Emmagee-"
 			+ SettingsActivity.class.getSimpleName();
 
 	private CheckBox chkFloat;
@@ -64,13 +68,13 @@ public class SettingsActivity extends Activity {
 		try {
 			raf = new RandomAccessFile(settingTempFile, "r");
 			String f = raf.readLine();
-			if (f == null || (f != null && f.equals(""))) {
+			if (f == null || ("".equals(f))) {
 				time = "5";
 			} else {
 				time = f;
 			}
 			String tag = raf.readLine();
-			if (tag != null && tag.equals("false")) {
+			if ("false".equals(tag)) {
 				floatingTag = false;
 			}
 			raf.close();
@@ -92,7 +96,7 @@ public class SettingsActivity extends Activity {
 					Toast.makeText(SettingsActivity.this, "输入数据无效，请重新输入",
 							Toast.LENGTH_LONG).show();
 					edtTime.setText("");
-				} else if (time.equals("") || Long.parseLong(time) == 0) {
+				} else if ("".equals(time) || Long.parseLong(time) == 0) {
 					Toast.makeText(SettingsActivity.this, "输入数据为空,请重新输入",
 							Toast.LENGTH_LONG).show();
 					edtTime.setText("");

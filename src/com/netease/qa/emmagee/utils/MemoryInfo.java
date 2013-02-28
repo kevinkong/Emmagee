@@ -25,6 +25,10 @@ import android.content.Context;
 import android.os.Debug;
 import android.util.Log;
 
+/**
+ * operate memory information
+ * 
+ */
 public class MemoryInfo {
 
 	private static final String LOG_TAG = "Emmagee-"
@@ -100,7 +104,7 @@ public class MemoryInfo {
 
 	/**
 	 * get the sdk version of phone.
-	 *
+	 * 
 	 * @return sdk version
 	 */
 	public String getSDKVersion() {
@@ -109,7 +113,7 @@ public class MemoryInfo {
 
 	/**
 	 * get phone type.
-	 *
+	 * 
 	 * @return phone type
 	 */
 	public String getPhoneType() {

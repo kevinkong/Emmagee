@@ -29,6 +29,10 @@ import com.netease.qa.emmagee.service.EmmageeService;
 import android.content.Context;
 import android.util.Log;
 
+/**
+ * operate CPU information
+ * 
+ */
 public class CpuInfo {
 
 	private static final String LOG_TAG = "Emmagee-"
@@ -46,7 +50,7 @@ public class CpuInfo {
 	private long lastestTraffic;
 	private long traffic;
 	private TrafficInfo trafficInfo;
-	private ArrayList<String> CpuUsedRatio;
+	private ArrayList<String> cpuUsedRatio;
 	private long totalCpu2;
 	private long processCpu2;
 	private long idleCpu2;
@@ -61,7 +65,7 @@ public class CpuInfo {
 		formatterFile = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		mi = new MemoryInfo();
 		totalMemorySize = mi.getTotalMemory();
-		CpuUsedRatio = new ArrayList<String>();
+		cpuUsedRatio = new ArrayList<String>();
 	}
 
 	/**
@@ -141,7 +145,7 @@ public class CpuInfo {
 		fomart.setMinimumFractionDigits(2);
 
 		readCpuStat();
-		CpuUsedRatio.clear();
+		cpuUsedRatio.clear();
 
 		try {
 			Calendar cal = Calendar.getInstance();
@@ -160,7 +164,8 @@ public class CpuInfo {
 				processCpuRatio = fomart
 						.format(100 * ((double) (processCpu - processCpu2) / (double) (totalCpu - totalCpu2)));
 				totalCpuRatio = fomart
-						.format(100 * ((double) ((totalCpu - idleCpu) - (totalCpu2 - idleCpu2)) / (double) (totalCpu - totalCpu2)));
+						.format(100 * ((double) ((totalCpu - idleCpu) - (totalCpu2 - idleCpu2)) 
+								/ (double) (totalCpu - totalCpu2)));
 				long pidMemory = mi.getPidMemorySize(pid, context);
 				String pMemory = fomart.format((double) pidMemory / 1024);
 				long freeMemory = mi.getFreeMemorySize(context);
@@ -186,14 +191,14 @@ public class CpuInfo {
 			totalCpu2 = totalCpu;
 			processCpu2 = processCpu;
 			idleCpu2 = idleCpu;
-			CpuUsedRatio.add(processCpuRatio);
-			CpuUsedRatio.add(totalCpuRatio);
-			CpuUsedRatio.add(String.valueOf(traffic));
+			cpuUsedRatio.add(processCpuRatio);
+			cpuUsedRatio.add(totalCpuRatio);
+			cpuUsedRatio.add(String.valueOf(traffic));
 		} catch (IOException e) {
 			e.printStackTrace();
 			// PttService.closeOpenedStream()
 		}
-		return CpuUsedRatio;
+		return cpuUsedRatio;
 
 	}
 

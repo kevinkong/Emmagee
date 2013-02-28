@@ -53,6 +53,10 @@ import com.netease.qa.emmagee.utils.MemoryInfo;
 import com.netease.qa.emmagee.utils.MyApplication;
 import com.netease.qa.emmagee.R;
 
+/**
+ * Service running in background
+ *
+ */
 public class EmmageeService extends Service {
 
 	private final static String LOG_TAG = "Emmagee-"
@@ -151,7 +155,7 @@ public class EmmageeService extends Service {
 			RandomAccessFile raf = new RandomAccessFile(new File(
 					settingTempFile), "r");
 			time = raf.readLine();
-			isFloating = raf.readLine().equals("true") ? true : false;
+			isFloating = ("true".equals(raf.readLine())) ? true : false;
 			raf.close();
 		} catch (IOException e) {
 			time = "5";
@@ -322,8 +326,8 @@ public class EmmageeService extends Service {
 				processCpuRatio = processInfo.get(0);
 				totalCpuRatio = processInfo.get(1);
 				trafficSize = processInfo.get(2);
-				if (trafficSize != null && !trafficSize.equals("")
-						&& !trafficSize.equals("-1")) {
+				if ("".equals(trafficSize)
+						&& !("-1".equals(trafficSize))) {
 					tempTraffic = Integer.parseInt(trafficSize);
 					if (tempTraffic > 1024) {
 						isMb = true;
@@ -336,7 +340,7 @@ public class EmmageeService extends Service {
 						+ freeMemoryKb + "MB");
 				txtTotalMem.setText("占用CPU:" + processCpuRatio + "%"
 						+ ",总体CPU:" + totalCpuRatio + "%");
-				if (trafficSize.equals("-1")) {
+				if ("-1".equals(trafficSize)) {
 					txtTraffic.setText("本程序或本设备不支持流量统计");
 				} else if (isMb)
 					txtTraffic.setText("消耗流量:" + fomart.format(trafficMb)
