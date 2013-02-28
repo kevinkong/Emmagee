@@ -53,6 +53,11 @@ import com.netease.qa.emmagee.utils.ProcessInfo;
 import com.netease.qa.emmagee.utils.Programe;
 import com.netease.qa.emmagee.R;
 
+/**
+ * Main Page of Emmagee.
+ * @author andrewleo
+ *
+ */
 public class MainPageActivity extends Activity {
 
 	private final String LOG_TAG = "Emmagee-"
