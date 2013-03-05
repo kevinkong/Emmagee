@@ -1,10 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project
-    name="complie Emmagee"
-    basedir="."
+    name="build apk file"
     default="clean" >
 
-    <target name="update_project" >
+    <!-- set the operating system test properties -->
+
+    <condition property="is Unix and Unix-like" >
+
+        <os family="unix" />
+    </condition>
+
+    <condition property="isWindows" >
+
+        <os family="windows" />
+    </condition>
+
+    <target
+        name="unix_update_project"
+        if="is Unix and Unix-like" >
+
+        <exec
+            executable="android"
+            failonerror="true" >
+
+            <arg line="update project -n Emmagee -p ." />
+        </exec>
+    </target>
+
+    <target
+        name="unix_debug"
+        depends="unix_update_project"
+        if="is Unix and Unix-like" >
+
+        <exec
+            executable="ant"
+            failonerror="true" >
+
+            <arg line="debug" />
+        </exec>
+    </target>
+
+    <target
+        name="win_update_project"
+        if="isWindows" >
 
         <exec
             executable="cmd"
@@ -15,8 +53,9 @@
     </target>
 
     <target
-        name="debug"
-        depends="update_project" >
+        name="win_debug"
+        depends="win_update_project"
+        if="isWindows" >
 
         <exec
             executable="cmd"
@@ -28,7 +67,7 @@
 
     <target
         name="clean"
-        depends="debug" >
+        depends="win_debug,unix_debug" >
 
         <delete includeEmptyDirs="true" >
 
