@@ -27,6 +27,7 @@ import java.util.Calendar;
 import com.netease.qa.emmagee.service.EmmageeService;
 
 import android.content.Context;
+import android.os.Build;
 import android.util.Log;
 
 /**
@@ -148,9 +149,14 @@ public class CpuInfo {
 		cpuUsedRatio.clear();
 
 		try {
+			String mDateTime2;
 			Calendar cal = Calendar.getInstance();
-			String mDateTime2 = formatterFile.format(cal.getTime().getTime()
-					+ 8 * 60 * 60 * 1000);
+//			if ((Build.MODEL.equals("sdk"))
+//					|| (Build.MODEL.equals("google_sdk"))) {
+//				mDateTime2 = formatterFile.format(cal.getTime().getTime() + 8
+//						* 60 * 60 * 1000);
+//			} else
+				mDateTime2 = formatterFile.format(cal.getTime().getTime());
 
 			if (isInitialStatics) {
 				initialTraffic = trafficInfo.getTrafficInfo();
@@ -164,8 +170,8 @@ public class CpuInfo {
 				processCpuRatio = fomart
 						.format(100 * ((double) (processCpu - processCpu2) / (double) (totalCpu - totalCpu2)));
 				totalCpuRatio = fomart
-						.format(100 * ((double) ((totalCpu - idleCpu) - (totalCpu2 - idleCpu2)) 
-								/ (double) (totalCpu - totalCpu2)));
+						.format(100 * ((double) ((totalCpu - idleCpu) - 
+								(totalCpu2 - idleCpu2)) / (double) (totalCpu - totalCpu2)));
 				long pidMemory = mi.getPidMemorySize(pid, context);
 				String pMemory = fomart.format((double) pidMemory / 1024);
 				long freeMemory = mi.getFreeMemorySize(context);

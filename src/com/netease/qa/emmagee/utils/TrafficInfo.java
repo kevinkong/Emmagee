@@ -24,7 +24,7 @@ import android.util.Log;
 
 /**
  * information of network traffic
- *
+ * 
  */
 public class TrafficInfo {
 
@@ -40,7 +40,7 @@ public class TrafficInfo {
 	/**
 	 * get total network traffic, which is the sum of upload and download
 	 * traffic.
-	 *
+	 * 
 	 * @return total traffic include received and send traffic
 	 */
 	public long getTrafficInfo() {
@@ -66,8 +66,11 @@ public class TrafficInfo {
 			e.printStackTrace();
 		} finally {
 			try {
-				rafRcv.close();
-				rafSnd.close();
+				if (rafRcv != null) {
+					rafRcv.close();
+				}
+				if (rafSnd != null)
+					rafSnd.close();
 			} catch (IOException e) {
 				Log.i(LOG_TAG,
 						"close randomAccessFile exception: " + e.getMessage());
