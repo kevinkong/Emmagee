@@ -33,6 +33,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
@@ -55,7 +56,7 @@ import com.netease.qa.emmagee.R;
 
 /**
  * Service running in background
- *
+ * 
  */
 public class EmmageeService extends Service {
 
@@ -170,7 +171,12 @@ public class EmmageeService extends Service {
 	private void createResultCsv() {
 		Calendar cal = Calendar.getInstance();
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
-		String mDateTime = formatter.format(cal.getTime().getTime());
+		String mDateTime;
+		if ((Build.MODEL.equals("sdk")) || (Build.MODEL.equals("google_sdk")))
+			mDateTime = formatter.format(cal.getTime().getTime() + 8 * 60 * 60
+					* 1000);
+		else
+			mDateTime = formatter.format(cal.getTime().getTime());
 
 		if (android.os.Environment.getExternalStorageState().equals(
 				android.os.Environment.MEDIA_MOUNTED)) {
@@ -187,7 +193,7 @@ public class EmmageeService extends Service {
 			File resultFile = new File(resultFilePath);
 			resultFile.createNewFile();
 			out = new FileOutputStream(resultFile);
-			osw = new OutputStreamWriter(out, "utf-8");
+			osw = new OutputStreamWriter(out, "GBK");
 			bw = new BufferedWriter(osw);
 			long totalMemorySize = memoryInfo.getTotalMemory();
 			String totalMemory = fomart.format((double) totalMemorySize / 1024);
@@ -304,9 +310,9 @@ public class EmmageeService extends Service {
 
 	/**
 	 * refresh the performance data showing in floating window.
-	 *
+	 * 
 	 * @throws FileNotFoundException
-	 *
+	 * 
 	 * @throws IOException
 	 */
 	private void dataRefresh() {
@@ -326,8 +332,7 @@ public class EmmageeService extends Service {
 				processCpuRatio = processInfo.get(0);
 				totalCpuRatio = processInfo.get(1);
 				trafficSize = processInfo.get(2);
-				if ("".equals(trafficSize)
-						&& !("-1".equals(trafficSize))) {
+				if ("".equals(trafficSize) && !("-1".equals(trafficSize))) {
 					tempTraffic = Integer.parseInt(trafficSize);
 					if (tempTraffic > 1024) {
 						isMb = true;
