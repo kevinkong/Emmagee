@@ -100,12 +100,12 @@ public class CpuInfo {
 		try {
 			// monitor total and idle cpu stat of certain process
 			RandomAccessFile cpuInfo = new RandomAccessFile("/proc/stat", "r");
-			String[] toks = cpuInfo.readLine().split(" ");
-			idleCpu = Long.parseLong(toks[5]);
-			totalCpu = Long.parseLong(toks[2]) + Long.parseLong(toks[3])
-					+ Long.parseLong(toks[4]) + Long.parseLong(toks[6])
-					+ Long.parseLong(toks[5]) + Long.parseLong(toks[7])
-					+ Long.parseLong(toks[8]);
+			String[] toks = cpuInfo.readLine().split("\\s+");
+			idleCpu = Long.parseLong(toks[4]);
+			totalCpu = Long.parseLong(toks[1]) + Long.parseLong(toks[2])
+					+ Long.parseLong(toks[3]) + Long.parseLong(toks[4])
+					+ Long.parseLong(toks[6]) + Long.parseLong(toks[5])
+					+ Long.parseLong(toks[7]);
 			cpuInfo.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -168,7 +168,7 @@ public class CpuInfo {
 				else
 					traffic = (lastestTraffic - initialTraffic + 1023) / 1024;
 				processCpuRatio = fomart
-						.format(100 * ((double) (processCpu - processCpu2) / (double) (totalCpu - totalCpu2)));
+						.format(100 * ((double) (processCpu - processCpu2) / ((double) (totalCpu - totalCpu2))));
 				totalCpuRatio = fomart
 						.format(100 * ((double) ((totalCpu - idleCpu) - (totalCpu2 - idleCpu2)) / (double) (totalCpu - totalCpu2)));
 				long pidMemory = mi.getPidMemorySize(pid, context);
@@ -207,7 +207,7 @@ public class CpuInfo {
 
 	}
 
-	// TODO coming soon
+	// // TODO coming soon
 	// public String cpuinfo() {
 	// String sys_info = "";
 	// String s;
