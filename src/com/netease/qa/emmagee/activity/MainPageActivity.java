@@ -26,8 +26,11 @@ import java.util.List;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -55,7 +58,7 @@ import com.netease.qa.emmagee.R;
 
 /**
  * Main Page of Emmagee
- *
+ * 
  */
 public class MainPageActivity extends Activity {
 
@@ -69,10 +72,11 @@ public class MainPageActivity extends Activity {
 	private Intent monitorService;
 	private ListView lstViProgramme;
 	private Button btnTest;
-	private boolean isTesting = true;
 	private boolean isRadioChecked = false;
 	private int pid, uid;
 	private String processName, packageName, settingTempFile;
+	private boolean isServiceStop = false;
+	private UpdateReceiver receiver;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -86,19 +90,24 @@ public class MainPageActivity extends Activity {
 		processInfo = new ProcessInfo();
 		lstViProgramme = (ListView) findViewById(R.id.processList);
 		btnTest = (Button) findViewById(R.id.test);
-		lstViProgramme.setAdapter(new ListAdapter());
 		btnTest.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				monitorService = new Intent();
 				monitorService.setClass(MainPageActivity.this,
 						EmmageeService.class);
-				if (isTesting) {
+				if ("开始测试".equals(btnTest.getText().toString())) {
 					if (isRadioChecked) {
 						Intent intent = getPackageManager()
 								.getLaunchIntentForPackage(packageName);
 						Log.d(LOG_TAG, packageName);
-						startActivity(intent);
+						try {
+							startActivity(intent);
+						} catch (NullPointerException e) {
+							Toast.makeText(MainPageActivity.this, "该程序无法启动",
+									Toast.LENGTH_LONG).show();
+							return;
+						}
 						waitForAppStart(packageName);
 						monitorService.putExtra("processName", processName);
 						monitorService.putExtra("pid", pid);
@@ -108,14 +117,12 @@ public class MainPageActivity extends Activity {
 								settingTempFile);
 						startService(monitorService);
 						btnTest.setText("停止测试");
-						isTesting = false;
 					} else {
 						Toast.makeText(MainPageActivity.this, "请选择需要测试的应用程序",
 								Toast.LENGTH_LONG).show();
 					}
 				} else {
 					btnTest.setText("开始测试");
-					isTesting = true;
 					Toast.makeText(MainPageActivity.this,
 							"测试结果文件：" + EmmageeService.resultFilePath,
 							Toast.LENGTH_LONG).show();
@@ -123,6 +130,36 @@ public class MainPageActivity extends Activity {
 				}
 			}
 		});
+	}
+
+	public class UpdateReceiver extends BroadcastReceiver {
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			isServiceStop = intent.getExtras().getBoolean("isServiceStop");
+			if (isServiceStop) {
+				btnTest.setText("开始测试");
+			}
+		}
+	}
+
+	protected void onStart() {
+		Log.d(LOG_TAG, "onStart");
+		receiver = new UpdateReceiver();
+		IntentFilter filter = new IntentFilter();
+		filter.addAction("com.netease.action.emmageeService");
+		this.registerReceiver(receiver, filter);
+		super.onStart();
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		Log.d(LOG_TAG, "onResume");
+		if (EmmageeService.isStop) {
+			btnTest.setText("开始测试");
+		}
+		lstViProgramme.setAdapter(new ListAdapter());
 	}
 
 	/**
@@ -192,7 +229,7 @@ public class MainPageActivity extends Activity {
 
 	/**
 	 * set menu options,including cancel and setting options.
-	 *
+	 * 
 	 * @return true
 	 */
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -205,7 +242,7 @@ public class MainPageActivity extends Activity {
 
 	/**
 	 * trigger menu options.
-	 *
+	 * 
 	 * @return false
 	 */
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -227,7 +264,7 @@ public class MainPageActivity extends Activity {
 
 	/**
 	 * create a dialog.
-	 *
+	 * 
 	 * @return a dialog
 	 */
 	protected Dialog onCreateDialog(int id) {
@@ -258,7 +295,7 @@ public class MainPageActivity extends Activity {
 
 	/**
 	 * customizing adapter.
-	 *
+	 * 
 	 */
 	private class ListAdapter extends BaseAdapter {
 		List<Programe> programe;
@@ -341,6 +378,11 @@ public class MainPageActivity extends Activity {
 	@Override
 	public void finish() {
 		super.finish();
+	}
+
+	protected void onStop() {
+		unregisterReceiver(receiver);
+		super.onStop();
 	}
 
 	@Override

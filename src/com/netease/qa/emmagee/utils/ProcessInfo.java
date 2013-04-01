@@ -19,8 +19,6 @@ package com.netease.qa.emmagee.utils;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.netease.qa.emmagee.activity.MainPageActivity;
-
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningAppProcessInfo;
 import android.content.Context;

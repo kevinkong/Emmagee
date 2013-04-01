@@ -49,6 +49,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+//import com.netease.qa.emmagee.activity.MainPageActivity;
 import com.netease.qa.emmagee.utils.CpuInfo;
 import com.netease.qa.emmagee.utils.MemoryInfo;
 import com.netease.qa.emmagee.utils.MyApplication;
@@ -87,16 +88,20 @@ public class EmmageeService extends Service {
 	private boolean isFloating;
 	private String processName, packageName, settingTempFile;
 	private int pid, uid;
+	private boolean isServiceStop = false;
 
 	public static BufferedWriter bw;
 	public static FileOutputStream out;
 	public static OutputStreamWriter osw;
 	public static String resultFilePath;
+	public static boolean isStop = false;
 
 	@Override
 	public void onCreate() {
 		Log.i(LOG_TAG, "onCreate");
 		super.onCreate();
+		isServiceStop = false;
+		isStop = false;
 		memoryInfo = new MemoryInfo();
 		fomart = new DecimalFormat();
 		fomart.setMaximumFractionDigits(2);
@@ -143,7 +148,7 @@ public class EmmageeService extends Service {
 			createFloatingWindow();
 		}
 		createResultCsv();
-		handler.postDelayed(task, delaytime);
+		handler.postDelayed(task, 1000);
 	}
 
 	/**
@@ -300,11 +305,20 @@ public class EmmageeService extends Service {
 	}
 
 	private Runnable task = new Runnable() {
+
 		public void run() {
-			dataRefresh();
-			handler.postDelayed(this, delaytime);
-			if (isFloating)
-				windowManager.updateViewLayout(viFloatingWindow, wmParams);
+			if (!isServiceStop) {
+				dataRefresh();
+				handler.postDelayed(this, delaytime);
+				if (isFloating)
+					windowManager.updateViewLayout(viFloatingWindow, wmParams);
+			} else {
+				Intent intent = new Intent();
+				intent.putExtra("isServiceStop", true);
+				intent.setAction("com.netease.action.emmageeService");// action与接收器相同
+				sendBroadcast(intent);
+				stopSelf();
+			}
 		}
 	};
 
@@ -339,6 +353,11 @@ public class EmmageeService extends Service {
 						trafficMb = (double) tempTraffic / 1024;
 					}
 				}
+			}
+			if ("0".equals(processMemory) && "0.00".equals(processCpuRatio)) {
+				closeOpenedStream();
+				isServiceStop = true;
+				return;
 			}
 			if (processCpuRatio != null && totalCpuRatio != null) {
 				txtUnusedMem.setText("占用内存:" + processMemory + "MB" + ",机器剩余:"
@@ -384,11 +403,14 @@ public class EmmageeService extends Service {
 	@Override
 	public void onDestroy() {
 		Log.i(LOG_TAG, "onDestroy");
-		super.onDestroy();
 		if (windowManager != null)
 			windowManager.removeView(viFloatingWindow);
 		handler.removeCallbacks(task);
 		closeOpenedStream();
+		isStop = true;
+		Toast.makeText(this, "测试结果文件：" + EmmageeService.resultFilePath,
+				Toast.LENGTH_LONG).show();
+		super.onDestroy();
 	}
 
 	@Override
