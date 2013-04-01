@@ -167,8 +167,8 @@ public class CpuInfo {
 					traffic = -1;
 				else
 					traffic = (lastestTraffic - initialTraffic + 1023) / 1024;
-				processCpuRatio = fomart
-						.format(100 * ((double) (processCpu - processCpu2) / ((double) (totalCpu - totalCpu2))));
+				processCpuRatio = fomart.format(100 * ((double) (processCpu - processCpu2) 
+						/ ((double) (totalCpu - totalCpu2))));
 				totalCpuRatio = fomart
 						.format(100 * ((double) ((totalCpu - idleCpu) - (totalCpu2 - idleCpu2)) / (double) (totalCpu - totalCpu2)));
 				long pidMemory = mi.getPidMemorySize(pid, context);
