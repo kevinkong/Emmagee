@@ -22,7 +22,8 @@
             android:id="@+id/time"
             android:layout_width="120dp"
             android:maxLength="5"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:inputType="number" />
 
         <TextView
             android:layout_width="wrap_content"
