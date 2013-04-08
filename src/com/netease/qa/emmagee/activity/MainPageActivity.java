@@ -16,12 +16,11 @@
  */
 package com.netease.qa.emmagee.activity;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.util.List;
+import java.util.Properties;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -39,8 +38,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -82,9 +79,6 @@ public class MainPageActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		Log.i(LOG_TAG, "MainActivity::onCreate");
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		setContentView(R.layout.mainpage);
 		createNewFile();
 		processInfo = new ProcessInfo();
@@ -132,6 +126,9 @@ public class MainPageActivity extends Activity {
 		});
 	}
 
+	/**
+	 * customized BroadcastReceiver
+	 */
 	public class UpdateReceiver extends BroadcastReceiver {
 
 		@Override
@@ -143,6 +140,7 @@ public class MainPageActivity extends Activity {
 		}
 	}
 
+	@Override
 	protected void onStart() {
 		Log.d(LOG_TAG, "onStart");
 		receiver = new UpdateReceiver();
@@ -168,15 +166,22 @@ public class MainPageActivity extends Activity {
 	private void createNewFile() {
 		Log.i(LOG_TAG, "create new file to save setting data");
 		settingTempFile = getBaseContext().getFilesDir().getPath()
-				+ "\\Emmagee_Settings.txt";
+				+ "\\EmmageeSettings.properties";
+		Log.i(LOG_TAG, "settingFile = " + settingTempFile);
 		File settingFile = new File(settingTempFile);
 		if (!settingFile.exists()) {
 			try {
 				settingFile.createNewFile();
-				BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(
-						new FileOutputStream(settingFile)));
-				bw.write("5" + "\r\n" + "true");
-				bw.close();
+				Properties properties = new Properties();
+				properties.setProperty("interval", "5");
+				properties.setProperty("isfloat", "true");
+				properties.setProperty("sender", "");
+				properties.setProperty("password", "");
+				properties.setProperty("recipients", "");
+				properties.setProperty("smtp", "");
+				FileOutputStream fos = new FileOutputStream(settingTempFile);
+				properties.store(fos, "Setting Data");
+				fos.close();
 			} catch (IOException e) {
 				Log.d(LOG_TAG, "create new file exception :" + e.getMessage());
 			}

@@ -18,14 +18,15 @@ package com.netease.qa.emmagee.service;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.io.RandomAccessFile;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Properties;
 
 import android.app.Activity;
 import android.app.Service;
@@ -49,8 +50,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-//import com.netease.qa.emmagee.activity.MainPageActivity;
 import com.netease.qa.emmagee.utils.CpuInfo;
+import com.netease.qa.emmagee.utils.EncryptData;
+import com.netease.qa.emmagee.utils.MailSender;
 import com.netease.qa.emmagee.utils.MemoryInfo;
 import com.netease.qa.emmagee.utils.MyApplication;
 import com.netease.qa.emmagee.R;
@@ -89,6 +91,9 @@ public class EmmageeService extends Service {
 	private String processName, packageName, settingTempFile;
 	private int pid, uid;
 	private boolean isServiceStop = false;
+	private String sender, password, recipients, smtp;
+	private String[] receivers;
+	private EncryptData des;
 
 	public static BufferedWriter bw;
 	public static FileOutputStream out;
@@ -106,6 +111,7 @@ public class EmmageeService extends Service {
 		fomart = new DecimalFormat();
 		fomart.setMaximumFractionDigits(2);
 		fomart.setMinimumFractionDigits(0);
+		des = new EncryptData("emmagee");
 	}
 
 	@Override
@@ -158,11 +164,19 @@ public class EmmageeService extends Service {
 	 */
 	private void readSettingInfo(Intent intent) {
 		try {
-			RandomAccessFile raf = new RandomAccessFile(new File(
-					settingTempFile), "r");
-			time = raf.readLine();
-			isFloating = ("true".equals(raf.readLine())) ? true : false;
-			raf.close();
+			Properties properties = new Properties();
+			properties.load(new FileInputStream(settingTempFile));
+			String interval = properties.getProperty("interval").trim();
+			isFloating = "true"
+					.equals(properties.getProperty("isfloat").trim()) ? true
+					: false;
+			sender = properties.getProperty("sender").trim();
+			password = properties.getProperty("password").trim();
+			recipients = properties.getProperty("recipients").trim();
+			time = "".equals(interval) ? "5" : interval;
+			recipients = properties.getProperty("recipients");
+			receivers = recipients.split("\\s+");
+			smtp = properties.getProperty("smtp");
 		} catch (IOException e) {
 			time = "5";
 			isFloating = true;
@@ -315,7 +329,7 @@ public class EmmageeService extends Service {
 			} else {
 				Intent intent = new Intent();
 				intent.putExtra("isServiceStop", true);
-				intent.setAction("com.netease.action.emmageeService");// action与接收器相同
+				intent.setAction("com.netease.action.emmageeService");
 				sendBroadcast(intent);
 				stopSelf();
 			}
@@ -408,8 +422,24 @@ public class EmmageeService extends Service {
 		handler.removeCallbacks(task);
 		closeOpenedStream();
 		isStop = true;
-		Toast.makeText(this, "测试结果文件：" + EmmageeService.resultFilePath,
-				Toast.LENGTH_LONG).show();
+		boolean isSendSuccessfully = false;
+		try {
+			isSendSuccessfully = MailSender.sendTextMail(sender,
+					des.decrypt(password), smtp,
+					"Emmagee Performance Test Report", "see attachment",
+					resultFilePath, receivers);
+		} catch (Exception e) {
+			isSendSuccessfully = false;
+		}
+		if (isSendSuccessfully) {
+			Toast.makeText(this, "测试结果报表已发送至邮箱:" + recipients,
+					Toast.LENGTH_LONG).show();
+		} else {
+			Toast.makeText(this,
+					"测试结果未成功发送至邮箱，结果保存在:" + EmmageeService.resultFilePath,
+					Toast.LENGTH_LONG).show();
+		}
+
 		super.onDestroy();
 	}
 
