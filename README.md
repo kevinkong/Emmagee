@@ -24,7 +24,7 @@ you should not miss:
 
 ## How to use Emmagee?
 
-First of all ,you should have Emmagee.apk,download [here](http://emmagee.googlecode.com/files/Emmagee.apk) or 
+First of all ,you should have Emmagee.apk,download [here](http://code.google.com/p/emmagee/downloads/list) or 
 build the apk file youself [here](https://github.com/NetEase/Emmagee/wiki/How-to-build-emmage.apk%3F),then :
 
 1. Start Emmagee App
