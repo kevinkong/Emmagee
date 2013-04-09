@@ -17,18 +17,87 @@
         <!-- 允许输入数据为正整数 -->
         <!-- android:numeric="integer" -->
 
-		<!--采集频率 -->
+
+        <!-- 采集频率 -->
+
         <EditText
             android:id="@+id/time"
             android:layout_width="120dp"
-            android:maxLength="5"
             android:layout_height="wrap_content"
-            android:inputType="number" />
+            android:inputType="number"
+            android:maxLength="5" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/seconds" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/sender" />
+
+        <EditText
+            android:id="@+id/sender"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/password" />
+
+        <EditText
+            android:id="@+id/password"
+            android:inputType="textPassword"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+     
+     <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/smtp" />
+
+        <EditText
+            android:id="@+id/smtp"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/receiver" />
+
+        <EditText
+            android:id="@+id/recipients"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" 
+            android:layout_marginLeft="15sp"
+            android:layout_marginRight="15sp"/>
     </LinearLayout>
 
     <RelativeLayout
@@ -62,10 +131,10 @@
         <Button
             android:id="@+id/save"
             android:layout_width="200dp"
-            android:gravity="center_horizontal" 
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true" 
             android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:gravity="center_horizontal"
             android:text="@string/ok" />
     </RelativeLayout>
 
