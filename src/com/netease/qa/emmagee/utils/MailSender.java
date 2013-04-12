@@ -37,7 +37,7 @@ public class MailSender {
 			String smtp, String subject, String content, String file,
 			String[] maillists) {
 		if (maillists == null || maillists.length == 0
-				|| (maillists[0].trim().equals(""))) {
+				|| ("".equals(maillists[0].trim()))) {
 			return false;
 		} else {
 			// Get system properties
