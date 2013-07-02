@@ -29,6 +29,7 @@ import java.util.Calendar;
 import java.util.Properties;
 
 import android.app.Activity;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -37,6 +38,7 @@ import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -50,6 +52,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.netease.qa.emmagee.activity.MainPageActivity;
 import com.netease.qa.emmagee.utils.CpuInfo;
 import com.netease.qa.emmagee.utils.EncryptData;
 import com.netease.qa.emmagee.utils.MailSender;
@@ -117,8 +120,15 @@ public class EmmageeService extends Service {
 	@Override
 	public void onStart(Intent intent, int startId) {
 		Log.i(LOG_TAG, "onStart");
-		setForeground(true);
-		super.onStart(intent, startId);
+		PendingIntent contentIntent = PendingIntent.getActivity(
+				getBaseContext(), 0, new Intent(this, MainPageActivity.class),
+				0);
+		NotificationCompat.Builder builder = new NotificationCompat.Builder(
+				this);
+		builder.setContentIntent(contentIntent).setSmallIcon(R.drawable.icon)
+				.setWhen(System.currentTimeMillis()).setAutoCancel(true)
+				.setContentTitle("Emmagee");
+		startForeground(startId, builder.build());
 
 		pid = intent.getExtras().getInt("pid");
 		uid = intent.getExtras().getInt("uid");
@@ -441,6 +451,7 @@ public class EmmageeService extends Service {
 		}
 
 		super.onDestroy();
+		stopForeground(true);
 	}
 
 	@Override
