@@ -19,6 +19,7 @@ package com.netease.qa.emmagee.service;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -31,10 +32,13 @@ import java.util.Properties;
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.wifi.WifiManager;
+import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
@@ -52,13 +56,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.netease.qa.emmagee.R;
 import com.netease.qa.emmagee.activity.MainPageActivity;
 import com.netease.qa.emmagee.utils.CpuInfo;
+import com.netease.qa.emmagee.utils.CurrentInfo;
 import com.netease.qa.emmagee.utils.EncryptData;
 import com.netease.qa.emmagee.utils.MailSender;
 import com.netease.qa.emmagee.utils.MemoryInfo;
 import com.netease.qa.emmagee.utils.MyApplication;
-import com.netease.qa.emmagee.R;
 
 /**
  * Service running in background
@@ -104,6 +109,12 @@ public class EmmageeService extends Service {
 	public static String resultFilePath;
 	public static boolean isStop = false;
 
+	private String totalBatt;
+	private String currentBatt;
+	private String temperature;
+	private String voltage;
+	private CurrentInfo currentInfo;
+
 	@Override
 	public void onCreate() {
 		Log.i(LOG_TAG, "onCreate");
@@ -115,6 +126,37 @@ public class EmmageeService extends Service {
 		fomart.setMaximumFractionDigits(2);
 		fomart.setMinimumFractionDigits(0);
 		des = new EncryptData("emmagee");
+		currentInfo = new CurrentInfo();
+		registerReceiver(new BatteryInfoBroadcastReceiver(), new IntentFilter(
+				"android.intent.action.BATTERY_CHANGED"));
+	}
+
+	/**
+	 * 电池信息监控监听器
+	 * 
+	 * @author hz_liuxiao@corp.netease.com
+	 * 
+	 */
+	public class BatteryInfoBroadcastReceiver extends BroadcastReceiver {
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+
+			if (Intent.ACTION_BATTERY_CHANGED.equals(intent.getAction())) {
+				int level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0);
+
+				int scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+				currentBatt = String.valueOf(level * 100 / scale) + "%";
+
+				voltage = String.valueOf(intent.getIntExtra(
+						BatteryManager.EXTRA_VOLTAGE, -1) * 1.0 / 1000);
+
+				temperature = String.valueOf(intent.getIntExtra(
+						BatteryManager.EXTRA_TEMPERATURE, -1) * 1.0 / 10);
+			}
+
+		}
+
 	}
 
 	@Override
@@ -449,7 +491,6 @@ public class EmmageeService extends Service {
 					"测试结果未成功发送至邮箱，结果保存在:" + EmmageeService.resultFilePath,
 					Toast.LENGTH_LONG).show();
 		}
-
 		super.onDestroy();
 		stopForeground(true);
 	}
