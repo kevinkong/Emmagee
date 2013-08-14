@@ -86,6 +86,7 @@ public class EmmageeService extends Service {
 	private TextView txtTotalMem;
 	private TextView txtUnusedMem;
 	private TextView txtTraffic;
+	private TextView txtBatt;
 	private ImageView imgViIcon;
 	private Button btnWifi;
 	private int delaytime;
@@ -146,7 +147,7 @@ public class EmmageeService extends Service {
 				int level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0);
 
 				int scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
-				currentBatt = String.valueOf(level * 100 / scale) + "%";
+				totalBatt = String.valueOf(level * 100 / scale) + "%";
 
 				voltage = String.valueOf(intent.getIntExtra(
 						BatteryManager.EXTRA_VOLTAGE, -1) * 1.0 / 1000);
@@ -188,6 +189,8 @@ public class EmmageeService extends Service {
 					.findViewById(R.id.memunused);
 			txtTotalMem = (TextView) viFloatingWindow
 					.findViewById(R.id.memtotal);
+			txtBatt = (TextView) viFloatingWindow
+					.findViewById(R.id.batt);
 			txtTraffic = (TextView) viFloatingWindow.findViewById(R.id.traffic);
 			btnWifi = (Button) viFloatingWindow.findViewById(R.id.wifi);
 
@@ -277,7 +280,7 @@ public class EmmageeService extends Service {
 					+ uid + "\r\n");
 			bw.write("时间" + "," + "应用占用内存PSS(MB)" + "," + "应用占用内存比(%)" + ","
 					+ " 机器剩余内存(MB)" + "," + "应用占用CPU率(%)" + "," + "CPU总使用率(%)"
-					+ "," + "流量(KB)：" + "\r\n");
+					+ "," + "流量(KB)"+ "," + "电量(%)"+ "," + "电流(mA)"+ "," + "温度(C)"+ "," + "电压(V)" + "\r\n");
 		} catch (IOException e) {
 			Log.e(LOG_TAG, e.getMessage());
 		}
@@ -400,7 +403,8 @@ public class EmmageeService extends Service {
 		long freeMemory = memoryInfo.getFreeMemorySize(getBaseContext());
 		String freeMemoryKb = fomart.format((double) freeMemory / 1024);
 		String processMemory = fomart.format((double) pidMemory / 1024);
-		ArrayList<String> processInfo = cpuInfo.getCpuRatioInfo();
+		String currentBatt = String.valueOf(currentInfo.getValue());
+		ArrayList<String> processInfo = cpuInfo.getCpuRatioInfo(totalBatt,currentBatt,temperature,voltage);
 		if (isFloating) {
 			String processCpuRatio = "0";
 			String totalCpuRatio = "0";
@@ -430,6 +434,7 @@ public class EmmageeService extends Service {
 						+ freeMemoryKb + "MB");
 				txtTotalMem.setText("占用CPU:" + processCpuRatio + "%"
 						+ ",总体CPU:" + totalCpuRatio + "%");
+				txtBatt.setText("电量:"+totalBatt+",电流:"+currentBatt+"mA");
 				if ("-1".equals(trafficSize)) {
 					txtTraffic.setText("本程序或本设备不支持流量统计");
 				} else if (isMb)

@@ -139,7 +139,8 @@ public class CpuInfo {
 	 * @return network traffic ,used ratio of process CPU and total CPU in
 	 *         certain interval
 	 */
-	public ArrayList<String> getCpuRatioInfo() {
+	public ArrayList<String> getCpuRatioInfo(String totalBatt,
+			String currentBatt, String temperature, String voltage) {
 
 		DecimalFormat fomart = new DecimalFormat();
 		fomart.setMaximumFractionDigits(2);
@@ -155,6 +156,10 @@ public class CpuInfo {
 					|| (Build.MODEL.equals("google_sdk"))) {
 				mDateTime2 = formatterFile.format(cal.getTime().getTime() + 8
 						* 60 * 60 * 1000);
+				totalBatt = "N/A";
+				currentBatt = "N/A";
+				temperature = "N/A";
+				voltage = "N/A";
 			} else
 				mDateTime2 = formatterFile.format(cal.getTime().getTime());
 
@@ -167,10 +172,10 @@ public class CpuInfo {
 					traffic = -1;
 				else
 					traffic = (lastestTraffic - initialTraffic + 1023) / 1024;
-				processCpuRatio = fomart.format(100 * ((double) (processCpu - processCpu2) 
-						/ ((double) (totalCpu - totalCpu2))));
-				totalCpuRatio = fomart.format(100 * ((double) ((totalCpu - idleCpu) - (totalCpu2 - idleCpu2)) 
-						/ (double) (totalCpu - totalCpu2)));
+				processCpuRatio = fomart
+						.format(100 * ((double) (processCpu - processCpu2) / ((double) (totalCpu - totalCpu2))));
+				totalCpuRatio = fomart
+						.format(100 * ((double) ((totalCpu - idleCpu) - (totalCpu2 - idleCpu2)) / (double) (totalCpu - totalCpu2)));
 				long pidMemory = mi.getPidMemorySize(pid, context);
 				String pMemory = fomart.format((double) pidMemory / 1024);
 				long freeMemory = mi.getFreeMemorySize(context);
@@ -186,11 +191,14 @@ public class CpuInfo {
 					EmmageeService.bw.write(mDateTime2 + "," + pMemory + ","
 							+ percent + "," + fMemory + "," + processCpuRatio
 							+ "," + totalCpuRatio + "," + "本程序或本设备不支持流量统计"
-							+ "\r\n");
+							+ "," + totalBatt + "," + currentBatt + ","
+							+ temperature + "," + voltage + "\r\n");
 				} else {
 					EmmageeService.bw.write(mDateTime2 + "," + pMemory + ","
 							+ percent + "," + fMemory + "," + processCpuRatio
-							+ "," + totalCpuRatio + "," + traffic + "\r\n");
+							+ "," + totalCpuRatio + "," + traffic + ","
+							+ totalBatt + "," + currentBatt + "," + temperature
+							+ "," + voltage + "\r\n");
 				}
 			}
 			totalCpu2 = totalCpu;

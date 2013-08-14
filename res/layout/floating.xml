@@ -47,6 +47,16 @@
                 android:gravity="right"
                 android:paddingRight="10.0dip"
                 android:textColor="#FFFFFF" />
+            
+            <TextView
+                android:id="@+id/batt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="3dp"
+                android:layout_weight="0.4"
+                android:gravity="right"
+                android:paddingRight="10.0dip"
+                android:textColor="#FFFFFF" />
   			<TextView
                 android:id="@+id/traffic"
                 android:layout_width="wrap_content"
