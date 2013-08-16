@@ -28,6 +28,7 @@ import android.util.Log;
 /**
  * operate memory information
  * 
+ * @author andrewleo
  */
 public class MemoryInfo {
 

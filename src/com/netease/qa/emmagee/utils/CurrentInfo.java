@@ -9,6 +9,12 @@ import java.io.FileReader;
 import android.os.Build;
 import android.util.Log;
 
+/**
+ * Current info
+ * 
+ * @author andrewleo
+ * 
+ */
 public class CurrentInfo {
 	private static final String LOG_TAG = "Emmagee-CurrentInfo";
 
@@ -138,6 +144,13 @@ public class CurrentInfo {
 		return value;
 	}
 
+	/**
+	 * 获取当前的电流值
+	 * 
+	 * @param file
+	 * @param convertToMillis
+	 * @return
+	 */
 	public Long getCurrentValue(File file, boolean convertToMillis) {
 		String text = null;
 		try {

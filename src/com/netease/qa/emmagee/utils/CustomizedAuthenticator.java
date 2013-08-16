@@ -5,6 +5,7 @@ import javax.mail.*;
 /**
  * Customized Authenticator
  * 
+ * @author andrewleo
  */
 public class CustomizedAuthenticator extends Authenticator {
 	String userName = null;

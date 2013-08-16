@@ -56,6 +56,7 @@ import com.netease.qa.emmagee.R;
 /**
  * Main Page of Emmagee
  * 
+ * @author andrewleo
  */
 public class MainPageActivity extends Activity {
 
@@ -128,6 +129,8 @@ public class MainPageActivity extends Activity {
 
 	/**
 	 * customized BroadcastReceiver
+	 * 
+	 * @author andrewleo
 	 */
 	public class UpdateReceiver extends BroadcastReceiver {
 
@@ -301,6 +304,7 @@ public class MainPageActivity extends Activity {
 	/**
 	 * customizing adapter.
 	 * 
+	 * @author andrewleo
 	 */
 	private class ListAdapter extends BaseAdapter {
 		List<Programe> programe;
@@ -308,6 +312,8 @@ public class MainPageActivity extends Activity {
 
 		/**
 		 * save status of all installed processes
+		 * 
+		 * @author andrewleo
 		 */
 		class Viewholder {
 			TextView txtAppName;

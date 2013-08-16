@@ -8,6 +8,8 @@ import javax.crypto.IllegalBlockSizeException;
 
 /**
  * 提供加密算法，可以对输入的字符串进行加密、解密操作
+ * 
+ * @author andrewleo
  */
 public class EncryptData {
 	private static String strDefaultKey = "emmagee";

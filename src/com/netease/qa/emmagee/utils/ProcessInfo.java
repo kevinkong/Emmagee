@@ -28,7 +28,8 @@ import android.util.Log;
 
 /**
  * get information of processes
- *
+ * 
+ * @author andrewleo
  */
 public class ProcessInfo {
 
@@ -40,7 +41,7 @@ public class ProcessInfo {
 	/**
 	 * get information of all running processes,including package name ,process
 	 * name ,icon ,pid and uid.
-	 *
+	 * 
 	 * @param context
 	 *            context of activity
 	 * @return running processes list
@@ -85,7 +86,7 @@ public class ProcessInfo {
 
 	/**
 	 * get information of all applications.
-	 *
+	 * 
 	 * @param context
 	 *            context of activity
 	 * @return packages information of all applications

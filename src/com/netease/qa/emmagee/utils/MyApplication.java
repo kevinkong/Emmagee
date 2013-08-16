@@ -22,6 +22,7 @@ import android.view.WindowManager;
 /**
  * my application class
  * 
+ * @author andrewleo
  */
 public class MyApplication extends Application {
 

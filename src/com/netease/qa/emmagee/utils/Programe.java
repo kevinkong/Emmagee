@@ -22,6 +22,7 @@ import android.graphics.drawable.Drawable;
  * details of installed processes ,including
  * icon,packagename,pid,uid,processname
  * 
+ * @author andrewleo
  */
 public class Programe {
 	private Drawable icon;

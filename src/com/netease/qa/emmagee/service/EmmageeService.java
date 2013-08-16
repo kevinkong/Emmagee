@@ -68,6 +68,7 @@ import com.netease.qa.emmagee.utils.MyApplication;
 /**
  * Service running in background
  * 
+ * @author andrewleo
  */
 public class EmmageeService extends Service {
 
@@ -189,8 +190,7 @@ public class EmmageeService extends Service {
 					.findViewById(R.id.memunused);
 			txtTotalMem = (TextView) viFloatingWindow
 					.findViewById(R.id.memtotal);
-			txtBatt = (TextView) viFloatingWindow
-					.findViewById(R.id.batt);
+			txtBatt = (TextView) viFloatingWindow.findViewById(R.id.batt);
 			txtTraffic = (TextView) viFloatingWindow.findViewById(R.id.traffic);
 			btnWifi = (Button) viFloatingWindow.findViewById(R.id.wifi);
 
@@ -280,7 +280,8 @@ public class EmmageeService extends Service {
 					+ uid + "\r\n");
 			bw.write("时间" + "," + "应用占用内存PSS(MB)" + "," + "应用占用内存比(%)" + ","
 					+ " 机器剩余内存(MB)" + "," + "应用占用CPU率(%)" + "," + "CPU总使用率(%)"
-					+ "," + "流量(KB)"+ "," + "电量(%)"+ "," + "电流(mA)"+ "," + "温度(C)"+ "," + "电压(V)" + "\r\n");
+					+ "," + "流量(KB)" + "," + "电量(%)" + "," + "电流(mA)" + ","
+					+ "温度(C)" + "," + "电压(V)" + "\r\n");
 		} catch (IOException e) {
 			Log.e(LOG_TAG, e.getMessage());
 		}
@@ -404,7 +405,8 @@ public class EmmageeService extends Service {
 		String freeMemoryKb = fomart.format((double) freeMemory / 1024);
 		String processMemory = fomart.format((double) pidMemory / 1024);
 		String currentBatt = String.valueOf(currentInfo.getValue());
-		ArrayList<String> processInfo = cpuInfo.getCpuRatioInfo(totalBatt,currentBatt,temperature,voltage);
+		ArrayList<String> processInfo = cpuInfo.getCpuRatioInfo(totalBatt,
+				currentBatt, temperature, voltage);
 		if (isFloating) {
 			String processCpuRatio = "0";
 			String totalCpuRatio = "0";
@@ -434,7 +436,7 @@ public class EmmageeService extends Service {
 						+ freeMemoryKb + "MB");
 				txtTotalMem.setText("占用CPU:" + processCpuRatio + "%"
 						+ ",总体CPU:" + totalCpuRatio + "%");
-				txtBatt.setText("电量:"+totalBatt+",电流:"+currentBatt+"mA");
+				txtBatt.setText("电量:" + totalBatt + ",电流:" + currentBatt + "mA");
 				if ("-1".equals(trafficSize)) {
 					txtTraffic.setText("本程序或本设备不支持流量统计");
 				} else if (isMb)

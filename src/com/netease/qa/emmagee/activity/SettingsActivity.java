@@ -41,6 +41,7 @@ import com.netease.qa.emmagee.utils.EncryptData;
 /**
  * Setting Page of Emmagee
  * 
+ * @author andrewleo
  */
 public class SettingsActivity extends Activity {
 
