@@ -34,7 +34,7 @@ build the apk file youself [here](https://github.com/NetEase/Emmagee/wiki/How-to
 
 Meanwhile you'd better follow the rules below
 
-* It's *NOT* recommended to submit a pull request directly to Dagger's `master` branch. `develop` branch is more appropriate
+* It's *NOT* recommended to submit a pull request directly to Emmagee's `master` branch. `develop` branch is more appropriate
 * Follow common Java coding conventions
 * Put all Java class files under *com.netease* package
 * Add the following [license](#license) in each Java class file
