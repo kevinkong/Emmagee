@@ -5,6 +5,7 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
+import java.util.Locale;
 
 import android.os.Build;
 import android.util.Log;
@@ -17,129 +18,108 @@ import android.util.Log;
  */
 public class CurrentInfo {
 	private static final String LOG_TAG = "Emmagee-CurrentInfo";
+	private static final String BUILD_MODEL = Build.MODEL.toLowerCase(Locale.ENGLISH);
+	private static final String I_MBAT = "I_MBAT: ";
+	private static final String CURRENT_NOW = "/sys/class/power_supply/battery/current_now";
+	private static final String BATT_CURRENT = "/sys/class/power_supply/battery/batt_current";
+	private static final String SMEM_TEXT = "/sys/class/power_supply/battery/smem_text";
+	private static final String BATT_CURRENT_ADC = "/sys/class/power_supply/battery/batt_current_adc";
+	private static final String CURRENT_AVG = "/sys/class/power_supply/battery/current_avg";
 
-	public Long getValue() {
+	public Long getCurrentValue() {
 		File f = null;
-		// htc desire hd / desire z?
-		if (Build.MODEL.toLowerCase().contains("desire hd")
-				|| Build.MODEL.toLowerCase().contains("desire z")) {
-			f = new File("/sys/class/power_supply/battery/batt_current");
+		Log.d(LOG_TAG, BUILD_MODEL);
+		// galaxy s4,oppo find,samgsung note2
+		if (BUILD_MODEL.contains("sgh-i337") || BUILD_MODEL.contains("gt-i9505") || BUILD_MODEL.contains("sch-i545")
+				|| BUILD_MODEL.contains("find 5") || BUILD_MODEL.contains("sgh-m919") || BUILD_MODEL.contains("sgh-i537")
+				|| BUILD_MODEL.contains("x907") || BUILD_MODEL.contains("gt-n7100")) {
+			f = new File(CURRENT_NOW);
+			if (f.exists()) {
+				return getCurrentValue(f, false);
+			}
+		}
+
+		// samsung galaxy
+		if (BUILD_MODEL.contains("gt-p31") || BUILD_MODEL.contains("gt-p51")) {
+			f = new File(CURRENT_AVG);
+			if (f.exists()) {
+				return getCurrentValue(f, false);
+			}
+		}
+
+		// htc desire hd ,desire z
+		if (BUILD_MODEL.contains("desire hd") || BUILD_MODEL.contains("desire z")) {
+			f = new File(BATT_CURRENT);
 			if (f.exists())
 				return getCurrentValue(f, false);
 		}
 
-		// sony ericsson xperia x1
-		f = new File(
-				"/sys/devices/platform/i2c-adapter/i2c-0/0-0036/power_supply/ds2746-battery/current_now");
+		// htc sensation z710e
+		f = new File(BATT_CURRENT);
 		if (f.exists())
 			return getCurrentValue(f, false);
-		// xdandroid
-		/* if (Build.MODEL.equalsIgnoreCase("MSM")) { */
-		f = new File(
-				"/sys/devices/platform/i2c-adapter/i2c-0/0-0036/power_supply/battery/current_now");
-		if (f.exists())
-			return getCurrentValue(f, false);
-		/* } */
-		// droid eris
-		f = new File("/sys/class/power_supply/battery/smem_text");
+
+		// htc one V
+		f = new File(SMEM_TEXT);
 		if (f.exists())
 			return getSMemValue();
-		// some htc devices
-		f = new File("/sys/class/power_supply/battery/batt_current");
-		if (f.exists())
-			return getCurrentValue(f, false);
-		// nexus one
-		f = new File("/sys/class/power_supply/battery/current_now");
+
+		// nexus one,meizu
+		f = new File(CURRENT_NOW);
 		if (f.exists())
 			return getCurrentValue(f, true);
-		// samsung galaxy vibrant
-		f = new File("/sys/class/power_supply/battery/batt_chg_current");
+
+		// galaxy note, galaxy s2
+		f = new File(BATT_CURRENT_ADC);
 		if (f.exists())
 			return getCurrentValue(f, false);
-		// sony ericsson x10
-		f = new File("/sys/class/power_supply/battery/charger_current");
+
+		// acer V360
+		f = new File("/sys/class/power_supply/battery/BatteryAverageCurrent");
 		if (f.exists())
 			return getCurrentValue(f, false);
+
+		// moto milestone,moto mb526
+		f = new File("/sys/devices/platform/cpcap_battery/power_supply/usb/current_now");
+		if (f.exists())
+			return getCurrentValue(f, false);
+
 		return null;
 	}
 
-	public static Long getSMemValue() {
+	/**
+	 * 从smem_text文件中读取电流数据
+	 * 
+	 * @return
+	 */
+	public Long getSMemValue() {
 		boolean success = false;
 		String text = null;
+		Long value = null;
 		try {
-			FileReader fr = new FileReader(
-					"/sys/class/power_supply/battery/smem_text");
+			FileReader fr = new FileReader(SMEM_TEXT);
 			BufferedReader br = new BufferedReader(fr);
 			String line = br.readLine();
 			while (line != null) {
-				if (line.contains("I_MBAT")) {
-					text = line.substring(line.indexOf("I_MBAT: ") + 8);
+				if (line.contains(I_MBAT)) {
+					text = line.substring(line.indexOf(I_MBAT) + 8);
 					success = true;
 					break;
 				}
 				line = br.readLine();
 			}
-			br.close();
 			fr.close();
-		} catch (Exception ex) {
-			Log.e(LOG_TAG, ex.getMessage());
-			ex.printStackTrace();
+			br.close();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		Long value = null;
 		if (success) {
 			try {
 				value = Long.parseLong(text);
 			} catch (NumberFormatException nfe) {
-				Log.e(LOG_TAG, nfe.getMessage());
+				nfe.printStackTrace();
 				value = null;
-
 			}
-		}
-		return value;
-	}
-
-	public static Long getBattAttrValue(File f, String dischargeField,
-			String chargeField) {
-		String text = null;
-		Long value = null;
-		try {
-			// @@@ debug
-			// StringReader fr = new
-			// StringReader("vref: 1248\r\nbatt_id: 3\r\nbatt_vol: 4068\r\nbatt_current: 0\r\nbatt_discharge_current: 123\r\nbatt_temperature: 329\r\nbatt_temp_protection:normal\r\nPd_M:0\r\nI_MBAT:-313\r\npercent_last(RP): 94\r\npercent_update: 71\r\nlevel: 71\r\nfirst_level: 100\r\nfull_level:100\r\ncapacity:1580\r\ncharging_source: USB\r\ncharging_enabled: Slow\r\n");
-			FileReader fr = new FileReader(f);
-			BufferedReader br = new BufferedReader(fr);
-			String line = br.readLine();
-			final String chargeFieldHead = chargeField + ": ";
-			final String dischargeFieldHead = dischargeField + ": ";
-			while (line != null) {
-				if (line.contains(chargeField)) {
-					text = line.substring(line.indexOf(chargeFieldHead)
-							+ chargeFieldHead.length());
-					try {
-						value = Long.parseLong(text);
-						if (value != 0)
-							break;
-					} catch (NumberFormatException nfe) {
-						Log.e(LOG_TAG, nfe.getMessage(), nfe);
-					}
-				}
-				// "batt_discharge_current:"
-				if (line.contains(dischargeField)) {
-					text = line.substring(line.indexOf(dischargeFieldHead)
-							+ dischargeFieldHead.length());
-					try {
-						value = (-1) * Math.abs(Long.parseLong(text));
-					} catch (NumberFormatException nfe) {
-						Log.e(LOG_TAG, nfe.getMessage(), nfe);
-					}
-					break;
-				}
-				line = br.readLine();
-			}
-			br.close();
-			fr.close();
-		} catch (Exception ex) {
-			Log.e(LOG_TAG, ex.getMessage(), ex);
 		}
 		return value;
 	}
@@ -152,28 +132,35 @@ public class CurrentInfo {
 	 * @return
 	 */
 	public Long getCurrentValue(File file, boolean convertToMillis) {
-		String text = null;
-		try {
-			FileInputStream fs = new FileInputStream(file);
-			DataInputStream ds = new DataInputStream(fs);
-			text = ds.readLine();
-			ds.close();
-			fs.close();
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
+		Log.d(LOG_TAG, "*** getCurrentValue ***");
+		Log.d(LOG_TAG, "*** " + convertToMillis + " ***");
+		String line = null;
 		Long value = null;
-
-		if (text != null) {
+		FileInputStream fs = null;
+		DataInputStream ds = null;
+		try {
+			fs = new FileInputStream(file);
+			ds = new DataInputStream(fs);
+			line = ds.readLine();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
 			try {
-				value = Long.parseLong(text);
+				fs.close();
+				ds.close();
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}
+		if (line != null) {
+			try {
+				value = Long.parseLong(line);
 			} catch (NumberFormatException nfe) {
 				value = null;
 			}
 			if (convertToMillis)
-				value = value / 1000; // convert to milliampere
+				value = value / 1000;
 		}
-
 		return value;
 	}
 }

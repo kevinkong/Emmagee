@@ -65,7 +65,8 @@
                 android:layout_weight="0.4"
                 android:gravity="right"
                 android:paddingRight="10.0dip"
-                android:textColor="#FFFFFF" />
+                android:textColor="#FFFFFF" />
+  			
             <Button
                 android:id="@+id/wifi"
                 android:layout_width="80dp"
