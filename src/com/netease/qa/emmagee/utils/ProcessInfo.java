@@ -17,6 +17,7 @@
 package com.netease.qa.emmagee.utils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import android.app.ActivityManager;
@@ -81,6 +82,7 @@ public class ProcessInfo {
 			}
 			progressList.add(programe);
 		}
+		Collections.sort(progressList);
 		return progressList;
 	}
 

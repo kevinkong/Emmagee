@@ -24,7 +24,7 @@ import android.graphics.drawable.Drawable;
  * 
  * @author andrewleo
  */
-public class Programe {
+public class Programe implements Comparable<Programe> {
 	private Drawable icon;
 	private String processName;
 	private String packageName;
@@ -70,5 +70,10 @@ public class Programe {
 
 	public void setPid(int pid) {
 		this.pid = pid;
+	}
+
+	@Override
+	public int compareTo(Programe arg0) {
+		return (this.getProcessName().compareTo(arg0.getProcessName()));
 	}
 }

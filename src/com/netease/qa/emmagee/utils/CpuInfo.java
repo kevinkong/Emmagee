@@ -144,6 +144,7 @@ public class CpuInfo {
 			String currentBatt, String temperature, String voltage) {
 
 		DecimalFormat fomart = new DecimalFormat();
+//		fomart.setGroupingUsed(false);
 		fomart.setMaximumFractionDigits(2);
 		fomart.setMinimumFractionDigits(2);
 
