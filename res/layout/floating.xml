@@ -69,8 +69,13 @@
   			
             <Button
                 android:id="@+id/wifi"
-                android:layout_width="80dp"
-                android:layout_height="40dp" />
+                android:layout_width="50dp"
+                android:layout_height="25dp" />
+            
+            <Button
+                android:id="@+id/stop"
+                android:layout_width="50dp"
+                android:layout_height="25dp" />
 
         </LinearLayout>
     </RelativeLayout>
