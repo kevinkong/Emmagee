@@ -86,7 +86,6 @@ public class EmmageeService extends Service {
 	private TextView txtTotalMem;
 	private TextView txtUnusedMem;
 	private TextView txtTraffic;
-	private TextView txtBatt;
 	private ImageView imgViIcon;
 	private Button btnWifi;
 	private int delaytime;
@@ -181,7 +180,6 @@ public class EmmageeService extends Service {
 			viFloatingWindow = LayoutInflater.from(this).inflate(R.layout.floating, null);
 			txtUnusedMem = (TextView) viFloatingWindow.findViewById(R.id.memunused);
 			txtTotalMem = (TextView) viFloatingWindow.findViewById(R.id.memtotal);
-			txtBatt = (TextView) viFloatingWindow.findViewById(R.id.batt);
 			txtTraffic = (TextView) viFloatingWindow.findViewById(R.id.traffic);
 			btnWifi = (Button) viFloatingWindow.findViewById(R.id.wifi);
 
@@ -195,7 +193,6 @@ public class EmmageeService extends Service {
 			txtUnusedMem.setTextColor(android.graphics.Color.RED);
 			txtTotalMem.setTextColor(android.graphics.Color.RED);
 			txtTraffic.setTextColor(android.graphics.Color.RED);
-			txtBatt.setTextColor(android.graphics.Color.RED);
 			imgViIcon = (ImageView) viFloatingWindow.findViewById(R.id.img2);
 			imgViIcon.setVisibility(View.GONE);
 			imgViIcon.setOnClickListener(new OnClickListener() {
@@ -412,15 +409,15 @@ public class EmmageeService extends Service {
 			}
 			// 如果cpu使用率存在且都不小于0，则输出
 			if (processCpuRatio != null && totalCpuRatio != null) {
-				txtUnusedMem.setText("占用内存:" + processMemory + "MB" + ",机器剩余:" + freeMemoryKb + "MB");
-				txtTotalMem.setText("占用CPU:" + processCpuRatio + "%" + ",总体CPU:" + totalCpuRatio + "%");
-				txtBatt.setText("电量:" + totalBatt + ",电流:" + currentBatt + "mA");
+				txtUnusedMem.setText("应用/剩余内存:" + processMemory + "/" + freeMemoryKb + "MB");
+				txtTotalMem.setText("应用/总体CPU:" + processCpuRatio + "%/" + totalCpuRatio + "%");
+				String batt = "电流:" + currentBatt + "mA,";
 				if ("-1".equals(trafficSize)) {
-					txtTraffic.setText("本程序或本设备不支持流量统计");
+					txtTraffic.setText(batt + "本程序或本设备不支持流量统计");
 				} else if (isMb)
-					txtTraffic.setText("流量:" + fomart.format(trafficMb) + "MB");
+					txtTraffic.setText(batt + "流量:" + fomart.format(trafficMb) + "MB");
 				else
-					txtTraffic.setText("流量:" + trafficSize + "KB");
+					txtTraffic.setText(batt + "流量:" + trafficSize + "KB");
 			}
 			// 当内存为0切cpu使用率为0时则是被测应用退出
 			if ("0".equals(processMemory) && "0.00".equals(processCpuRatio)) {

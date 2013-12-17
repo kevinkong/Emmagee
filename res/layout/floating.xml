@@ -42,41 +42,38 @@
                 android:id="@+id/memtotal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="3dp"
                 android:layout_weight="0.4"
                 android:gravity="right"
                 android:paddingRight="10.0dip"
                 android:textColor="#FFFFFF" />
-            
+
             <TextView
-                android:id="@+id/batt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="3dp"
-                android:layout_weight="0.4"
-                android:gravity="right"
-                android:paddingRight="10.0dip"
-                android:textColor="#FFFFFF" />
-  			<TextView
                 android:id="@+id/traffic"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="3dp"
                 android:layout_weight="0.4"
                 android:gravity="right"
                 android:paddingRight="10.0dip"
                 android:textColor="#FFFFFF" />
-  			
-            <Button
-                android:id="@+id/wifi"
-                android:layout_width="50dp"
-                android:layout_height="25dp" />
-            
-            <Button
-                android:id="@+id/stop"
-                android:layout_width="50dp"
-                android:layout_height="25dp" />
 
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" 
+                android:layout_weight="0.4">
+
+                <Button
+                    android:id="@+id/wifi"
+                    android:textSize = "12dp"
+                    android:layout_width="80dp"
+                    android:layout_height="40dp" />
+                <Button
+                    android:id="@+id/stop"
+                    android:text="停止测试"
+                    android:textSize = "12dp"
+                    android:layout_width="80dp"
+                    android:layout_height="40dp" />
+            </LinearLayout>
         </LinearLayout>
     </RelativeLayout>
 
