@@ -16,12 +16,14 @@
  */
 package com.netease.qa.emmagee.service;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -116,6 +118,12 @@ public class EmmageeService extends Service {
 	private String voltage;
 	private CurrentInfo currentInfo;
 	private BatteryInfoBroadcastReceiver batteryBroadcast = null;
+
+	//获取启动时间所需变量
+	private static final int MAX_START_TIME_COUNT = 5;	//暂定最大轮询5次
+	private int getStartTimeCount = 0;
+	private boolean isGetStartTime = true;
+	private String startTime = "";
 
 	@Override
 	public void onCreate() {
@@ -351,8 +359,12 @@ public class EmmageeService extends Service {
 			if (!isServiceStop) {
 				dataRefresh();
 				handler.postDelayed(this, delaytime);
-				if (isFloating)
+				if (isFloating) {
 					windowManager.updateViewLayout(viFloatingWindow, wmParams);
+				}
+				//每次刷新数据（有最大次数限制）就尝试获取logcat的启动时间，如果获取到了，就退出
+				//TODO:是否每个应用都能正常正确的获取
+				getStartTimeFromLogcat();
 			} else {
 				Intent intent = new Intent();
 				intent.putExtra("isServiceStop", true);
@@ -362,6 +374,37 @@ public class EmmageeService extends Service {
 			}
 		}
 	};
+
+	/**
+	 * get start time from logcat
+	 */
+	private void getStartTimeFromLogcat() {
+		if (isGetStartTime && getStartTimeCount < MAX_START_TIME_COUNT) {
+			try {
+				String logcatCommand = "logcat -v time -d ActivityManager:I *:S";
+				Process process = Runtime.getRuntime().exec(logcatCommand);
+				BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+				StringBuilder strBuilder = new StringBuilder();
+				String line = "";
+
+				while ((line = bufferedReader.readLine()) != null) {
+					strBuilder.append(line);
+					strBuilder.append("\r\n");
+					if (line.matches(".*Displayed.*\\+(.*)ms.*")) {
+						//TODO：可以通过正则表达式获取，同时获取启动的是哪个Activity
+						startTime = line.substring(line.lastIndexOf("+") + 1, line.lastIndexOf("ms") + 2);
+						Toast.makeText(EmmageeService.this, "启动时间：" + startTime, Toast.LENGTH_LONG).show();
+						isGetStartTime = false;
+					}
+				}
+				getStartTimeCount++;
+				Log.w(LOG_TAG, "启动日志：" + strBuilder.toString());
+				Log.w(LOG_TAG, "getStartCount：" + getStartTimeCount);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 
 	/**
 	 * refresh the performance data showing in floating window.
@@ -446,6 +489,13 @@ public class EmmageeService extends Service {
 		if (windowManager != null)
 			windowManager.removeView(viFloatingWindow);
 		handler.removeCallbacks(task);
+		//在文件最后把启动时间加上
+		try {
+			//TODO：现在把启动时间写在了文件最后
+			bw.write("\r\n启动时间：" + startTime + "\r\n");
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
 		closeOpenedStream();
 		isStop = true;
 		unregisterReceiver(batteryBroadcast);
