@@ -96,11 +96,11 @@ public class MainPageActivity extends Activity {
 						Intent intent = getPackageManager()
 								.getLaunchIntentForPackage(packageName);
 						Log.d(LOG_TAG, packageName);
-						//清除logcat日志
+						//clear logcat
 						 try {
 							 Runtime.getRuntime().exec("logcat -c");
-						 } catch (IOException e1) {
-							 e1.printStackTrace();
+						 } catch (IOException e) {
+								Log.d(LOG_TAG, e.getMessage());
 						 }
 						try {
 							startActivity(intent);

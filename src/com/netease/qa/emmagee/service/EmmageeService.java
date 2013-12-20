@@ -22,6 +22,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -119,8 +121,9 @@ public class EmmageeService extends Service {
 	private CurrentInfo currentInfo;
 	private BatteryInfoBroadcastReceiver batteryBroadcast = null;
 
-	//获取启动时间所需变量
-	private static final int MAX_START_TIME_COUNT = 5;	//暂定最大轮询5次
+	// get start time
+	private static final int MAX_START_TIME_COUNT = 5;
+	private static final String START_TIME = "#startTime";
 	private int getStartTimeCount = 0;
 	private boolean isGetStartTime = true;
 	private String startTime = "";
@@ -258,13 +261,14 @@ public class EmmageeService extends Service {
 			File resultFile = new File(resultFilePath);
 			resultFile.createNewFile();
 			out = new FileOutputStream(resultFile);
-			osw = new OutputStreamWriter(out, "GBK");
+			osw = new OutputStreamWriter(out, "UTF-8");
 			bw = new BufferedWriter(osw);
 			long totalMemorySize = memoryInfo.getTotalMemory();
 			String totalMemory = fomart.format((double) totalMemorySize / 1024);
 			bw.write("指定应用的CPU内存监控情况\r\n" + "应用包名：," + packageName + "\r\n" + "应用名称: ," + processName + "\r\n" + "应用PID: ," + pid + "\r\n"
 					+ "机器内存大小(MB)：," + totalMemory + "MB\r\n" + "机器CPU型号：," + cpuInfo.getCpuName() + "\r\n" + "机器android系统版本：,"
-					+ memoryInfo.getSDKVersion() + "\r\n" + "手机型号：," + memoryInfo.getPhoneType() + "\r\n" + "UID：," + uid + "\r\n");
+					+ memoryInfo.getSDKVersion() + "\r\n" + "手机型号：," + memoryInfo.getPhoneType() + "\r\n" + "UID：," + uid + "\r\n"
+					+ "启动时间：," + START_TIME + "\r\n");
 			bw.write("时间" + "," + "应用占用内存PSS(MB)" + "," + "应用占用内存比(%)" + "," + " 机器剩余内存(MB)" + "," + "应用占用CPU率(%)" + "," + "CPU总使用率(%)" + ","
 					+ "流量(KB)" + "," + "电量(%)" + "," + "电流(mA)" + "," + "温度(C)" + "," + "电压(V)" + "\r\n");
 		} catch (IOException e) {
@@ -362,8 +366,7 @@ public class EmmageeService extends Service {
 				if (isFloating) {
 					windowManager.updateViewLayout(viFloatingWindow, wmParams);
 				}
-				//每次刷新数据（有最大次数限制）就尝试获取logcat的启动时间，如果获取到了，就退出
-				//TODO:是否每个应用都能正常正确的获取
+				// get app start time from logcat on every task running
 				getStartTimeFromLogcat();
 			} else {
 				Intent intent = new Intent();
@@ -376,33 +379,35 @@ public class EmmageeService extends Service {
 	};
 
 	/**
-	 * get start time from logcat
+	 * Try to get start time from logcat.
 	 */
 	private void getStartTimeFromLogcat() {
-		if (isGetStartTime && getStartTimeCount < MAX_START_TIME_COUNT) {
-			try {
-				String logcatCommand = "logcat -v time -d ActivityManager:I *:S";
-				Process process = Runtime.getRuntime().exec(logcatCommand);
-				BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-				StringBuilder strBuilder = new StringBuilder();
-				String line = "";
+		if (!isGetStartTime || getStartTimeCount >= MAX_START_TIME_COUNT) {
+			return;
+		}
+		try {
+			// filter logcat by Tag:ActivityManager and Level:Info
+			String logcatCommand = "logcat -v time -d ActivityManager:I *:S";
+			Process process = Runtime.getRuntime().exec(logcatCommand);
+			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+			// StringBuilder strBuilder = new StringBuilder();
+			String line = "";
 
-				while ((line = bufferedReader.readLine()) != null) {
-					strBuilder.append(line);
-					strBuilder.append("\r\n");
-					if (line.matches(".*Displayed.*\\+(.*)ms.*")) {
-						//TODO：可以通过正则表达式获取，同时获取启动的是哪个Activity
-						startTime = line.substring(line.lastIndexOf("+") + 1, line.lastIndexOf("ms") + 2);
-						Toast.makeText(EmmageeService.this, "启动时间：" + startTime, Toast.LENGTH_LONG).show();
-						isGetStartTime = false;
-					}
+			while ((line = bufferedReader.readLine()) != null) {
+				// strBuilder.append(line);
+				// strBuilder.append("\r\n");
+				if (line.matches(".*Displayed.*\\+(.*)ms.*")) {
+					// TODO：regular pattern:Activity,startTime
+					startTime = line.substring(line.lastIndexOf("+") + 1, line.lastIndexOf("ms") + 2);
+					Toast.makeText(EmmageeService.this, "启动时间：" + startTime, Toast.LENGTH_LONG).show();
+					isGetStartTime = false;
 				}
-				getStartTimeCount++;
-				Log.w(LOG_TAG, "启动日志：" + strBuilder.toString());
-				Log.w(LOG_TAG, "getStartCount：" + getStartTimeCount);
-			} catch (IOException e) {
-				e.printStackTrace();
 			}
+			getStartTimeCount++;
+			// Log.w(LOG_TAG, "Start Time Log：" + strBuilder.toString());
+			// Log.w(LOG_TAG, "getStartCount：" + getStartTimeCount);
+		} catch (IOException e) {
+			Log.d(LOG_TAG, e.getMessage());
 		}
 	}
 
@@ -489,14 +494,9 @@ public class EmmageeService extends Service {
 		if (windowManager != null)
 			windowManager.removeView(viFloatingWindow);
 		handler.removeCallbacks(task);
-		//在文件最后把启动时间加上
-		try {
-			//TODO：现在把启动时间写在了文件最后
-			bw.write("\r\n启动时间：" + startTime + "\r\n");
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
 		closeOpenedStream();
+		// replace the start time in file
+		replaceFileString(resultFilePath, START_TIME, startTime);
 		isStop = true;
 		unregisterReceiver(batteryBroadcast);
 		boolean isSendSuccessfully = false;
@@ -513,6 +513,31 @@ public class EmmageeService extends Service {
 		}
 		super.onDestroy();
 		stopForeground(true);
+	}
+
+	/**
+	 * Replaces all matches for replaceType within this replaceString in file on the filePath 
+	 * @param filePath
+	 * @param replaceType
+	 * @param replaceString
+	 */
+	private void replaceFileString(String filePath, String replaceType, String replaceString) {
+		try {
+			File file = new File(filePath);
+			BufferedReader reader = new BufferedReader(new FileReader(file));
+			String line = "", oldtext = "";
+			while ((line = reader.readLine()) != null) {
+				oldtext += line + "\r\n";
+			}
+			reader.close();
+			// replace a word in a file
+			String newtext = oldtext.replaceAll(replaceType, replaceString);
+			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filePath), "UTF-8"));
+			writer.write(newtext);
+			writer.close();
+		} catch (IOException e) {
+			Log.d(LOG_TAG, e.getMessage());
+		}
 	}
 
 	@Override
