@@ -23,5 +23,6 @@
     <string name="ok">保存</string>
     <string name="openwifi">开启wifi</string>
     <string name="closewifi">关闭wifi</string>
+    <string name="stopTest">停止测试</string>
 
 </resources>

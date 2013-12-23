@@ -90,7 +90,6 @@ public class EmmageeService extends Service {
 	private TextView txtTotalMem;
 	private TextView txtUnusedMem;
 	private TextView txtTraffic;
-	private TextView txtBatt;
 	private ImageView imgViIcon;
 	private Button btnWifi;
 	private int delaytime;
@@ -192,7 +191,6 @@ public class EmmageeService extends Service {
 			viFloatingWindow = LayoutInflater.from(this).inflate(R.layout.floating, null);
 			txtUnusedMem = (TextView) viFloatingWindow.findViewById(R.id.memunused);
 			txtTotalMem = (TextView) viFloatingWindow.findViewById(R.id.memtotal);
-			txtBatt = (TextView) viFloatingWindow.findViewById(R.id.batt);
 			txtTraffic = (TextView) viFloatingWindow.findViewById(R.id.traffic);
 			btnWifi = (Button) viFloatingWindow.findViewById(R.id.wifi);
 
@@ -206,13 +204,26 @@ public class EmmageeService extends Service {
 			txtUnusedMem.setTextColor(android.graphics.Color.RED);
 			txtTotalMem.setTextColor(android.graphics.Color.RED);
 			txtTraffic.setTextColor(android.graphics.Color.RED);
-			txtBatt.setTextColor(android.graphics.Color.RED);
 			imgViIcon = (ImageView) viFloatingWindow.findViewById(R.id.img2);
 			imgViIcon.setVisibility(View.GONE);
+			imgViIcon.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					Toast.makeText(EmmageeService.this, "测试结果文件：" + resultFilePath, Toast.LENGTH_LONG).show();
+					stopSelf();
+				}
+			});
 			createFloatingWindow();
 		}
 		createResultCsv();
 		handler.postDelayed(task, 1000);
+	}
+
+	/**
+	 * 点击左上的关闭按钮可以停止测试
+	 */
+	private void closeTest() {
+
 	}
 
 	/**
@@ -436,7 +447,7 @@ public class EmmageeService extends Service {
 				processCpuRatio = processInfo.get(0);
 				totalCpuRatio = processInfo.get(1);
 				trafficSize = processInfo.get(2);
-				if ("".equals(trafficSize) && !("-1".equals(trafficSize))) {
+				if (!("".equals(trafficSize)) && !("-1".equals(trafficSize))) {
 					tempTraffic = Integer.parseInt(trafficSize);
 					if (tempTraffic > 1024) {
 						isMb = true;
@@ -444,21 +455,23 @@ public class EmmageeService extends Service {
 					}
 				}
 			}
+			// 如果cpu使用率存在且都不小于0，则输出
+			if (processCpuRatio != null && totalCpuRatio != null) {
+				txtUnusedMem.setText("应用/剩余内存:" + processMemory + "/" + freeMemoryKb + "MB");
+				txtTotalMem.setText("应用/总体CPU:" + processCpuRatio + "%/" + totalCpuRatio + "%");
+				String batt = "电流:" + currentBatt + "mA,";
+				if ("-1".equals(trafficSize)) {
+					txtTraffic.setText(batt + "本程序或本设备不支持流量统计");
+				} else if (isMb)
+					txtTraffic.setText(batt + "流量:" + fomart.format(trafficMb) + "MB");
+				else
+					txtTraffic.setText(batt + "流量:" + trafficSize + "KB");
+			}
+			// 当内存为0切cpu使用率为0时则是被测应用退出
 			if ("0".equals(processMemory) && "0.00".equals(processCpuRatio)) {
 				closeOpenedStream();
 				isServiceStop = true;
 				return;
-			}
-			if (processCpuRatio != null && totalCpuRatio != null) {
-				txtUnusedMem.setText("占用内存:" + processMemory + "MB" + ",机器剩余:" + freeMemoryKb + "MB");
-				txtTotalMem.setText("占用CPU:" + processCpuRatio + "%" + ",总体CPU:" + totalCpuRatio + "%");
-				txtBatt.setText("电量:" + totalBatt + ",电流:" + currentBatt + "mA");
-				if ("-1".equals(trafficSize)) {
-					txtTraffic.setText("本程序或本设备不支持流量统计");
-				} else if (isMb)
-					txtTraffic.setText("消耗流量:" + fomart.format(trafficMb) + "MB");
-				else
-					txtTraffic.setText("消耗流量:" + trafficSize + "KB");
 			}
 		}
 	}
@@ -477,8 +490,13 @@ public class EmmageeService extends Service {
 	 */
 	public static void closeOpenedStream() {
 		try {
-			if (bw != null)
+			if (bw != null) {
+				// TODO 补充一些注释
+				bw.write("注释:已知部分不支持的机型可在此查阅:https://github.com/NetEase/Emmagee/wiki/Some-devices-are-not-supported \r\n");
+				bw.write("电流:小于0是放电，大于0是充电，部分机型可能无数据\r\n");
+				bw.write("N/A意味不支持或者数据异常\r\n");
 				bw.close();
+			}
 			if (osw != null)
 				osw.close();
 			if (out != null)
@@ -543,5 +561,9 @@ public class EmmageeService extends Service {
 	@Override
 	public IBinder onBind(Intent intent) {
 		return null;
+	}
+
+	private void is_double() {
+
 	}
 }
