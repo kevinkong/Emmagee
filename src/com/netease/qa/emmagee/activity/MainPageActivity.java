@@ -96,6 +96,12 @@ public class MainPageActivity extends Activity {
 						Intent intent = getPackageManager()
 								.getLaunchIntentForPackage(packageName);
 						Log.d(LOG_TAG, packageName);
+						//clear logcat
+						 try {
+							 Runtime.getRuntime().exec("logcat -c");
+						 } catch (IOException e) {
+								Log.d(LOG_TAG, e.getMessage());
+						 }
 						try {
 							startActivity(intent);
 						} catch (NullPointerException e) {
