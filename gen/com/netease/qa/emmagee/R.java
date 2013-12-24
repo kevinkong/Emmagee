@@ -18,27 +18,31 @@ public final class R {
         public static final int meminfo=0x7f020004;
     }
     public static final class id {
-        public static final int Lin=0x7f050004;
+        public static final int Lin=0x7f050003;
         public static final int b=0x7f050001;
-        public static final int cpu1=0x7f050013;
-        public static final int cpu2=0x7f050014;
+        public static final int cpu1=0x7f050017;
+        public static final int cpu2=0x7f050018;
         public static final int cpu_info=0x7f050000;
-        public static final int floating=0x7f050011;
-        public static final int floating_Window=0x7f050010;
+        public static final int floating=0x7f050015;
+        public static final int floating_Window=0x7f050014;
         public static final int image=0x7f05000a;
         public static final int img1=0x7f050002;
-        public static final int img2=0x7f050003;
         public static final int memoryinfo=0x7f05000e;
-        public static final int memtotal=0x7f050006;
-        public static final int memunused=0x7f050005;
+        public static final int memtotal=0x7f050005;
+        public static final int memunused=0x7f050004;
+        public static final int password=0x7f050011;
         public static final int processList=0x7f05000c;
         public static final int rb=0x7f050009;
-        public static final int save=0x7f050012;
+        public static final int recipients=0x7f050013;
+        public static final int save=0x7f050016;
+        public static final int sender=0x7f050010;
+        public static final int smtp=0x7f050012;
+        public static final int stop=0x7f050008;
         public static final int test=0x7f05000d;
         public static final int text=0x7f05000b;
         public static final int time=0x7f05000f;
-        public static final int traffic=0x7f050007;
-        public static final int wifi=0x7f050008;
+        public static final int traffic=0x7f050006;
+        public static final int wifi=0x7f050007;
     }
     public static final class layout {
         public static final int cpu=0x7f030000;
@@ -56,17 +60,22 @@ public final class R {
         public static final int app_name3=0x7f040004;
         public static final int app_name4=0x7f040005;
         public static final int bg=0x7f040009;
-        public static final int closewifi=0x7f040011;
+        public static final int closewifi=0x7f040015;
         public static final int collect=0x7f04000c;
         public static final int cpu=0x7f040008;
         public static final int hello=0x7f040000;
         public static final int memoryinfo=0x7f04000b;
-        public static final int ok=0x7f04000f;
-        public static final int openwifi=0x7f040010;
-        public static final int seconds=0x7f04000d;
+        public static final int ok=0x7f040013;
+        public static final int openwifi=0x7f040014;
+        public static final int password=0x7f04000f;
+        public static final int receiver=0x7f04000d;
+        public static final int seconds=0x7f040011;
+        public static final int sender=0x7f04000e;
+        public static final int smtp=0x7f040010;
         public static final int start=0x7f040007;
+        public static final int stopTest=0x7f040016;
         public static final int system=0x7f040006;
         public static final int testmemory=0x7f04000a;
-        public static final int window=0x7f04000e;
+        public static final int window=0x7f040012;
     }
 }
