@@ -23,7 +23,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -56,7 +55,6 @@ import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -90,7 +88,7 @@ public class EmmageeService extends Service {
 	private TextView txtTotalMem;
 	private TextView txtUnusedMem;
 	private TextView txtTraffic;
-	private ImageView imgViIcon;
+	private Button btnStop;
 	private Button btnWifi;
 	private int delaytime;
 	private DecimalFormat fomart;
@@ -114,7 +112,6 @@ public class EmmageeService extends Service {
 	public static boolean isStop = false;
 
 	private String totalBatt;
-	private String currentBatt;
 	private String temperature;
 	private String voltage;
 	private CurrentInfo currentInfo;
@@ -146,7 +143,7 @@ public class EmmageeService extends Service {
 	/**
 	 * 电池信息监控监听器
 	 * 
-	 * @author hz_liuxiao@corp.netease.com
+	 * @author andrewleo
 	 * 
 	 */
 	public class BatteryInfoBroadcastReceiver extends BroadcastReceiver {
@@ -204,11 +201,11 @@ public class EmmageeService extends Service {
 			txtUnusedMem.setTextColor(android.graphics.Color.RED);
 			txtTotalMem.setTextColor(android.graphics.Color.RED);
 			txtTraffic.setTextColor(android.graphics.Color.RED);
-			imgViIcon = (ImageView) viFloatingWindow.findViewById(R.id.img2);
-			imgViIcon.setVisibility(View.GONE);
-			imgViIcon.setOnClickListener(new OnClickListener() {
+			btnStop = (Button) viFloatingWindow.findViewById(R.id.stop);
+			btnStop.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
+					isServiceStop = true;
 					Toast.makeText(EmmageeService.this, "测试结果文件：" + resultFilePath, Toast.LENGTH_LONG).show();
 					stopSelf();
 				}
@@ -217,13 +214,6 @@ public class EmmageeService extends Service {
 		}
 		createResultCsv();
 		handler.postDelayed(task, 1000);
-	}
-
-	/**
-	 * 点击左上的关闭按钮可以停止测试
-	 */
-	private void closeTest() {
-
 	}
 
 	/**
@@ -278,8 +268,8 @@ public class EmmageeService extends Service {
 			String totalMemory = fomart.format((double) totalMemorySize / 1024);
 			bw.write("指定应用的CPU内存监控情况\r\n" + "应用包名：," + packageName + "\r\n" + "应用名称: ," + processName + "\r\n" + "应用PID: ," + pid + "\r\n"
 					+ "机器内存大小(MB)：," + totalMemory + "MB\r\n" + "机器CPU型号：," + cpuInfo.getCpuName() + "\r\n" + "机器android系统版本：,"
-					+ memoryInfo.getSDKVersion() + "\r\n" + "手机型号：," + memoryInfo.getPhoneType() + "\r\n" + "UID：," + uid + "\r\n"
-					+ "启动时间：," + START_TIME + "\r\n");
+					+ memoryInfo.getSDKVersion() + "\r\n" + "手机型号：," + memoryInfo.getPhoneType() + "\r\n" + "UID：," + uid + "\r\n" + "启动时间：,"
+					+ START_TIME + "\r\n");
 			bw.write("时间" + "," + "应用占用内存PSS(MB)" + "," + "应用占用内存比(%)" + "," + " 机器剩余内存(MB)" + "," + "应用占用CPU率(%)" + "," + "CPU总使用率(%)" + ","
 					+ "流量(KB)" + "," + "电量(%)" + "," + "电流(mA)" + "," + "温度(C)" + "," + "电压(V)" + "\r\n");
 		} catch (IOException e) {
@@ -312,7 +302,6 @@ public class EmmageeService extends Service {
 				y = event.getRawY() - 25;
 				switch (event.getAction()) {
 				case MotionEvent.ACTION_DOWN:
-					// state = MotionEvent.ACTION_DOWN;
 					startX = x;
 					startY = y;
 					mTouchStartX = event.getX();
@@ -320,14 +309,12 @@ public class EmmageeService extends Service {
 					Log.d("startP", "startX" + mTouchStartX + "====startY" + mTouchStartY);
 					break;
 				case MotionEvent.ACTION_MOVE:
-					// state = MotionEvent.ACTION_MOVE;
 					updateViewPosition();
 					break;
 
 				case MotionEvent.ACTION_UP:
-					// state = MotionEvent.ACTION_UP;
 					updateViewPosition();
-					showImg();
+					// showImg();
 					mTouchStartX = mTouchStartY = 0;
 					break;
 				}
@@ -357,16 +344,17 @@ public class EmmageeService extends Service {
 		});
 	}
 
-	/**
-	 * show the image.
-	 */
-	private void showImg() {
-		if (Math.abs(x - startX) < 1.5 && Math.abs(y - startY) < 1.5 && !imgViIcon.isShown()) {
-			imgViIcon.setVisibility(View.VISIBLE);
-		} else if (imgViIcon.isShown()) {
-			imgViIcon.setVisibility(View.GONE);
-		}
-	}
+	// /**
+	// * show the image.
+	// */
+	// private void showImg() {
+	// if (Math.abs(x - startX) < 1.5 && Math.abs(y - startY) < 1.5 &&
+	// !btnStop.isShown()) {
+	// btnStop.setVisibility(View.VISIBLE);
+	// } else if (btnStop.isShown()) {
+	// btnStop.setVisibility(View.GONE);
+	// }
+	// }
 
 	private Runnable task = new Runnable() {
 
@@ -534,7 +522,9 @@ public class EmmageeService extends Service {
 	}
 
 	/**
-	 * Replaces all matches for replaceType within this replaceString in file on the filePath 
+	 * Replaces all matches for replaceType within this replaceString in file on
+	 * the filePath
+	 * 
 	 * @param filePath
 	 * @param replaceType
 	 * @param replaceString
@@ -561,9 +551,5 @@ public class EmmageeService extends Service {
 	@Override
 	public IBinder onBind(Intent intent) {
 		return null;
-	}
-
-	private void is_double() {
-
 	}
 }
