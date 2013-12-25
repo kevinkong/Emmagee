@@ -34,8 +34,7 @@ import android.util.Log;
  */
 public class ProcessInfo {
 
-	private static final String LOG_TAG = "Emmagee-"
-			+ ProcessInfo.class.getSimpleName();
+	private static final String LOG_TAG = "Emmagee-" + ProcessInfo.class.getSimpleName();
 
 	private static final String PACKAGE_NAME = "com.netease.qa.emmagee";
 
@@ -50,26 +49,18 @@ public class ProcessInfo {
 	public List<Programe> getRunningProcess(Context context) {
 		Log.i(LOG_TAG, "get running processes");
 
-		ActivityManager am = (ActivityManager) context
-				.getSystemService(Context.ACTIVITY_SERVICE);
+		ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
 		List<RunningAppProcessInfo> run = am.getRunningAppProcesses();
 		PackageManager pm = context.getPackageManager();
 		List<Programe> progressList = new ArrayList<Programe>();
-		boolean launchTag;
 
 		for (ApplicationInfo appinfo : getPackagesInfo(context)) {
-			launchTag = false;
 			Programe programe = new Programe();
-			if (((appinfo.flags & ApplicationInfo.FLAG_SYSTEM) > 0)
-					|| ((appinfo.processName != null) && (appinfo.processName
-							.equals(PACKAGE_NAME)))) {
+			if (((appinfo.flags & ApplicationInfo.FLAG_SYSTEM) > 0) || ((appinfo.processName != null) && (appinfo.processName.equals(PACKAGE_NAME)))) {
 				continue;
 			}
 			for (RunningAppProcessInfo runningProcess : run) {
-				if ((runningProcess.processName != null)
-						&& runningProcess.processName
-								.equals(appinfo.processName)) {
-					launchTag = true;
+				if ((runningProcess.processName != null) && runningProcess.processName.equals(appinfo.processName)) {
 					programe.setPid(runningProcess.pid);
 					programe.setUid(runningProcess.uid);
 					break;
@@ -77,9 +68,7 @@ public class ProcessInfo {
 			}
 			programe.setPackageName(appinfo.processName);
 			programe.setProcessName(appinfo.loadLabel(pm).toString());
-			if (launchTag) {
-				programe.setIcon(appinfo.loadIcon(pm));
-			}
+			programe.setIcon(appinfo.loadIcon(pm));
 			progressList.add(programe);
 		}
 		Collections.sort(progressList);
@@ -95,8 +84,7 @@ public class ProcessInfo {
 	 */
 	private List<ApplicationInfo> getPackagesInfo(Context context) {
 		PackageManager pm = context.getApplicationContext().getPackageManager();
-		List<ApplicationInfo> appList = pm
-				.getInstalledApplications(PackageManager.GET_UNINSTALLED_PACKAGES);
+		List<ApplicationInfo> appList = pm.getInstalledApplications(PackageManager.GET_UNINSTALLED_PACKAGES);
 		return appList;
 	}
 }
