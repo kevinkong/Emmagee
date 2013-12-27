@@ -98,7 +98,7 @@ public class EmmageeService extends Service {
 	private CpuInfo cpuInfo;
 	private String time;
 	private boolean isFloating;
-	private String processName, packageName, settingTempFile;
+	private String processName, packageName, settingTempFile, startActivity;
 	private int pid, uid;
 	private boolean isServiceStop = false;
 	private String sender, password, recipients, smtp;
@@ -180,6 +180,7 @@ public class EmmageeService extends Service {
 		processName = intent.getExtras().getString("processName");
 		packageName = intent.getExtras().getString("packageName");
 		settingTempFile = intent.getExtras().getString("settingTempFile");
+		startActivity = intent.getExtras().getString("startActivity");
 
 		cpuInfo = new CpuInfo(getBaseContext(), pid, Integer.toString(uid));
 		readSettingInfo(intent);
@@ -205,7 +206,11 @@ public class EmmageeService extends Service {
 			btnStop.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					isServiceStop = true;
+					Intent intent = new Intent();
+					intent.putExtra("isServiceStop", true);
+					intent.setAction("com.netease.action.emmageeService");
+					sendBroadcast(intent);
+					// isServiceStop = true;
 					Toast.makeText(EmmageeService.this, "测试结果文件：" + resultFilePath, Toast.LENGTH_LONG).show();
 					stopSelf();
 				}
@@ -388,23 +393,27 @@ public class EmmageeService extends Service {
 			String logcatCommand = "logcat -v time -d ActivityManager:I *:S";
 			Process process = Runtime.getRuntime().exec(logcatCommand);
 			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-//			StringBuilder strBuilder = new StringBuilder();
+			StringBuilder strBuilder = new StringBuilder();
 			String line = "";
 
 			while ((line = bufferedReader.readLine()) != null) {
-//				strBuilder.append(line);
-//				strBuilder.append("\r\n");
-				if (line.matches(".*Displayed.*\\+(.*)ms.*")) {
+				strBuilder.append(line);
+				strBuilder.append("\r\n");
+				String regex = ".*Displayed.*" + startActivity + ".*\\+(.*)ms.*";
+				Log.d("my logs", regex);
+				if (line.matches(regex)) {
+					Log.w("my logs", line);
 					if (line.contains("total")) {
 						line = line.substring(0, line.indexOf("total"));
 					}
 					startTime = line.substring(line.lastIndexOf("+") + 1, line.lastIndexOf("ms") + 2);
 					Toast.makeText(EmmageeService.this, "启动时间：" + startTime, Toast.LENGTH_LONG).show();
 					isGetStartTime = false;
+					break;
 				}
 			}
 			getStartTimeCount++;
-//			Log.w(LOG_TAG, "Start Time Log：" + strBuilder.toString());
+			// Log.w("my logs", "Start Time Log：" + strBuilder.toString());
 			Log.w(LOG_TAG, "getStartCount：" + getStartTimeCount);
 		} catch (IOException e) {
 			Log.d(LOG_TAG, e.getMessage());
@@ -424,6 +433,18 @@ public class EmmageeService extends Service {
 		String freeMemoryKb = fomart.format((double) freeMemory / 1024);
 		String processMemory = fomart.format((double) pidMemory / 1024);
 		String currentBatt = String.valueOf(currentInfo.getCurrentValue());
+		// 异常数据过滤
+		Log.d("my logs-before", currentBatt);
+		try {
+			if (Math.abs(Double.parseDouble(currentBatt)) >= 500) {
+				currentBatt = "N/A";
+			} else {
+				currentBatt = currentBatt + "mA";
+			}
+		} catch (Exception e) {
+			currentBatt = "N/A";
+		}
+		Log.d("my logs-after", currentBatt);
 		ArrayList<String> processInfo = cpuInfo.getCpuRatioInfo(totalBatt, currentBatt, temperature, voltage);
 		if (isFloating) {
 			String processCpuRatio = "0";
@@ -448,13 +469,13 @@ public class EmmageeService extends Service {
 			if (processCpuRatio != null && totalCpuRatio != null) {
 				txtUnusedMem.setText("应用/剩余内存:" + processMemory + "/" + freeMemoryKb + "MB");
 				txtTotalMem.setText("应用/总体CPU:" + processCpuRatio + "%/" + totalCpuRatio + "%");
-				String batt = "电流:" + currentBatt + "mA,";
+				String batt = "电流:" + currentBatt;
 				if ("-1".equals(trafficSize)) {
-					txtTraffic.setText(batt + "本程序或本设备不支持流量统计");
+					txtTraffic.setText(batt + ",流量:N/A");
 				} else if (isMb)
-					txtTraffic.setText(batt + "流量:" + fomart.format(trafficMb) + "MB");
+					txtTraffic.setText(batt + ",流量:" + fomart.format(trafficMb) + "MB");
 				else
-					txtTraffic.setText(batt + "流量:" + trafficSize + "KB");
+					txtTraffic.setText(batt + ",流量:" + trafficSize + "KB");
 			}
 			// 当内存为0切cpu使用率为0时则是被测应用退出
 			if ("0".equals(processMemory) && "0.00".equals(processCpuRatio)) {
@@ -480,10 +501,9 @@ public class EmmageeService extends Service {
 	public static void closeOpenedStream() {
 		try {
 			if (bw != null) {
-				// TODO 补充一些注释
 				bw.write("注释:已知部分不支持的机型可在此查阅:https://github.com/NetEase/Emmagee/wiki/Some-devices-are-not-supported \r\n");
-				bw.write("电流:小于0是放电，大于0是充电，部分机型可能无数据\r\n");
-				bw.write("N/A意味不支持或者数据异常\r\n");
+				bw.write("电流:小于0是放电大于0是充电\r\n启动时间:为空是应用已启动或者未搜集到启动时间\r\n");
+				bw.write("N/A表示不支持或者数据异常\r\n");
 				bw.close();
 			}
 			if (osw != null)

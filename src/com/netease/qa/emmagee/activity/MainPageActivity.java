@@ -30,6 +30,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ResolveInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -92,6 +93,7 @@ public class MainPageActivity extends Activity {
 				if ("开始测试".equals(btnTest.getText().toString())) {
 					if (isRadioChecked) {
 						Intent intent = getPackageManager().getLaunchIntentForPackage(packageName);
+						String startActivity = "";
 						Log.d(LOG_TAG, packageName);
 						//clear logcat
 						 try {
@@ -100,8 +102,9 @@ public class MainPageActivity extends Activity {
 								Log.d(LOG_TAG, e.getMessage());
 						 }
 						try {
+							startActivity = intent.resolveActivity(getPackageManager()).getShortClassName();
 							startActivity(intent);
-						} catch (NullPointerException e) {
+						} catch (Exception e) {
 							Toast.makeText(MainPageActivity.this, "该程序无法启动", Toast.LENGTH_LONG).show();
 							return;
 						}
@@ -111,6 +114,7 @@ public class MainPageActivity extends Activity {
 						monitorService.putExtra("uid", uid);
 						monitorService.putExtra("packageName", packageName);
 						monitorService.putExtra("settingTempFile", settingTempFile);
+						monitorService.putExtra("startActivity", startActivity);
 						startService(monitorService);
 						btnTest.setText("停止测试");
 					} else {
