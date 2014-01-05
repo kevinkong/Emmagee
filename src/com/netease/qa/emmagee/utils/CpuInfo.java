@@ -177,13 +177,11 @@ public class CpuInfo {
 					percent = fomart.format(((double) pidMemory / (double) totalMemorySize) * 100);
 				}
 
-				// 当应用的cpu使用率大于0时才写入文件中，过滤掉异常数据
-				if (isDouble(processCpuRatio) && isDouble(totalCpuRatio)) {
+				if (isPositive(processCpuRatio) && isPositive(totalCpuRatio)) {
 					// whether certain device supports traffic statics or not
-					if (traffic == -1) {						
+					if (traffic == -1) {
 						EmmageeService.bw.write(mDateTime2 + "," + pMemory + "," + percent + "," + fMemory + "," + processCpuRatio + ","
-								+ totalCpuRatio + "," + "N/A" + "," + totalBatt + "," + currentBatt + "," + temperature + "," + voltage
-								+ "\r\n");
+								+ totalCpuRatio + "," + "N/A" + "," + totalBatt + "," + currentBatt + "," + temperature + "," + voltage + "\r\n");
 					} else {
 						EmmageeService.bw.write(mDateTime2 + "," + pMemory + "," + percent + "," + fMemory + "," + processCpuRatio + ","
 								+ totalCpuRatio + "," + traffic + "," + totalBatt + "," + currentBatt + "," + temperature + "," + voltage + "\r\n");
@@ -198,24 +196,24 @@ public class CpuInfo {
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
-			// PttService.closeOpenedStream()
 		}
 		return cpuUsedRatio;
 	}
 
 	/**
-	 * 判断text是否是一个double类型数据
+	 * is text a positive number
 	 * 
 	 * @param text
 	 * @return
 	 */
-	private boolean isDouble(String text) {
+	private boolean isPositive(String text) {
+		Double num;
 		try {
-			Double.parseDouble(text);
+			num = Double.parseDouble(text);
 		} catch (NumberFormatException e) {
 			return false;
 		}
-		return true;
+		return num >= 0;
 	}
 
 }

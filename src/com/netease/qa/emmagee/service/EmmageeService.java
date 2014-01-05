@@ -464,25 +464,26 @@ public class EmmageeService extends Service {
 						trafficMb = (double) tempTraffic / 1024;
 					}
 				}
+				// 如果cpu使用率存在且都不小于0，则输出
+				if (processCpuRatio != null && totalCpuRatio != null) {
+					txtUnusedMem.setText("应用/剩余内存:" + processMemory + "/" + freeMemoryKb + "MB");
+					txtTotalMem.setText("应用/总体CPU:" + processCpuRatio + "%/" + totalCpuRatio + "%");
+					String batt = "电流:" + currentBatt;
+					if ("-1".equals(trafficSize)) {
+						txtTraffic.setText(batt + ",流量:N/A");
+					} else if (isMb)
+						txtTraffic.setText(batt + ",流量:" + fomart.format(trafficMb) + "MB");
+					else
+						txtTraffic.setText(batt + ",流量:" + trafficSize + "KB");
+				}
+				// 当内存为0切cpu使用率为0时则是被测应用退出
+				if ("0".equals(processMemory) && "0.00".equals(processCpuRatio)) {
+					closeOpenedStream();
+					isServiceStop = true;
+					return;
+				}
 			}
-			// 如果cpu使用率存在且都不小于0，则输出
-			if (processCpuRatio != null && totalCpuRatio != null) {
-				txtUnusedMem.setText("应用/剩余内存:" + processMemory + "/" + freeMemoryKb + "MB");
-				txtTotalMem.setText("应用/总体CPU:" + processCpuRatio + "%/" + totalCpuRatio + "%");
-				String batt = "电流:" + currentBatt;
-				if ("-1".equals(trafficSize)) {
-					txtTraffic.setText(batt + ",流量:N/A");
-				} else if (isMb)
-					txtTraffic.setText(batt + ",流量:" + fomart.format(trafficMb) + "MB");
-				else
-					txtTraffic.setText(batt + ",流量:" + trafficSize + "KB");
-			}
-			// 当内存为0切cpu使用率为0时则是被测应用退出
-			if ("0".equals(processMemory) && "0.00".equals(processCpuRatio)) {
-				closeOpenedStream();
-				isServiceStop = true;
-				return;
-			}
+
 		}
 	}
 
