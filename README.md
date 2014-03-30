@@ -1,3 +1,4 @@
+代码迁移到https://github.com/NetEase/Emmagee ，此处不再维护
 ##Emmagee - a practical, handy performance test tool for specified Android App
 
 Emmagee is a practical, handy performance test tool for specified Android App, which can monitor CPU, memory and 
