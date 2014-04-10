@@ -155,7 +155,7 @@ public class EmmageeService extends Service {
 				int level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0);
 
 				int scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
-				totalBatt = String.valueOf(level * 100 / scale) + "%";
+				totalBatt = String.valueOf(level * 100 / scale);
 
 				voltage = String.valueOf(intent.getIntExtra(BatteryManager.EXTRA_VOLTAGE, -1) * 1.0 / 1000);
 
@@ -438,8 +438,6 @@ public class EmmageeService extends Service {
 		try {
 			if (Math.abs(Double.parseDouble(currentBatt)) >= 500) {
 				currentBatt = "N/A";
-			} else {
-				currentBatt = currentBatt + "mA";
 			}
 		} catch (Exception e) {
 			currentBatt = "N/A";

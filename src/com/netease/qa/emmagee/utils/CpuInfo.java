@@ -138,7 +138,7 @@ public class CpuInfo {
 	public ArrayList<String> getCpuRatioInfo(String totalBatt, String currentBatt, String temperature, String voltage) {
 
 		DecimalFormat fomart = new DecimalFormat();
-		// fomart.setGroupingUsed(false);
+		fomart.setGroupingUsed(false);
 		fomart.setMaximumFractionDigits(2);
 		fomart.setMinimumFractionDigits(2);
 
