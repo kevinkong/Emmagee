@@ -123,6 +123,7 @@ public class EmmageeService extends Service {
 	private int getStartTimeCount = 0;
 	private boolean isGetStartTime = true;
 	private String startTime = "";
+	private static final String SERVICE_ACTION = "com.netease.action.emmageeService";
 
 	@Override
 	public void onCreate() {
@@ -208,10 +209,8 @@ public class EmmageeService extends Service {
 				public void onClick(View v) {
 					Intent intent = new Intent();
 					intent.putExtra("isServiceStop", true);
-					intent.setAction("com.netease.action.emmageeService");
+					intent.setAction(SERVICE_ACTION);
 					sendBroadcast(intent);
-					// isServiceStop = true;
-					Toast.makeText(EmmageeService.this, "测试结果文件：" + resultFilePath, Toast.LENGTH_LONG).show();
 					stopSelf();
 				}
 			});
@@ -375,7 +374,7 @@ public class EmmageeService extends Service {
 			} else {
 				Intent intent = new Intent();
 				intent.putExtra("isServiceStop", true);
-				intent.setAction("com.netease.action.emmageeService");
+				intent.setAction(SERVICE_ACTION);
 				sendBroadcast(intent);
 				stopSelf();
 			}
