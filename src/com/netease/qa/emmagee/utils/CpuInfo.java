@@ -59,6 +59,10 @@ public class CpuInfo {
 	private String totalCpuRatio = "";
 	private int pid;
 
+	private static final String INTEL_CPU_NAME = "model name";
+	private static final String CPU_X86 = "x86";
+	private static final String CPU_INFO_PATH = "/proc/cpuinfo";
+
 	public CpuInfo(Context context, int pid, String uid) {
 		this.pid = pid;
 		this.context = context;
@@ -87,6 +91,9 @@ public class CpuInfo {
 				stringBuffer.append(line + "\n");
 			}
 			String[] tok = stringBuffer.toString().split(" ");
+			for(int i = 0;i<tok.length;i++){
+				Log.w(LOG_TAG, "tok["+i+"]=========="+tok[i]);
+			}
 			processCpu = Long.parseLong(tok[13]) + Long.parseLong(tok[14]);
 			processCpuInfo.close();
 		} catch (FileNotFoundException e) {
@@ -100,6 +107,9 @@ public class CpuInfo {
 			// monitor total and idle cpu stat of certain process
 			RandomAccessFile cpuInfo = new RandomAccessFile("/proc/stat", "r");
 			String[] toks = cpuInfo.readLine().split("\\s+");
+			for(int i = 0;i<toks.length;i++){
+				Log.w(LOG_TAG, "toks["+i+"]=========="+toks[i]);
+			}
 			idleCpu = Long.parseLong(toks[4]);
 			totalCpu = Long.parseLong(toks[1]) + Long.parseLong(toks[2]) + Long.parseLong(toks[3]) + Long.parseLong(toks[4])
 					+ Long.parseLong(toks[6]) + Long.parseLong(toks[5]) + Long.parseLong(toks[7]);
@@ -118,10 +128,21 @@ public class CpuInfo {
 	 */
 	public String getCpuName() {
 		try {
-			RandomAccessFile cpuStat = new RandomAccessFile("/proc/cpuinfo", "r");
-			String[] cpu = cpuStat.readLine().split(":"); // cpu信息的前一段是含有processor字符串，此处替换为不显示
-			cpuStat.close();
-			return cpu[1];
+			RandomAccessFile cpuStat = new RandomAccessFile(CPU_INFO_PATH, "r");
+			// 需要判断是intel or arm
+			if (Build.CPU_ABI.equalsIgnoreCase(CPU_X86)) {
+				String line;
+				while (null != (line = cpuStat.readLine())) {
+					String[] values = line.split(":");
+					if (values[0].contains(INTEL_CPU_NAME)) {
+						return values[1];
+					}
+				}
+			} else {
+				String[] cpu = cpuStat.readLine().split(":"); // cpu信息的前一段是含有processor字符串，此处替换为不显示
+				cpuStat.close();
+				return cpu[1];
+			}
 		} catch (IOException e) {
 			Log.e(LOG_TAG, "IOException: " + e.getMessage());
 		}
