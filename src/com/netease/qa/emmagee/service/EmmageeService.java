@@ -271,11 +271,17 @@ public class EmmageeService extends Service {
 			bw = new BufferedWriter(osw);
 			long totalMemorySize = memoryInfo.getTotalMemory();
 			String totalMemory = fomart.format((double) totalMemorySize / 1024);
+			String multiCpuTitle = "";
+			// titles of multiple cpu cores 
+			ArrayList<String> cpuList = cpuInfo.getCpuList();
+			for(int i =0 ; i < cpuList.size(); i++){
+				multiCpuTitle += ","+cpuList.get(i)+"总使用率(%)";
+			}
 			bw.write("指定应用的CPU内存监控情况\r\n" + "应用包名：," + packageName + "\r\n" + "应用名称: ," + processName + "\r\n" + "应用PID: ," + pid + "\r\n"
 					+ "机器内存大小(MB)：," + totalMemory + "MB\r\n" + "机器CPU型号：," + cpuInfo.getCpuName() + "\r\n" + "机器android系统版本：,"
 					+ memoryInfo.getSDKVersion() + "\r\n" + "手机型号：," + memoryInfo.getPhoneType() + "\r\n" + "UID：," + uid + "\r\n" + START_TIME);
-			bw.write("时间" + "," + "应用占用内存PSS(MB)" + "," + "应用占用内存比(%)" + "," + " 机器剩余内存(MB)" + "," + "应用占用CPU率(%)" + "," + "CPU总使用率(%)" + ","
-					+ "流量(KB)" + "," + "电量(%)" + "," + "电流(mA)" + "," + "温度(C)" + "," + "电压(V)" + "\r\n");
+			bw.write("时间" + "," + "应用占用内存PSS(MB)" + "," + "应用占用内存比(%)" + "," + " 机器剩余内存(MB)" + "," + "应用占用CPU率(%)" + "," + "CPU总使用率(%)"
+					+ multiCpuTitle +"," + "流量(KB)" + "," + "电量(%)" + "," + "电流(mA)" + "," + "温度(C)" + "," + "电压(V)" + "\r\n");
 		} catch (IOException e) {
 			Log.e(LOG_TAG, e.getMessage());
 		}
@@ -310,12 +316,10 @@ public class EmmageeService extends Service {
 					startY = y;
 					mTouchStartX = event.getX();
 					mTouchStartY = event.getY();
-					Log.d("startP", "startX" + mTouchStartX + "====startY" + mTouchStartY);
 					break;
 				case MotionEvent.ACTION_MOVE:
 					updateViewPosition();
 					break;
-
 				case MotionEvent.ACTION_UP:
 					updateViewPosition();
 					// showImg();
@@ -400,7 +404,6 @@ public class EmmageeService extends Service {
 				strBuilder.append(line);
 				strBuilder.append("\r\n");
 				String regex = ".*Displayed.*" + startActivity + ".*\\+(.*)ms.*";
-				Log.d("my logs", regex);
 				if (line.matches(regex)) {
 					Log.w("my logs", line);
 					if (line.contains("total")) {
@@ -413,8 +416,6 @@ public class EmmageeService extends Service {
 				}
 			}
 			getStartTimeCount++;
-			// Log.w("my logs", "Start Time Log：" + strBuilder.toString());
-			Log.w(LOG_TAG, "getStartCount：" + getStartTimeCount);
 		} catch (IOException e) {
 			Log.d(LOG_TAG, e.getMessage());
 		}
@@ -434,7 +435,6 @@ public class EmmageeService extends Service {
 		String processMemory = fomart.format((double) pidMemory / 1024);
 		String currentBatt = String.valueOf(currentInfo.getCurrentValue());
 		// 异常数据过滤
-		Log.d("my logs-before", currentBatt);
 		try {
 			if (Math.abs(Double.parseDouble(currentBatt)) >= 500) {
 				currentBatt = "N/A";
@@ -442,7 +442,6 @@ public class EmmageeService extends Service {
 		} catch (Exception e) {
 			currentBatt = "N/A";
 		}
-		Log.d("my logs-after", currentBatt);
 		ArrayList<String> processInfo = cpuInfo.getCpuRatioInfo(totalBatt, currentBatt, temperature, voltage);
 		if (isFloating) {
 			String processCpuRatio = "0";

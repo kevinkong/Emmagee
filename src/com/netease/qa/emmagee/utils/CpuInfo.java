@@ -16,6 +16,8 @@
  */
 package com.netease.qa.emmagee.utils;
 
+import java.io.File;
+import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -23,6 +25,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.regex.Pattern;
 
 import com.netease.qa.emmagee.service.EmmageeService;
 
@@ -41,8 +44,8 @@ public class CpuInfo {
 
 	private Context context;
 	private long processCpu;
-	private long idleCpu;
-	private long totalCpu;
+	private ArrayList<Long> idleCpu = new ArrayList<Long>();
+	private ArrayList<Long> totalCpu = new ArrayList<Long>();
 	private boolean isInitialStatics = true;
 	private SimpleDateFormat formatterFile;
 	private MemoryInfo mi;
@@ -51,17 +54,19 @@ public class CpuInfo {
 	private long lastestTraffic;
 	private long traffic;
 	private TrafficInfo trafficInfo;
-	private ArrayList<String> cpuUsedRatio;
-	private long totalCpu2;
+	private ArrayList<String> cpuUsedRatio = new ArrayList<String>();
+	private ArrayList<Long> totalCpu2 = new ArrayList<Long>();
 	private long processCpu2;
-	private long idleCpu2;
+	private ArrayList<Long> idleCpu2 = new ArrayList<Long>();
 	private String processCpuRatio = "";
-	private String totalCpuRatio = "";
+	private ArrayList<String> totalCpuRatio = new ArrayList<String>();
 	private int pid;
 
 	private static final String INTEL_CPU_NAME = "model name";
+	private static final String CPU_DIR_PATH = "/sys/devices/system/cpu/";
 	private static final String CPU_X86 = "x86";
 	private static final String CPU_INFO_PATH = "/proc/cpuinfo";
+	private static final String CPU_STAT = "/proc/stat";
 
 	public CpuInfo(Context context, int pid, String uid) {
 		this.pid = pid;
@@ -91,9 +96,6 @@ public class CpuInfo {
 				stringBuffer.append(line + "\n");
 			}
 			String[] tok = stringBuffer.toString().split(" ");
-			for(int i = 0;i<tok.length;i++){
-				Log.w(LOG_TAG, "tok["+i+"]=========="+tok[i]);
-			}
 			processCpu = Long.parseLong(tok[13]) + Long.parseLong(tok[14]);
 			processCpuInfo.close();
 		} catch (FileNotFoundException e) {
@@ -102,17 +104,20 @@ public class CpuInfo {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		read_total_cpu_stat();
+	}
 
+	private void read_total_cpu_stat() {
 		try {
 			// monitor total and idle cpu stat of certain process
-			RandomAccessFile cpuInfo = new RandomAccessFile("/proc/stat", "r");
-			String[] toks = cpuInfo.readLine().split("\\s+");
-			for(int i = 0;i<toks.length;i++){
-				Log.w(LOG_TAG, "toks["+i+"]=========="+toks[i]);
+			RandomAccessFile cpuInfo = new RandomAccessFile(CPU_STAT, "r");
+			String line = "";
+			while ((null != (line = cpuInfo.readLine())) && line.startsWith("cpu")) {
+				String[] toks = line.split("\\s+");
+				idleCpu.add(Long.parseLong(toks[4]));
+				totalCpu.add(Long.parseLong(toks[1]) + Long.parseLong(toks[2]) + Long.parseLong(toks[3]) + Long.parseLong(toks[4])
+						+ Long.parseLong(toks[6]) + Long.parseLong(toks[5]) + Long.parseLong(toks[7]));
 			}
-			idleCpu = Long.parseLong(toks[4]);
-			totalCpu = Long.parseLong(toks[1]) + Long.parseLong(toks[2]) + Long.parseLong(toks[3]) + Long.parseLong(toks[4])
-					+ Long.parseLong(toks[6]) + Long.parseLong(toks[5]) + Long.parseLong(toks[7]);
 			cpuInfo.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -150,6 +155,63 @@ public class CpuInfo {
 	}
 
 	/**
+	 * display directories naming with "cpu*"
+	 * 
+	 * @author andrewleo
+	 */
+	class CpuFilter implements FileFilter {
+		@Override
+		public boolean accept(File pathname) {
+			// Check if filename matchs "cpu[0-9]"
+			if (Pattern.matches("cpu[0-9]", pathname.getName())) {
+				return true;
+			}
+			return false;
+		}
+	}
+
+	/**
+	 * get CPU core numbers
+	 * 
+	 * @return cpu core numbers
+	 */
+	public int getCpuNum() {
+		try {
+			// Get directory containing CPU info
+			File dir = new File(CPU_DIR_PATH);
+			// Filter to only list the devices we care about
+			File[] files = dir.listFiles(new CpuFilter());
+			return files.length;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return 1;
+		}
+	}
+
+	/**
+	 * get CPU core list
+	 * 
+	 * @return cpu core list
+	 */
+	public ArrayList<String> getCpuList() {
+		ArrayList<String> cpuList = new ArrayList<String>();
+		try {
+			// Get directory containing CPU info
+			File dir = new File(CPU_DIR_PATH);
+			// Filter to only list the devices we care about
+			File[] files = dir.listFiles(new CpuFilter());
+			for (int i = 0; i < files.length; i++) {
+				cpuList.add(files[i].getName());
+			}
+			return cpuList;
+		} catch (Exception e) {
+			e.printStackTrace();
+			cpuList.add("cpu0");
+			return cpuList;
+		}
+	}
+
+	/**
 	 * reserve used ratio of process CPU and total CPU, meanwhile collect
 	 * network traffic.
 	 * 
@@ -163,8 +225,11 @@ public class CpuInfo {
 		fomart.setMaximumFractionDigits(2);
 		fomart.setMinimumFractionDigits(2);
 
-		readCpuStat();
 		cpuUsedRatio.clear();
+		idleCpu.clear();
+		totalCpu.clear();
+		totalCpuRatio.clear();
+		readCpuStat();
 
 		try {
 			String mDateTime2;
@@ -177,7 +242,6 @@ public class CpuInfo {
 				voltage = "N/A";
 			} else
 				mDateTime2 = formatterFile.format(cal.getTime().getTime());
-
 			if (isInitialStatics) {
 				initialTraffic = trafficInfo.getTrafficInfo();
 				isInitialStatics = false;
@@ -187,8 +251,27 @@ public class CpuInfo {
 					traffic = -1;
 				else
 					traffic = (lastestTraffic - initialTraffic + 1023) / 1024;
-				processCpuRatio = fomart.format(100 * ((double) (processCpu - processCpu2) / ((double) (totalCpu - totalCpu2))));
-				totalCpuRatio = fomart.format(100 * ((double) ((totalCpu - idleCpu) - (totalCpu2 - idleCpu2)) / (double) (totalCpu - totalCpu2)));
+				StringBuffer totalCpuBuffer = new StringBuffer();
+				if (null != totalCpu2 && totalCpu2.size() > 0) {
+					processCpuRatio = fomart.format(100 * ((double) (processCpu - processCpu2) / ((double) (totalCpu.get(0) - totalCpu2.get(0)))));
+					for (int i = 0; i < (totalCpu.size() > totalCpu2.size() ? totalCpu2.size() : totalCpu.size()); i++) {
+						String cpuRatio = fomart.format(100 * ((double) ((totalCpu.get(i) - idleCpu.get(i)) - (totalCpu2.get(i) - idleCpu2.get(i))) / (double) (totalCpu
+								.get(i) - totalCpu2.get(i))));
+						totalCpuRatio.add(cpuRatio);
+						totalCpuBuffer.append(cpuRatio+",");
+					}
+				} else {
+					processCpuRatio = "0";
+					totalCpuRatio.add("0");
+					totalCpuBuffer.append("0,");
+					totalCpu2 = (ArrayList<Long>) totalCpu.clone();
+					processCpu2 = processCpu;
+					idleCpu2 = (ArrayList<Long>) idleCpu.clone();
+				}
+				// 多核cpu的值写入csv文件中
+				for(int i =0;i<getCpuNum()-totalCpuRatio.size()+1;i++){
+					totalCpuBuffer.append("N/A,");
+				}
 				long pidMemory = mi.getPidMemorySize(pid, context);
 				String pMemory = fomart.format((double) pidMemory / 1024);
 				long freeMemory = mi.getFreeMemorySize(context);
@@ -198,20 +281,20 @@ public class CpuInfo {
 					percent = fomart.format(((double) pidMemory / (double) totalMemorySize) * 100);
 				}
 
-				if (isPositive(processCpuRatio) && isPositive(totalCpuRatio)) {
+				if (isPositive(processCpuRatio) && isPositive(totalCpuRatio.get(0))) {
 					// whether certain device supports traffic statics or not
 					if (traffic == -1) {
 						EmmageeService.bw.write(mDateTime2 + "," + pMemory + "," + percent + "," + fMemory + "," + processCpuRatio + ","
-								+ totalCpuRatio + "," + "N/A" + "," + totalBatt + "," + currentBatt + "," + temperature + "," + voltage + "\r\n");
+								+ totalCpuBuffer.toString() + "N/A" + "," + totalBatt + "," + currentBatt + "," + temperature + "," + voltage + "\r\n");
 					} else {
 						EmmageeService.bw.write(mDateTime2 + "," + pMemory + "," + percent + "," + fMemory + "," + processCpuRatio + ","
-								+ totalCpuRatio + "," + traffic + "," + totalBatt + "," + currentBatt + "," + temperature + "," + voltage + "\r\n");
+								+ totalCpuBuffer.toString() + traffic + "," + totalBatt + "," + currentBatt + "," + temperature + "," + voltage + "\r\n");
 					}
-					totalCpu2 = totalCpu;
+					totalCpu2 = (ArrayList<Long>) totalCpu.clone();
 					processCpu2 = processCpu;
-					idleCpu2 = idleCpu;
+					idleCpu2 = (ArrayList<Long>) idleCpu.clone();
 					cpuUsedRatio.add(processCpuRatio);
-					cpuUsedRatio.add(totalCpuRatio);
+					cpuUsedRatio.add(totalCpuRatio.get(0));
 					cpuUsedRatio.add(String.valueOf(traffic));
 				}
 			}
