@@ -39,6 +39,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -80,6 +81,7 @@ public class MainPageActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		Log.i(LOG_TAG, "MainActivity::onCreate");
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.mainpage);
 		createNewFile();
 		processInfo = new ProcessInfo();

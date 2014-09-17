@@ -270,7 +270,7 @@ public class CpuInfo {
 				}
 				// 多核cpu的值写入csv文件中
 				for(int i =0;i<getCpuNum()-totalCpuRatio.size()+1;i++){
-					totalCpuBuffer.append("N/A,");
+					totalCpuBuffer.append("0.00,");
 				}
 				long pidMemory = mi.getPidMemorySize(pid, context);
 				String pMemory = fomart.format((double) pidMemory / 1024);

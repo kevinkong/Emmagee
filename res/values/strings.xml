@@ -24,5 +24,7 @@
     <string name="openwifi">开启wifi</string>
     <string name="closewifi">关闭wifi</string>
     <string name="stopTest">停止测试</string>
+    <string name="about">关于</string>
+    <string name="mail_settings">邮件发送配置</string>
 
 </resources>
