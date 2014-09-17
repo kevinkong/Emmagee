@@ -12,7 +12,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/collect" />
+            android:text="@string/collecting_frequency" />
 
         <!-- 允许输入数据为正整数 -->
         <!-- android:numeric="integer" -->
@@ -109,7 +109,7 @@
             android:id="@+id/floating_Window"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/window" />
+            android:text="@string/floating_window" />
 
         <CheckBox
             android:id="@+id/floating"
@@ -135,7 +135,7 @@
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:gravity="center_horizontal"
-            android:text="@string/ok" />
+            android:text="@string/save" />
     </RelativeLayout>
 
 </LinearLayout>

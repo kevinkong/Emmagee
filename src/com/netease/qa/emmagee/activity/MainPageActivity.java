@@ -30,7 +30,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.ResolveInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -90,7 +89,7 @@ public class MainPageActivity extends Activity {
 			public void onClick(View v) {
 				monitorService = new Intent();
 				monitorService.setClass(MainPageActivity.this, EmmageeService.class);
-				if ("开始测试".equals(btnTest.getText().toString())) {
+				if (getString(R.string.start_test).equals(btnTest.getText().toString())) {
 					if (isRadioChecked) {
 						Intent intent = getPackageManager().getLaunchIntentForPackage(packageName);
 						String startActivity = "";
@@ -105,7 +104,7 @@ public class MainPageActivity extends Activity {
 							startActivity = intent.resolveActivity(getPackageManager()).getShortClassName();
 							startActivity(intent);
 						} catch (Exception e) {
-							Toast.makeText(MainPageActivity.this, "该程序无法启动", Toast.LENGTH_LONG).show();
+							Toast.makeText(MainPageActivity.this, getString(R.string.can_not_start_app_toast), Toast.LENGTH_LONG).show();
 							return;
 						}
 						waitForAppStart(packageName);
@@ -116,13 +115,13 @@ public class MainPageActivity extends Activity {
 						monitorService.putExtra("settingTempFile", settingTempFile);
 						monitorService.putExtra("startActivity", startActivity);
 						startService(monitorService);
-						btnTest.setText("停止测试");
+						btnTest.setText(getString(R.string.stop_test));
 					} else {
-						Toast.makeText(MainPageActivity.this, "请选择需要测试的应用程序", Toast.LENGTH_LONG).show();
+						Toast.makeText(MainPageActivity.this, getString(R.string.choose_app_toast), Toast.LENGTH_LONG).show();
 					}
 				} else {
-					btnTest.setText("开始测试");
-					Toast.makeText(MainPageActivity.this, "测试结果文件：" + EmmageeService.resultFilePath, Toast.LENGTH_LONG).show();
+					btnTest.setText(getString(R.string.start_test));
+					Toast.makeText(MainPageActivity.this, getString(R.string.test_result_file_toast) + EmmageeService.resultFilePath, Toast.LENGTH_LONG).show();
 					stopService(monitorService);
 				}
 			}
@@ -141,7 +140,7 @@ public class MainPageActivity extends Activity {
 		public void onReceive(Context context, Intent intent) {
 			isServiceStop = intent.getExtras().getBoolean("isServiceStop");
 			if (isServiceStop) {
-				btnTest.setText("开始测试");
+				btnTest.setText(getString(R.string.start_test));
 			}
 		}
 	}
@@ -161,7 +160,7 @@ public class MainPageActivity extends Activity {
 		super.onResume();
 		Log.d(LOG_TAG, "onResume");
 		if (EmmageeService.isStop) {
-			btnTest.setText("开始测试");
+			btnTest.setText(getString(R.string.start_test));
 		}
 	}
 
@@ -241,8 +240,8 @@ public class MainPageActivity extends Activity {
 	 * @return true
 	 */
 	public boolean onCreateOptionsMenu(Menu menu) {
-		menu.add(0, Menu.FIRST, 0, "退出").setIcon(android.R.drawable.ic_menu_delete);
-		menu.add(0, Menu.FIRST, 1, "设置").setIcon(android.R.drawable.ic_menu_directions);
+		menu.add(0, Menu.FIRST, 0, getString(R.string.exit)).setIcon(android.R.drawable.ic_menu_delete);
+		menu.add(0, Menu.FIRST, 1, getString(R.string.setting)).setIcon(android.R.drawable.ic_menu_directions);
 		return true;
 	}
 
@@ -276,19 +275,19 @@ public class MainPageActivity extends Activity {
 	protected Dialog onCreateDialog(int id) {
 		switch (id) {
 		case 0:
-			return new AlertDialog.Builder(this).setTitle("确定退出程序？").setPositiveButton("确定", new android.content.DialogInterface.OnClickListener() {
+			return new AlertDialog.Builder(this).setTitle(getString(R.string.confirm)).setPositiveButton(getString(R.string.ok), new android.content.DialogInterface.OnClickListener() {
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
 					if (monitorService != null) {
 						Log.d(LOG_TAG, "stop service");
 						stopService(monitorService);
 					}
-					Log.d(LOG_TAG, "exit Emmagee");
-					EmmageeService.closeOpenedStream();
+//					EmmageeService.closeOpenedStream();
+                    Log.d(LOG_TAG, "exit Emmagee");
 					finish();
-					System.exit(0);
+//					System.exit(0);
 				}
-			}).setNegativeButton("取消", null).create();
+			}).setNegativeButton(getString(R.string.cancel), null).create();
 		default:
 			return null;
 		}

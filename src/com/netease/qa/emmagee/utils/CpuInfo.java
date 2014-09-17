@@ -33,6 +33,8 @@ import android.content.Context;
 import android.os.Build;
 import android.util.Log;
 
+import com.netease.qa.emmagee.R;
+
 /**
  * operate CPU information
  * 
@@ -276,7 +278,7 @@ public class CpuInfo {
 				String pMemory = fomart.format((double) pidMemory / 1024);
 				long freeMemory = mi.getFreeMemorySize(context);
 				String fMemory = fomart.format((double) freeMemory / 1024);
-				String percent = "统计出错";
+				String percent = context.getString(R.string.stat_error);
 				if (totalMemorySize != 0) {
 					percent = fomart.format(((double) pidMemory / (double) totalMemorySize) * 100);
 				}

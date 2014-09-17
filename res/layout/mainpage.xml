@@ -24,7 +24,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="6dp"
             android:gravity="center_horizontal"
-            android:text="@string/bg" />
+            android:text="@string/start_test" />
     </LinearLayout>
 
 </LinearLayout>

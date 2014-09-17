@@ -63,7 +63,7 @@
                     android:layout_height="40dp" />
                 <Button
                     android:id="@+id/stop"
-                    android:text="停止测试"
+                    android:text="@string/stop_test"
                     android:textSize = "12dp"
                     android:layout_width="80dp"
                     android:layout_height="40dp" />

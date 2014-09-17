@@ -113,7 +113,7 @@ public class SettingsActivity extends Activity {
 				time = edtTime.getText().toString().trim();
 				sender = edtSender.getText().toString().trim();
 				if (!"".equals(sender) && !checkMailFormat(sender)) {
-					Toast.makeText(SettingsActivity.this, "发件人邮箱格式不正确",
+					Toast.makeText(SettingsActivity.this, getString(R.string.sender_mail_toast) + getString(R.string.format_incorrect_format),
 							Toast.LENGTH_LONG).show();
 					return;
 				}
@@ -123,7 +123,7 @@ public class SettingsActivity extends Activity {
 					if (!"".equals(receivers[i])
 							&& !checkMailFormat(receivers[i])) {
 						Toast.makeText(SettingsActivity.this,
-								"收件人邮箱" + receivers[i] + "格式不正确",
+                                getString(R.string.receiver_mail_toast) + getString(R.string.format_incorrect_format) + "[" + receivers[i] + "]",
 								Toast.LENGTH_LONG).show();
 						return;
 					}
@@ -131,7 +131,7 @@ public class SettingsActivity extends Activity {
 				curPassword = edtPassword.getText().toString().trim();
 				smtp = edtSmtp.getText().toString().trim();
 				if (checkMailConfig(sender, recipients, smtp, curPassword) == -1) {
-					Toast.makeText(SettingsActivity.this, "邮箱配置不完整，请完善所有信息",
+					Toast.makeText(SettingsActivity.this, getString(R.string.info_incomplete_toast),
 							Toast.LENGTH_LONG).show();
 					return;
 				}
@@ -155,7 +155,7 @@ public class SettingsActivity extends Activity {
 						properties.setProperty("sender", sender);
 						Log.d(LOG_TAG, "sender=" + sender);
 						try {
-							// FIXME 注释
+							// FIXME comment
 							properties.setProperty(
 									"password",
 									curPassword.equals(prePassword) ? curPassword
@@ -173,7 +173,7 @@ public class SettingsActivity extends Activity {
 								settingTempFile);
 						properties.store(fos, "Setting Data");
 						fos.close();
-						Toast.makeText(SettingsActivity.this, "保存成功",
+						Toast.makeText(SettingsActivity.this, getString(R.string.save_success_toast),
 								Toast.LENGTH_LONG).show();
 						Intent intent = new Intent();
 						setResult(Activity.RESULT_FIRST_USER, intent);
