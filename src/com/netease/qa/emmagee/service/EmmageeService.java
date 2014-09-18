@@ -276,7 +276,7 @@ public class EmmageeService extends Service {
 			// titles of multiple cpu cores
 			ArrayList<String> cpuList = cpuInfo.getCpuList();
 			for (int i = 0; i < cpuList.size(); i++) {
-				multiCpuTitle += "," + cpuList.get(i) + " " + getString(R.string.total_usage);
+				multiCpuTitle += "," + cpuList.get(i) + getString(R.string.total_usage);
 			}
 			bw.write(getString(R.string.process_package) + ": ," + packageName + "\r\n" + getString(R.string.process_name) + ": ," + processName
 					+ "\r\n" + getString(R.string.process_pid) + ": ," + pid + "\r\n" + getString(R.string.mem_size) + "： ," + totalMemory + "MB\r\n"
@@ -358,18 +358,6 @@ public class EmmageeService extends Service {
 		});
 	}
 
-	// /**
-	// * show the image.
-	// */
-	// private void showImg() {
-	// if (Math.abs(x - startX) < 1.5 && Math.abs(y - startY) < 1.5 &&
-	// !btnStop.isShown()) {
-	// btnStop.setVisibility(View.VISIBLE);
-	// } else if (btnStop.isShown()) {
-	// btnStop.setVisibility(View.GONE);
-	// }
-	// }
-
 	private Runnable task = new Runnable() {
 
 		public void run() {
@@ -450,8 +438,8 @@ public class EmmageeService extends Service {
 		}
 		ArrayList<String> processInfo = cpuInfo.getCpuRatioInfo(totalBatt, currentBatt, temperature, voltage);
 		if (isFloating) {
-			String processCpuRatio = "0";
-			String totalCpuRatio = "0";
+			String processCpuRatio = "0.00";
+			String totalCpuRatio = "0.00";
 			String trafficSize = "0";
 			int tempTraffic = 0;
 			double trafficMb = 0;
@@ -480,7 +468,7 @@ public class EmmageeService extends Service {
 						txtTraffic.setText(batt + "," + getString(R.string.traffic) + trafficSize + "KB");
 				}
 				// 当内存为0切cpu使用率为0时则是被测应用退出
-				if ("0".equals(processMemory) && "0.00".equals(processCpuRatio)) {
+				if ("0".equals(processMemory)) {
 					closeOpenedStream();
 					isServiceStop = true;
 					return;

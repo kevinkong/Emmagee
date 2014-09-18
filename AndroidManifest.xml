@@ -4,7 +4,7 @@
     android:versionCode="30"
     android:versionName="2.0" >
 
-    <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="15"/>
+    <uses-sdk android:minSdkVersion="8" />
 
     <application android:name=".utils.MyApplication"
                  android:icon="@drawable/icon"
@@ -22,6 +22,7 @@
         </activity>
 
         <activity android:name=".activity.SettingsActivity"
+            	  android:theme="@style/customTheme"
                   android:screenOrientation="portrait"/>
 
         <activity android:name=".activity.AboutActivity"

@@ -33,6 +33,7 @@ import android.view.Window;
 import android.view.View.OnClickListener;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -79,7 +80,9 @@ public class MailSettingsActivity extends Activity {
 		edtSmtp = (EditText) findViewById(R.id.smtp);
 		title = (TextView)findViewById(R.id.nb_title);
 		ImageView btnSave = (ImageView) findViewById(R.id.btn_set);
-		ImageView goBack = (ImageView) findViewById(R.id.go_back);
+		LinearLayout layGoBack = (LinearLayout) findViewById(R.id.lay_go_back);
+		LinearLayout layBtnSet = (LinearLayout) findViewById(R.id.lay_btn_set);
+		
 		boolean floatingTag = true;
 		
 		title.setText(R.string.mail_settings);
@@ -108,13 +111,13 @@ public class MailSettingsActivity extends Activity {
 		edtPassword.setText(prePassword);
 		edtSmtp.setText(smtp);
 
-		goBack.setOnClickListener(new OnClickListener() {
+		layGoBack.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
 				MailSettingsActivity.this.finish();
 			}
 		});
-		btnSave.setOnClickListener(new OnClickListener() {
+		layBtnSet.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {		
 				sender = edtSender.getText().toString().trim();
@@ -202,11 +205,10 @@ public class MailSettingsActivity extends Activity {
 	 * @return true: valid email address
 	 */
 	private boolean checkMailFormat(String mail) {
-		String strPattern = "^[a-zA-Z][\\w\\.-]*[a-zA-Z0-9]@[a-zA-Z0-9][\\w\\.-]*"
+		String strPattern = "^[a-zA-Z0-9][\\w\\.-]*[a-zA-Z0-9]@[a-zA-Z0-9][\\w\\.-]*"
 				+ "[a-zA-Z0-9]\\.[a-zA-Z][a-zA-Z\\.]*[a-zA-Z]$";
 		Pattern p = Pattern.compile(strPattern);
 		Matcher m = p.matcher(mail);
 		return m.matches();
 	}
-
 }

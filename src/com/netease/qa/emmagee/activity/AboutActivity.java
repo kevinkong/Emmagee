@@ -26,6 +26,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.netease.qa.emmagee.R;
@@ -53,14 +54,16 @@ public class AboutActivity extends Activity {
 		appVersion = (TextView)findViewById(R.id.app_version);
 		appVersion.setText(getVersion());
 		
-		goBack = (ImageView)findViewById(R.id.go_back);
 		TextView title = (TextView)findViewById(R.id.nb_title);
 		title.setText(R.string.about);
 		
 		ImageView btnSave = (ImageView) findViewById(R.id.btn_set);
-		btnSave.setImageResource(R.drawable.actionbar_bg);
+		btnSave.setVisibility(ImageView.INVISIBLE);
 		
-		goBack.setOnClickListener(new OnClickListener() {
+		goBack = (ImageView)findViewById(R.id.go_back);
+		LinearLayout layGoBack = (LinearLayout) findViewById(R.id.lay_go_back);
+		
+		layGoBack.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
 				AboutActivity.this.finish();

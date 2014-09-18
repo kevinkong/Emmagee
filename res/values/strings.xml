@@ -13,12 +13,12 @@
     <string name="password">Password:</string>
     <string name="smtp">SMTP Server:</string>
     <string name="receiver">Receivers(separated by space):</string>
-    <string name="floating_window">Show floating window</string>
+    <string name="floating_window">Show Floating Window</string>
     <string name="save">Save</string>
 
     <string name="calculating">Calculating...</string>
-    <string name="open_wifi">Enable WIFI</string>
-    <string name="close_wifi">Disable WIFI</string>
+    <string name="open_wifi">WIFI Off</string>
+    <string name="close_wifi">WIFI On</string>
     <string name="process_free_mem">App/Available Memory:</string>
     <string name="process_overall_cpu">App/System CPU:</string>
     <string name="start_time">Start Time:</string>
@@ -63,6 +63,7 @@
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="confirm">Are you sure to exit？</string>
+    <string name="quite_alert">Click again to exit</string>
     
     <string name="about">About</string>
     <string name="mail_settings">Mail Settings</string>

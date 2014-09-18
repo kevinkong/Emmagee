@@ -63,6 +63,7 @@
     <string name="ok">确定</string>
     <string name="cancel">取消</string>
     <string name="confirm">确定退出程序？</string>
+    <string name="quite_alert">再点击一次退出应用</string>
     
     <string name="about">关于</string>
     <string name="mail_settings">邮件配置</string>

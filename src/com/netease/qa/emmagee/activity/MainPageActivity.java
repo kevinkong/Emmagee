@@ -23,18 +23,13 @@ import java.util.List;
 import java.util.Properties;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -42,6 +37,7 @@ import android.view.Window;
 import android.widget.*;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.TextView;
@@ -77,6 +73,8 @@ public class MainPageActivity extends Activity {
     private TextView nb_title;
     private ImageView go_back;
     private ImageView btn_set;
+    private LinearLayout layBtnSet;
+    private Long mExitTime = (long) 0;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -142,7 +140,7 @@ public class MainPageActivity extends Activity {
         nb_title.setText(getString(R.string.app_name));
         go_back.setVisibility(ImageView.INVISIBLE);
         btn_set.setImageResource(R.drawable.settings_button);
-        btn_set.setOnClickListener(new OnClickListener() {
+        layBtnSet.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 goToSettingsActivity();
@@ -156,6 +154,7 @@ public class MainPageActivity extends Activity {
         btn_set = (ImageView) findViewById(R.id.btn_set);
         lstViProgramme = (ListView) findViewById(R.id.processList);
         btnTest = (Button) findViewById(R.id.test);
+        layBtnSet = (LinearLayout) findViewById(R.id.lay_btn_set);
     }
 
 	/**
@@ -257,40 +256,21 @@ public class MainPageActivity extends Activity {
 	 *         should continue to be propagated.
 	 */
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
-			showDialog(0);
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+            if ((System.currentTimeMillis() - mExitTime) > 2000) {
+                    Toast.makeText(this, R.string.quite_alert, Toast.LENGTH_SHORT).show();
+                    mExitTime = System.currentTimeMillis();
+            } else {
+            		if (monitorService != null) {
+					Log.d(LOG_TAG, "stop service");
+					stopService(monitorService);
+				}
+                Log.d(LOG_TAG, "exit Emmagee");
+                finish();
+            }
+            return true;
 		}
 		return super.onKeyDown(keyCode, event);
-	}
-
-	/**
-	 * set menu options,including cancel and setting options.
-	 * 
-	 * @return true
-	 */
-	public boolean onCreateOptionsMenu(Menu menu) {
-		menu.add(0, Menu.FIRST, 0, getString(R.string.exit)).setIcon(android.R.drawable.ic_menu_delete);
-		menu.add(0, Menu.FIRST, 1, getString(R.string.setting)).setIcon(android.R.drawable.ic_menu_directions);
-		return true;
-	}
-
-	/**
-	 * trigger menu options.
-	 * 
-	 * @return false
-	 */
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getOrder()) {
-		case 0:
-			showDialog(0);
-			break;
-		case 1:
-            goToSettingsActivity();
-			break;
-		default:
-			break;
-		}
-		return false;
 	}
 
     private void goToSettingsActivity() {
@@ -299,32 +279,6 @@ public class MainPageActivity extends Activity {
         intent.putExtra("settingTempFile", settingTempFile);
         startActivityForResult(intent, Activity.RESULT_FIRST_USER);
     }
-
-	/**
-	 * create a dialog.
-	 * 
-	 * @return a dialog
-	 */
-	protected Dialog onCreateDialog(int id) {
-		switch (id) {
-		case 0:
-			return new AlertDialog.Builder(this).setTitle(getString(R.string.confirm)).setPositiveButton(getString(R.string.ok), new android.content.DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					if (monitorService != null) {
-						Log.d(LOG_TAG, "stop service");
-						stopService(monitorService);
-					}
-//					EmmageeService.closeOpenedStream();
-                    Log.d(LOG_TAG, "exit Emmagee");
-					finish();
-//					System.exit(0);
-				}
-			}).setNegativeButton(getString(R.string.cancel), null).create();
-		default:
-			return null;
-		}
-	}
 
 	/**
 	 * customizing adapter.

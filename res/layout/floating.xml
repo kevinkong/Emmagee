@@ -55,18 +55,23 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal" 
                 android:layout_weight="0.4">
-
+        
                 <Button
                     android:id="@+id/wifi"
                     android:textSize = "12dp"
-                    android:layout_width="80dp"
-                    android:layout_height="40dp" />
+                    android:layout_width="60dp"
+                    android:layout_height="30dp"
+                    android:layout_marginRight="@dimen/image_padding_small"
+                    android:textColor="@color/black"
+                    android:background="@drawable/float_button" />
                 <Button
                     android:id="@+id/stop"
                     android:text="@string/stop_test"
                     android:textSize = "12dp"
-                    android:layout_width="80dp"
-                    android:layout_height="40dp" />
+                    android:layout_width="60dp"
+                    android:layout_height="30dp"
+                    android:textColor="@color/black"
+                    android:background="@drawable/float_button" />
             </LinearLayout>
         </LinearLayout>
     </RelativeLayout>
