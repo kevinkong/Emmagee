@@ -122,7 +122,7 @@ public class MailSettingsActivity extends Activity {
 			public void onClick(View v) {
 				sender = edtSender.getText().toString().trim();
 				if (!"".equals(sender) && !checkMailFormat(sender)) {
-					Toast.makeText(MailSettingsActivity.this, "发件人邮箱格式不正确",
+					Toast.makeText(MailSettingsActivity.this, getString(R.string.sender_mail_toast) + getString(R.string.format_incorrect_format),
 							Toast.LENGTH_LONG).show();
 					return;
 				}
@@ -132,7 +132,7 @@ public class MailSettingsActivity extends Activity {
 					if (!"".equals(receivers[i])
 							&& !checkMailFormat(receivers[i])) {
 						Toast.makeText(MailSettingsActivity.this,
-								"收件人邮箱" + receivers[i] + "格式不正确",
+								getString(R.string.receiver_mail_toast) + "[" + receivers[i] + "]" + getString(R.string.format_incorrect_format),
 								Toast.LENGTH_LONG).show();
 						return;
 					}
@@ -141,7 +141,7 @@ public class MailSettingsActivity extends Activity {
 				smtp = edtSmtp.getText().toString().trim();
 				if (checkMailConfig(sender, recipients, smtp, curPassword) == -1) {
 					Toast.makeText(MailSettingsActivity.this,
-							"邮箱配置不完整，请完善所有信息", Toast.LENGTH_LONG).show();
+							getString(R.string.info_incomplete_toast), Toast.LENGTH_LONG).show();
 					return;
 				}
 				try {
@@ -162,7 +162,7 @@ public class MailSettingsActivity extends Activity {
 					FileOutputStream fos = new FileOutputStream(settingTempFile);
 					properties.store(fos, "Setting Data");
 					fos.close();
-					Toast.makeText(MailSettingsActivity.this, "保存成功",
+					Toast.makeText(MailSettingsActivity.this, getString(R.string.save_success_toast),
 							Toast.LENGTH_LONG).show();
 					Intent intent = new Intent();
 					setResult(Activity.RESULT_FIRST_USER, intent);
@@ -199,7 +199,9 @@ public class MailSettingsActivity extends Activity {
 	}
 
 	/**
-	 * 检查邮件格式正确性
+	 * check mail format
+	 * 
+	 * @return true: valid email address
 	 */
 	private boolean checkMailFormat(String mail) {
 		String strPattern = "^[a-zA-Z][\\w\\.-]*[a-zA-Z0-9]@[a-zA-Z0-9][\\w\\.-]*"

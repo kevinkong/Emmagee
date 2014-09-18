@@ -19,7 +19,7 @@
         android:layout_weight="1"
         android:gravity="center"
         android:singleLine="true"
-        android:text="@string/app_name4"
+        android:text="@string/setting"
         android:textColor="@color/white"
         android:textSize="@dimen/text_size_big" />
 

@@ -44,7 +44,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/collect"
+                    android:text="@string/collecting_frequency"
                     android:textColor="@color/black"
                     android:textSize="@dimen/text_size" />
 
@@ -84,7 +84,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:text="@string/window"
+                    android:text="@string/floating_window"
                     android:textColor="@color/black"
                     android:textSize="@dimen/text_size" />
 

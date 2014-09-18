@@ -144,44 +144,45 @@ public class SettingsActivity extends Activity {
 			}
 		});
 		// edtTime.setInputType(InputType.TYPE_CLASS_NUMBER);
-		btnSave.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				time = edtTime.getText().toString().trim();
-				if (!isNumeric(time)) {
-					Toast.makeText(SettingsActivity.this, "输入数据无效，请重新输入",
-							Toast.LENGTH_LONG).show();
-					edtTime.setText("");
-				} else if ("".equals(time) || Long.parseLong(time) == 0) {
-					Toast.makeText(SettingsActivity.this, "输入数据为空,请重新输入",
-							Toast.LENGTH_LONG).show();
-					edtTime.setText("");
-				} else if (Integer.parseInt(time) > 600) {
-					Toast.makeText(SettingsActivity.this, "数据超过最大值600，请重新输入",
-							Toast.LENGTH_LONG).show();
-				} else {
-					try {
-						Properties properties = new Properties();
-						properties.setProperty("interval", time);
-						properties.setProperty("isfloat",
-								chkFloat.isChecked() ? "true" : "false");
-						FileOutputStream fos = new FileOutputStream(
-								settingTempFile);
-						properties.store(fos, "Setting Data");
-						fos.close();
-						Toast.makeText(SettingsActivity.this, "保存成功",
-								Toast.LENGTH_LONG).show();
-						Intent intent = new Intent();
-						setResult(Activity.RESULT_FIRST_USER, intent);
-						SettingsActivity.this.finish();
-					} catch (FileNotFoundException e) {
-						e.printStackTrace();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		});
+		// btnSave.setOnClickListener(new OnClickListener() {
+		// @Override
+		// public void onClick(View v) {
+		// time = edtTime.getText().toString().trim();
+		// if (!isNumeric(time)) {
+		// Toast.makeText(SettingsActivity.this, "输入数据无效，请重新输入",
+		// Toast.LENGTH_LONG).show();
+		// edtTime.setText("");
+		// } else if ("".equals(time) || Long.parseLong(time) == 0) {
+		// Toast.makeText(SettingsActivity.this, "输入数据为空,请重新输入",
+		// Toast.LENGTH_LONG).show();
+		// edtTime.setText("");
+		// } else if (Integer.parseInt(time) > 600) {
+		// Toast.makeText(SettingsActivity.this, "数据超过最大值600，请重新输入",
+		// Toast.LENGTH_LONG).show();
+		// } else {
+		// try {
+		// Properties properties = new Properties();
+		// properties.setProperty("interval", time);
+		// properties.setProperty("isfloat",
+		// chkFloat.isChecked() ? "true" : "false");
+		// FileOutputStream fos = new FileOutputStream(
+		// settingTempFile);
+		// properties.store(fos, "Setting Data");
+		// fos.close();
+		// Toast.makeText(SettingsActivity.this,
+		// getString(R.string.save_success_toast),
+		// Toast.LENGTH_LONG).show();
+		// Intent intent = new Intent();
+		// setResult(Activity.RESULT_FIRST_USER, intent);
+		// SettingsActivity.this.finish();
+		// } catch (FileNotFoundException e) {
+		// e.printStackTrace();
+		// } catch (IOException e) {
+		// e.printStackTrace();
+		// }
+		// }
+		// }
+		// });
 	}
 
 	@Override
