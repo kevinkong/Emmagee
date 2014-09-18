@@ -16,14 +16,6 @@
  */
 package com.netease.qa.emmagee.activity;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.Properties;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -33,18 +25,13 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.netease.qa.emmagee.R;
-import com.netease.qa.emmagee.utils.EncryptData;
 
 /**
- * Setting Page of Emmagee
+ * About Page of Emmagee
  * 
  * @author andrewleo
  */
@@ -76,17 +63,14 @@ public class AboutActivity extends Activity {
 		goBack.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
-				Intent intent = new Intent();
-				intent.setClass(AboutActivity.this, SettingsActivity.class);
-				startActivityForResult(intent, Activity.RESULT_FIRST_USER);
 				AboutActivity.this.finish();
 			}
 		});
 	}
 	
 	/**
-	 * 获取版本号
-	 * @return 当前应用的版本号
+	 * get app version
+	 * @return app version
 	 */
 	public String getVersion() {
 	    try {

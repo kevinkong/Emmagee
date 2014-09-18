@@ -11,7 +11,6 @@
         android:orientation="horizontal" >
 
         <include
-            android:id="@+id/etNumCpuCores"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             layout="@layout/navigation_bar" />
@@ -39,6 +38,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
+                android:orientation="horizontal"
                 android:padding="@dimen/layout_vertical_margin_small" >
 
                 <TextView
@@ -53,25 +53,34 @@
                     android:layout_height="wrap_content"
                     android:gravity="right" >
 
-                    <EditText
+                    <TextView
                         android:id="@+id/time"
-                        android:layout_width="100sp"
+                        android:layout_width="50sp"
                         android:layout_height="wrap_content"
-                        android:background="@null"
                         android:gravity="center_vertical|right"
-                        android:hint="点击输入..."
-                        android:inputType="number"
-                        android:maxLength="5"
-                        android:textSize="@dimen/text_size" >
-
-                        <requestFocus />
-                    </EditText>
+                        android:textSize="@dimen/text_size"
+                        android:textColor="@color/black" >
+                    </TextView>
                 </LinearLayout>
             </LinearLayout>
 
+            <SeekBar
+                android:id="@+id/timeline"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:focusable="true"
+                android:max="60"
+                android:maxHeight="4.0dip"
+                android:minHeight="4.0dip"
+                android:paddingLeft="16.0dip"
+                android:paddingRight="16.0dip"
+                android:progress="5"
+                android:progressDrawable="@drawable/custom_seekbar"
+                android:thumb="@drawable/seekbar_thumb" />
+
             <View
                 android:layout_width="match_parent"
-                android:layout_height="1px"
+                android:layout_height="@dimen/line_height"
                 android:background="@color/light_gray" />
 
             <RelativeLayout
@@ -95,7 +104,10 @@
                     android:layout_alignParentRight="true"
                     android:background="@drawable/custom_checkbox"
                     android:button="@null"
-                    android:checked="true" />
+                    android:checked="true"
+                    android:paddingRight="@dimen/image_padding"
+                    android:paddingLeft="@dimen/image_padding" />
+
             </RelativeLayout>
         </LinearLayout>
 
@@ -135,11 +147,11 @@
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="1px"
+                android:layout_height="@dimen/line_height"
                 android:background="@color/light_gray" />
 
             <LinearLayout
-                android:id="@+id/about"               
+                android:id="@+id/about"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
@@ -167,4 +179,5 @@
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
-</LinearLayout>
+
+</LinearLayout>

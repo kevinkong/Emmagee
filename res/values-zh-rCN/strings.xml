@@ -8,8 +8,7 @@
     <string name="start_test">开始测试</string>
     <string name="stop_test">停止测试</string>
 
-    <string name="collecting_frequency">采集频率:</string>
-    <string name="seconds">秒</string>
+    <string name="collecting_frequency">采集频率(s)</string>
     <string name="sender">发件人:</string>
     <string name="password">密码:</string>
     <string name="smtp">SMTP服务器:</string>
@@ -66,6 +65,11 @@
     <string name="confirm">确定退出程序？</string>
     
     <string name="about">关于</string>
-    <string name="mail_settings">邮件发送配置</string>
-
+    <string name="mail_settings">邮件配置</string>
+    <string name="version_title">版本 </string>
+    <string name="about_emmagee_intro">Emmagee是一个简单易上手的Android性能监测小工具，
+        主要用于监控单个App的CPU，内存，流量，电量，电流以及整体性能状态，
+        同时支持自定义的监控频率以及性能数据的实时显示.</string>
+    <string name="about_team">开发团队：网易(杭州)质量保障部</string>
+    <string name="about_project_address">项目地址：https://github.com/NetEase/Emmagee</string>
 </resources>

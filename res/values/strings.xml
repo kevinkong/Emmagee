@@ -8,8 +8,7 @@
     <string name="start_test">Start Test</string>
     <string name="stop_test">Stop Test</string>
 
-    <string name="collecting_frequency">Collecting Frequency:</string>
-    <string name="seconds">Seconds</string>
+    <string name="collecting_frequency">Collecting Frequency(s)</string>
     <string name="sender">Sender:</string>
     <string name="password">Password:</string>
     <string name="smtp">SMTP Server:</string>
@@ -64,5 +63,14 @@
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="confirm">Are you sure to exit？</string>
-
+    
+    <string name="about">About</string>
+    <string name="mail_settings">Mail Settings</string>
+    <string name="version_title">Version </string>
+    <string name="about_emmagee_intro">Emmagee is a practical, handy performance test tool for specified
+         Android App, which can monitor CPU, memory, network traffic, battery current and status. 
+         Additionally, it also provides several cool features such as customizing interval of collecting
+         data, rendering real-time process status in a floating window, and much more.</string>
+    <string name="about_team">Team：QA, Netease(Hangzhou)</string>
+    <string name="about_project_address">Project Address：https://github.com/NetEase/Emmagee</string>
 </resources>

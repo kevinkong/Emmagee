@@ -229,13 +229,12 @@ public class EmmageeService extends Service {
 		try {
 			Properties properties = new Properties();
 			properties.load(new FileInputStream(settingTempFile));
-			String interval = properties.getProperty("interval").trim();
-			isFloating = "true".equals(properties.getProperty("isfloat").trim()) ? true : false;
-			sender = properties.getProperty("sender").trim();
-			password = properties.getProperty("password").trim();
-			recipients = properties.getProperty("recipients").trim();
+			String interval = (null == properties.getProperty("interval")) ? "" : properties.getProperty("interval").trim();
+			isFloating = "true".equals((null == properties.getProperty("isfloat")) ? "" : properties.getProperty("isfloat").trim()) ? true : false;
+			sender = (null == properties.getProperty("sender")) ? "" : properties.getProperty("sender").trim();
+			password = (null == properties.getProperty("password")) ? "" : properties.getProperty("password").trim();
+			recipients = (null == properties.getProperty("recipients")) ? "" : properties.getProperty("recipients").trim();
 			time = "".equals(interval) ? "5" : interval;
-			recipients = properties.getProperty("recipients");
 			receivers = recipients.split("\\s+");
 			smtp = properties.getProperty("smtp");
 		} catch (IOException e) {
@@ -257,9 +256,11 @@ public class EmmageeService extends Service {
 		else
 			mDateTime = formatter.format(cal.getTime().getTime());
 		if (android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)) {
-			//在4.0以下的低版本上/sdcard连接至/mnt/sdcard，而4.0以上版本则连接至/storage/sdcard0，所以有外接sdcard，/sdcard路径一定存在
-			resultFilePath = "/sdcard"+ File.separator + "Emmagee_TestResult_" + mDateTime + ".csv";	
-			//resultFilePath = android.os.Environment.getExternalStorageDirectory() + File.separator + "Emmagee_TestResult_" + mDateTime + ".csv";
+			// 在4.0以下的低版本上/sdcard连接至/mnt/sdcard，而4.0以上版本则连接至/storage/sdcard0，所以有外接sdcard，/sdcard路径一定存在
+			resultFilePath = "/sdcard" + File.separator + "Emmagee_TestResult_" + mDateTime + ".csv";
+			// resultFilePath =
+			// android.os.Environment.getExternalStorageDirectory() +
+			// File.separator + "Emmagee_TestResult_" + mDateTime + ".csv";
 		} else {
 			resultFilePath = getBaseContext().getFilesDir().getPath() + File.separator + "Emmagee_TestResult_" + mDateTime + ".csv";
 		}
@@ -272,24 +273,21 @@ public class EmmageeService extends Service {
 			long totalMemorySize = memoryInfo.getTotalMemory();
 			String totalMemory = fomart.format((double) totalMemorySize / 1024);
 			String multiCpuTitle = "";
-			// titles of multiple cpu cores 
+			// titles of multiple cpu cores
 			ArrayList<String> cpuList = cpuInfo.getCpuList();
-			for(int i =0 ; i < cpuList.size(); i++){
+			for (int i = 0; i < cpuList.size(); i++) {
 				multiCpuTitle += "," + cpuList.get(i) + " " + getString(R.string.total_usage);
 			}
-			bw.write(getString(R.string.process_package) + ": ," + packageName + "\r\n"
-                    + getString(R.string.process_name) + ": ," + processName + "\r\n"
-                    + getString(R.string.process_pid) + ": ," + pid + "\r\n"
-                    + getString(R.string.mem_size) + "： ," + totalMemory + "MB\r\n"
-                    + getString(R.string.cpu_type) + ": ," + cpuInfo.getCpuName() + "\r\n"
-                    + getString(R.string.android_system_version) + ": ," + memoryInfo.getSDKVersion() + "\r\n"
-                    + getString(R.string.mobile_type) + ": ," + memoryInfo.getPhoneType() + "\r\n"
-                    + "UID" + ": ," + uid + "\r\n"
-                    + START_TIME);
+			bw.write(getString(R.string.process_package) + ": ," + packageName + "\r\n" + getString(R.string.process_name) + ": ," + processName
+					+ "\r\n" + getString(R.string.process_pid) + ": ," + pid + "\r\n" + getString(R.string.mem_size) + "： ," + totalMemory + "MB\r\n"
+					+ getString(R.string.cpu_type) + ": ," + cpuInfo.getCpuName() + "\r\n" + getString(R.string.android_system_version) + ": ,"
+					+ memoryInfo.getSDKVersion() + "\r\n" + getString(R.string.mobile_type) + ": ," + memoryInfo.getPhoneType() + "\r\n" + "UID"
+					+ ": ," + uid + "\r\n" + START_TIME);
 			bw.write(getString(R.string.timestamp) + "," + getString(R.string.used_mem_PSS) + "," + getString(R.string.used_mem_ratio) + ","
-                    + getString(R.string.mobile_free_mem) + "," + getString(R.string.app_used_cpu_ratio) + "," + getString(R.string.total_used_cpu_ratio)
-					+ multiCpuTitle +"," + getString(R.string.traffic) + "," + getString(R.string.battery) + "," + getString(R.string.current) + ","
-                    + getString(R.string.temperature) + "," + getString(R.string.voltage) + "\r\n");
+					+ getString(R.string.mobile_free_mem) + "," + getString(R.string.app_used_cpu_ratio) + ","
+					+ getString(R.string.total_used_cpu_ratio) + multiCpuTitle + "," + getString(R.string.traffic) + ","
+					+ getString(R.string.battery) + "," + getString(R.string.current) + "," + getString(R.string.temperature) + ","
+					+ getString(R.string.voltage) + "\r\n");
 		} catch (IOException e) {
 			Log.e(LOG_TAG, e.getMessage());
 		}
@@ -507,10 +505,8 @@ public class EmmageeService extends Service {
 	public void closeOpenedStream() {
 		try {
 			if (bw != null) {
-				bw.write(getString(R.string.comment1) + "\r\n"
-                        + getString(R.string.comment2) + "\r\n"
-                        + getString(R.string.comment3) + "\r\n"
-                        + getString(R.string.comment4) + "\r\n");
+				bw.write(getString(R.string.comment1) + "\r\n" + getString(R.string.comment2) + "\r\n" + getString(R.string.comment3) + "\r\n"
+						+ getString(R.string.comment4) + "\r\n");
 				bw.close();
 			}
 			if (osw != null)

@@ -31,8 +31,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -42,7 +40,7 @@ import com.netease.qa.emmagee.R;
 import com.netease.qa.emmagee.utils.EncryptData;
 
 /**
- * Setting Page of Emmagee
+ * Mail Setting Page of Emmagee
  * 
  * @author andrewleo
  */
@@ -116,10 +114,9 @@ public class MailSettingsActivity extends Activity {
 				MailSettingsActivity.this.finish();
 			}
 		});
-		// edtTime.setInputType(InputType.TYPE_CLASS_NUMBER);
 		btnSave.setOnClickListener(new OnClickListener() {
 			@Override
-			public void onClick(View v) {
+			public void onClick(View v) {		
 				sender = edtSender.getText().toString().trim();
 				if (!"".equals(sender) && !checkMailFormat(sender)) {
 					Toast.makeText(MailSettingsActivity.this, getString(R.string.sender_mail_toast) + getString(R.string.format_incorrect_format),
@@ -146,6 +143,7 @@ public class MailSettingsActivity extends Activity {
 				}
 				try {
 					Properties properties = new Properties();
+					properties.load(new FileInputStream(settingTempFile)); 
 					properties.setProperty("sender", sender);
 					Log.d(LOG_TAG, "sender=" + sender);
 					try {

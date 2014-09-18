@@ -50,7 +50,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/layout_vertical_margin_small"
                     android:gravity="center_vertical"
-                    android:text="Emmagee"
+                    android:text="@string/app_name"
                     android:textColor="@color/black"
                     android:textSize="@dimen/text_size_bigest" />
             </LinearLayout>
@@ -65,7 +65,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="版本"
+                    android:text="@string/version_title"
                     android:textSize="@dimen/text_size" />
 
                 <TextView
@@ -79,7 +79,6 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/textview_horizontal_margin"
             android:background="@color/white"
             android:orientation="vertical" >
 
@@ -87,38 +86,39 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:padding="@dimen/layout_vertical_margin_small" >
+                android:orientation="vertical"
+                android:padding="@dimen/layout_horizontal_margin" >
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Emmagee XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+                    android:text="@string/about_emmagee_intro"
                     android:textColor="@color/black"
                     android:textSize="@dimen/text_size" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/line_height"
+                    android:background="@color/light_gray"
+                    android:layout_marginLeft="@dimen/layout_vertical_margin_small"
+                    android:layout_marginRight="@dimen/layout_vertical_margin_small"
+                    android:layout_marginTop="@dimen/layout_vertical_margin"
+                    android:layout_marginBottom="@dimen/layout_vertical_margin"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/about_team"
+                    android:textColor="@color/mix_gray"
+                    android:textSize="@dimen/text_size" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/about_project_address"
+                    android:textColor="@color/mix_gray"
+                    android:textSize="@dimen/text_size" />
             </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1px"
-                android:background="@color/light_gray" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal" >
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal" >
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical" >
         </LinearLayout>
     </LinearLayout>
 

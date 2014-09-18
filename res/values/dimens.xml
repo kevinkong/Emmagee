@@ -18,5 +18,13 @@
     
     <dimen name="button_width">140dp</dimen>
     <dimen name="button_height">40dp</dimen>
-
+    
+    <dimen name="image_padding">10dp</dimen>
+	<dimen name="image_padding_small">5dp</dimen>
+	
+	<dimen name="line_height">1px</dimen>
+	
+	<dimen name="edit_margin">5px</dimen>
+	
+	<dimen name="action_bar_height">60dp</dimen>
 </resources>

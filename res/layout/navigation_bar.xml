@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="45dip"
+    android:layout_height="@dimen/action_bar_height"
     android:background="@drawable/actionbar_bg"
     android:gravity="center_horizontal|center_vertical"
     android:orientation="horizontal" >
@@ -10,6 +10,7 @@
         android:id="@+id/go_back"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:paddingRight ="@dimen/image_padding"
         android:src="@drawable/btn_back" />
 
     <TextView
@@ -26,8 +27,8 @@
     <ImageView
         android:id="@+id/btn_set"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="@dimen/layout_vertical_margin"
+        android:layout_height="fill_parent" 
+        android:padding="@dimen/image_padding"
         android:src="@drawable/btn_save" />
 
 </LinearLayout>
