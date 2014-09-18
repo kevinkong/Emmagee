@@ -123,7 +123,7 @@ public class SettingsActivity extends Activity {
 					if (!"".equals(receivers[i])
 							&& !checkMailFormat(receivers[i])) {
 						Toast.makeText(SettingsActivity.this,
-                                getString(R.string.receiver_mail_toast) + getString(R.string.format_incorrect_format) + "[" + receivers[i] + "]",
+                                getString(R.string.receiver_mail_toast) + "[" + receivers[i] + "]" + getString(R.string.format_incorrect_format),
 								Toast.LENGTH_LONG).show();
 						return;
 					}

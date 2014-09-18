@@ -275,22 +275,21 @@ public class EmmageeService extends Service {
 			// titles of multiple cpu cores 
 			ArrayList<String> cpuList = cpuInfo.getCpuList();
 			for(int i =0 ; i < cpuList.size(); i++){
-				multiCpuTitle += "," + cpuList.get(i) + getString(R.string.total_usage) + "(%)";
+				multiCpuTitle += "," + cpuList.get(i) + " " + getString(R.string.total_usage);
 			}
-			bw.write(getString(R.string.app_monitor_title) +  "\r\n"
-                    + getString(R.string.process_package) + ": ," + packageName + "\r\n"
+			bw.write(getString(R.string.process_package) + ": ," + packageName + "\r\n"
                     + getString(R.string.process_name) + ": ," + processName + "\r\n"
                     + getString(R.string.process_pid) + ": ," + pid + "\r\n"
-                    + getString(R.string.mem_size) + "(MB)： ," + totalMemory + "MB\r\n"
+                    + getString(R.string.mem_size) + "： ," + totalMemory + "MB\r\n"
                     + getString(R.string.cpu_type) + ": ," + cpuInfo.getCpuName() + "\r\n"
                     + getString(R.string.android_system_version) + ": ," + memoryInfo.getSDKVersion() + "\r\n"
                     + getString(R.string.mobile_type) + ": ," + memoryInfo.getPhoneType() + "\r\n"
                     + "UID" + ": ," + uid + "\r\n"
                     + START_TIME);
-			bw.write(getString(R.string.datetime) + "," + getString(R.string.used_mem_PSS) + "(MB)," + getString(R.string.used_mem_ratio) + "(%),"
-                    + getString(R.string.mobile_free_mem) + "(MB)," + getString(R.string.app_used_cpu_ratio) + "(%)," + getString(R.string.total_used_cpu_ratio) + "(%)"
-					+ multiCpuTitle +"," + getString(R.string.traffic) + "(KB)," + getString(R.string.battery) + "(%)," + getString(R.string.current) + "(mA),"
-                    + getString(R.string.temperature) + "(C)," + getString(R.string.voltage) + "(V)" + "\r\n");
+			bw.write(getString(R.string.timestamp) + "," + getString(R.string.used_mem_PSS) + "," + getString(R.string.used_mem_ratio) + ","
+                    + getString(R.string.mobile_free_mem) + "," + getString(R.string.app_used_cpu_ratio) + "," + getString(R.string.total_used_cpu_ratio)
+					+ multiCpuTitle +"," + getString(R.string.traffic) + "," + getString(R.string.battery) + "," + getString(R.string.current) + ","
+                    + getString(R.string.temperature) + "," + getString(R.string.voltage) + "\r\n");
 		} catch (IOException e) {
 			Log.e(LOG_TAG, e.getMessage());
 		}
