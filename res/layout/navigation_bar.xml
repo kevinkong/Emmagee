@@ -11,7 +11,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingRight ="@dimen/image_padding"
-        android:src="@drawable/btn_back" />
+        android:src="@drawable/btn_back"
+        android:clickable="true" />
 
     <TextView
         android:id="@+id/nb_title"
@@ -27,8 +28,9 @@
     <ImageView
         android:id="@+id/btn_set"
         android:layout_width="wrap_content"
-        android:layout_height="fill_parent" 
         android:padding="@dimen/image_padding"
-        android:src="@drawable/btn_save" />
+        android:src="@drawable/btn_save"
+        android:layout_height="wrap_content"
+        android:clickable="true" />
 
 </LinearLayout>

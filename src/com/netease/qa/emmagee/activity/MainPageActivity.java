@@ -39,9 +39,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.widget.BaseAdapter;
-import android.widget.Button;
-import android.widget.CompoundButton;
+import android.widget.*;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -76,60 +74,89 @@ public class MainPageActivity extends Activity {
 	private boolean isServiceStop = false;
 	private UpdateReceiver receiver;
 
+    private TextView nb_title;
+    private ImageView go_back;
+    private ImageView btn_set;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		Log.i(LOG_TAG, "MainActivity::onCreate");
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.mainpage);
+        initTitleLayout();
 		createNewFile();
+
 		processInfo = new ProcessInfo();
-		lstViProgramme = (ListView) findViewById(R.id.processList);
-		btnTest = (Button) findViewById(R.id.test);
 		btnTest.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				monitorService = new Intent();
-				monitorService.setClass(MainPageActivity.this, EmmageeService.class);
-				if (getString(R.string.start_test).equals(btnTest.getText().toString())) {
-					if (isRadioChecked) {
-						Intent intent = getPackageManager().getLaunchIntentForPackage(packageName);
-						String startActivity = "";
-						Log.d(LOG_TAG, packageName);
-						//clear logcat
-						 try {
-							 Runtime.getRuntime().exec("logcat -c");
-						 } catch (IOException e) {
-								Log.d(LOG_TAG, e.getMessage());
-						 }
-						try {
-							startActivity = intent.resolveActivity(getPackageManager()).getShortClassName();
-							startActivity(intent);
-						} catch (Exception e) {
-							Toast.makeText(MainPageActivity.this, getString(R.string.can_not_start_app_toast), Toast.LENGTH_LONG).show();
-							return;
-						}
-						waitForAppStart(packageName);
-						monitorService.putExtra("processName", processName);
-						monitorService.putExtra("pid", pid);
-						monitorService.putExtra("uid", uid);
-						monitorService.putExtra("packageName", packageName);
-						monitorService.putExtra("settingTempFile", settingTempFile);
-						monitorService.putExtra("startActivity", startActivity);
-						startService(monitorService);
-						btnTest.setText(getString(R.string.stop_test));
-					} else {
-						Toast.makeText(MainPageActivity.this, getString(R.string.choose_app_toast), Toast.LENGTH_LONG).show();
-					}
-				} else {
-					btnTest.setText(getString(R.string.start_test));
-					Toast.makeText(MainPageActivity.this, getString(R.string.test_result_file_toast) + EmmageeService.resultFilePath, Toast.LENGTH_LONG).show();
-					stopService(monitorService);
-				}
-			}
-		});
+            @Override
+            public void onClick(View v) {
+                monitorService = new Intent();
+                monitorService.setClass(MainPageActivity.this, EmmageeService.class);
+                if (getString(R.string.start_test).equals(btnTest.getText().toString())) {
+                    if (isRadioChecked) {
+                        Intent intent = getPackageManager().getLaunchIntentForPackage(packageName);
+                        String startActivity = "";
+                        Log.d(LOG_TAG, packageName);
+                        //clear logcat
+                        try {
+                            Runtime.getRuntime().exec("logcat -c");
+                        } catch (IOException e) {
+                            Log.d(LOG_TAG, e.getMessage());
+                        }
+                        try {
+                            startActivity = intent.resolveActivity(getPackageManager()).getShortClassName();
+                            startActivity(intent);
+                        } catch (Exception e) {
+                            Toast.makeText(MainPageActivity.this, getString(R.string.can_not_start_app_toast), Toast.LENGTH_LONG).show();
+                            return;
+                        }
+                        waitForAppStart(packageName);
+                        monitorService.putExtra("processName", processName);
+                        monitorService.putExtra("pid", pid);
+                        monitorService.putExtra("uid", uid);
+                        monitorService.putExtra("packageName", packageName);
+                        monitorService.putExtra("settingTempFile", settingTempFile);
+                        monitorService.putExtra("startActivity", startActivity);
+                        startService(monitorService);
+                        btnTest.setText(getString(R.string.stop_test));
+                    } else {
+                        Toast.makeText(MainPageActivity.this, getString(R.string.choose_app_toast), Toast.LENGTH_LONG).show();
+                    }
+                } else {
+                    btnTest.setText(getString(R.string.start_test));
+                    Toast.makeText(MainPageActivity.this, getString(R.string.test_result_file_toast) + EmmageeService.resultFilePath, Toast.LENGTH_LONG).show();
+                    stopService(monitorService);
+                }
+            }
+        });
 		lstViProgramme.setAdapter(new ListAdapter());
+        lstViProgramme.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                RadioButton rdBtn = (RadioButton)((LinearLayout)view).getChildAt(0);
+                rdBtn.setChecked(true);
+            }
+        });
+
+        nb_title.setText(getString(R.string.app_name));
+        go_back.setVisibility(ImageView.INVISIBLE);
+        btn_set.setImageResource(R.drawable.settings_button);
+        btn_set.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                goToSettingsActivity();
+            }
+        });
 	}
+
+    private void initTitleLayout() {
+        go_back = (ImageView) findViewById(R.id.go_back);
+        nb_title = (TextView) findViewById(R.id.nb_title);
+        btn_set = (ImageView) findViewById(R.id.btn_set);
+        lstViProgramme = (ListView) findViewById(R.id.processList);
+        btnTest = (Button) findViewById(R.id.test);
+    }
 
 	/**
 	 * customized BroadcastReceiver
@@ -258,16 +285,20 @@ public class MainPageActivity extends Activity {
 			showDialog(0);
 			break;
 		case 1:
-			Intent intent = new Intent();
-			intent.setClass(MainPageActivity.this, SettingsActivity.class);
-			intent.putExtra("settingTempFile", settingTempFile);
-			startActivityForResult(intent, Activity.RESULT_FIRST_USER);
+            goToSettingsActivity();
 			break;
 		default:
 			break;
 		}
 		return false;
 	}
+
+    private void goToSettingsActivity() {
+        Intent intent = new Intent();
+        intent.setClass(MainPageActivity.this, SettingsActivity.class);
+        intent.putExtra("settingTempFile", settingTempFile);
+        startActivityForResult(intent, Activity.RESULT_FIRST_USER);
+    }
 
 	/**
 	 * create a dialog.
@@ -336,12 +367,19 @@ public class MainPageActivity extends Activity {
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
+            Programe pr = (Programe) programe.get(position);
 			Viewholder holder = new Viewholder();
 			final int i = position;
 			convertView = MainPageActivity.this.getLayoutInflater().inflate(R.layout.list_item, null);
-			holder.imgViAppIcon = (ImageView) convertView.findViewById(R.id.image);
+
+            holder.imgViAppIcon = (ImageView) convertView.findViewById(R.id.image);
+            holder.imgViAppIcon.setImageDrawable(pr.getIcon());
+
 			holder.txtAppName = (TextView) convertView.findViewById(R.id.text);
+            holder.txtAppName.setText(pr.getProcessName());
+
 			holder.rdoBtnApp = (RadioButton) convertView.findViewById(R.id.rb);
+            holder.rdoBtnApp.setFocusable(false);
 			holder.rdoBtnApp.setId(position);
 			holder.rdoBtnApp.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 				@Override
@@ -366,9 +404,7 @@ public class MainPageActivity extends Activity {
 				if (!holder.rdoBtnApp.isChecked())
 					holder.rdoBtnApp.setChecked(true);
 			}
-			Programe pr = (Programe) programe.get(position);
-			holder.imgViAppIcon.setImageDrawable(pr.getIcon());
-			holder.txtAppName.setText(pr.getProcessName());
+
 			return convertView;
 		}
 	}
