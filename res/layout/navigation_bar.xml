@@ -10,7 +10,8 @@
         android:id="@+id/go_back"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/btn_back" />
+        android:src="@drawable/btn_back"
+        android:clickable="true"/>
 
     <TextView
         android:id="@+id/nb_title"
@@ -27,7 +28,7 @@
         android:id="@+id/btn_set"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginRight="@dimen/layout_vertical_margin"
-        android:src="@drawable/btn_save" />
+        android:src="@drawable/btn_save"
+        android:clickable="true"/>
 
 </LinearLayout>
