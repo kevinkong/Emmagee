@@ -27,4 +27,12 @@
 	<dimen name="edit_margin">5px</dimen>
 	
 	<dimen name="action_bar_height">60dp</dimen>
+
+    <dimen name="layout_height_test">50dp</dimen>
+    <dimen name="layout_marginTop_test">6dp</dimen>
+    <dimen name="layout_marginBottom_test">2dp</dimen>
+    <dimen name="layout_marginLeft_test">30dp</dimen>
+    <dimen name="layout_marginRight_test">30dp</dimen>
+    <dimen name="text_size_test">16sp</dimen>
+
 </resources>

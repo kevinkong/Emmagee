@@ -70,11 +70,11 @@ public class MainPageActivity extends Activity {
 	private boolean isServiceStop = false;
 	private UpdateReceiver receiver;
 
-    private TextView nb_title;
-    private ImageView go_back;
-    private ImageView btn_set;
-    private LinearLayout layBtnSet;
-    private Long mExitTime = (long) 0;
+	private TextView nbTitle;
+	private ImageView ivGoBack;
+	private ImageView ivBtnSet;
+	private LinearLayout layBtnSet;
+	private Long mExitTime = (long) 0;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -82,80 +82,81 @@ public class MainPageActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.mainpage);
-        initTitleLayout();
+		initTitleLayout();
 		createNewFile();
 
 		processInfo = new ProcessInfo();
 		btnTest.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                monitorService = new Intent();
-                monitorService.setClass(MainPageActivity.this, EmmageeService.class);
-                if (getString(R.string.start_test).equals(btnTest.getText().toString())) {
-                    if (isRadioChecked) {
-                        Intent intent = getPackageManager().getLaunchIntentForPackage(packageName);
-                        String startActivity = "";
-                        Log.d(LOG_TAG, packageName);
-                        //clear logcat
-                        try {
-                            Runtime.getRuntime().exec("logcat -c");
-                        } catch (IOException e) {
-                            Log.d(LOG_TAG, e.getMessage());
-                        }
-                        try {
-                            startActivity = intent.resolveActivity(getPackageManager()).getShortClassName();
-                            startActivity(intent);
-                        } catch (Exception e) {
-                            Toast.makeText(MainPageActivity.this, getString(R.string.can_not_start_app_toast), Toast.LENGTH_LONG).show();
-                            return;
-                        }
-                        waitForAppStart(packageName);
-                        monitorService.putExtra("processName", processName);
-                        monitorService.putExtra("pid", pid);
-                        monitorService.putExtra("uid", uid);
-                        monitorService.putExtra("packageName", packageName);
-                        monitorService.putExtra("settingTempFile", settingTempFile);
-                        monitorService.putExtra("startActivity", startActivity);
-                        startService(monitorService);
-                        btnTest.setText(getString(R.string.stop_test));
-                    } else {
-                        Toast.makeText(MainPageActivity.this, getString(R.string.choose_app_toast), Toast.LENGTH_LONG).show();
-                    }
-                } else {
-                    btnTest.setText(getString(R.string.start_test));
-                    Toast.makeText(MainPageActivity.this, getString(R.string.test_result_file_toast) + EmmageeService.resultFilePath, Toast.LENGTH_LONG).show();
-                    stopService(monitorService);
-                }
-            }
-        });
+			@Override
+			public void onClick(View v) {
+				monitorService = new Intent();
+				monitorService.setClass(MainPageActivity.this, EmmageeService.class);
+				if (getString(R.string.start_test).equals(btnTest.getText().toString())) {
+					if (isRadioChecked) {
+						Intent intent = getPackageManager().getLaunchIntentForPackage(packageName);
+						String startActivity = "";
+						Log.d(LOG_TAG, packageName);
+						// clear logcat
+						try {
+							Runtime.getRuntime().exec("logcat -c");
+						} catch (IOException e) {
+							Log.d(LOG_TAG, e.getMessage());
+						}
+						try {
+							startActivity = intent.resolveActivity(getPackageManager()).getShortClassName();
+							startActivity(intent);
+						} catch (Exception e) {
+							Toast.makeText(MainPageActivity.this, getString(R.string.can_not_start_app_toast), Toast.LENGTH_LONG).show();
+							return;
+						}
+						waitForAppStart(packageName);
+						monitorService.putExtra("processName", processName);
+						monitorService.putExtra("pid", pid);
+						monitorService.putExtra("uid", uid);
+						monitorService.putExtra("packageName", packageName);
+						monitorService.putExtra("settingTempFile", settingTempFile);
+						monitorService.putExtra("startActivity", startActivity);
+						startService(monitorService);
+						btnTest.setText(getString(R.string.stop_test));
+					} else {
+						Toast.makeText(MainPageActivity.this, getString(R.string.choose_app_toast), Toast.LENGTH_LONG).show();
+					}
+				} else {
+					btnTest.setText(getString(R.string.start_test));
+					Toast.makeText(MainPageActivity.this, getString(R.string.test_result_file_toast) + EmmageeService.resultFilePath,
+							Toast.LENGTH_LONG).show();
+					stopService(monitorService);
+				}
+			}
+		});
 		lstViProgramme.setAdapter(new ListAdapter());
-        lstViProgramme.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                RadioButton rdBtn = (RadioButton)((LinearLayout)view).getChildAt(0);
-                rdBtn.setChecked(true);
-            }
-        });
+		lstViProgramme.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+				RadioButton rdBtn = (RadioButton) ((LinearLayout) view).getChildAt(0);
+				rdBtn.setChecked(true);
+			}
+		});
 
-        nb_title.setText(getString(R.string.app_name));
-        go_back.setVisibility(ImageView.INVISIBLE);
-        btn_set.setImageResource(R.drawable.settings_button);
-        layBtnSet.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                goToSettingsActivity();
-            }
-        });
+		nbTitle.setText(getString(R.string.app_name));
+		ivGoBack.setVisibility(ImageView.INVISIBLE);
+		ivBtnSet.setImageResource(R.drawable.settings_button);
+		layBtnSet.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				goToSettingsActivity();
+			}
+		});
 	}
 
-    private void initTitleLayout() {
-        go_back = (ImageView) findViewById(R.id.go_back);
-        nb_title = (TextView) findViewById(R.id.nb_title);
-        btn_set = (ImageView) findViewById(R.id.btn_set);
-        lstViProgramme = (ListView) findViewById(R.id.processList);
-        btnTest = (Button) findViewById(R.id.test);
-        layBtnSet = (LinearLayout) findViewById(R.id.lay_btn_set);
-    }
+	private void initTitleLayout() {
+		ivGoBack = (ImageView) findViewById(R.id.go_back);
+		nbTitle = (TextView) findViewById(R.id.nb_title);
+		ivBtnSet = (ImageView) findViewById(R.id.btn_set);
+		lstViProgramme = (ListView) findViewById(R.id.processList);
+		btnTest = (Button) findViewById(R.id.test);
+		layBtnSet = (LinearLayout) findViewById(R.id.lay_btn_set);
+	}
 
 	/**
 	 * customized BroadcastReceiver
@@ -257,28 +258,28 @@ public class MainPageActivity extends Activity {
 	 */
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if ((System.currentTimeMillis() - mExitTime) > 2000) {
-                    Toast.makeText(this, R.string.quite_alert, Toast.LENGTH_SHORT).show();
-                    mExitTime = System.currentTimeMillis();
-            } else {
-            		if (monitorService != null) {
+			if ((System.currentTimeMillis() - mExitTime) > 2000) {
+				Toast.makeText(this, R.string.quite_alert, Toast.LENGTH_SHORT).show();
+				mExitTime = System.currentTimeMillis();
+			} else {
+				if (monitorService != null) {
 					Log.d(LOG_TAG, "stop service");
 					stopService(monitorService);
 				}
-                Log.d(LOG_TAG, "exit Emmagee");
-                finish();
-            }
-            return true;
+				Log.d(LOG_TAG, "exit Emmagee");
+				finish();
+			}
+			return true;
 		}
 		return super.onKeyDown(keyCode, event);
 	}
 
-    private void goToSettingsActivity() {
-        Intent intent = new Intent();
-        intent.setClass(MainPageActivity.this, SettingsActivity.class);
-        intent.putExtra("settingTempFile", settingTempFile);
-        startActivityForResult(intent, Activity.RESULT_FIRST_USER);
-    }
+	private void goToSettingsActivity() {
+		Intent intent = new Intent();
+		intent.setClass(MainPageActivity.this, SettingsActivity.class);
+		intent.putExtra("settingTempFile", settingTempFile);
+		startActivityForResult(intent, Activity.RESULT_FIRST_USER);
+	}
 
 	/**
 	 * customizing adapter.
@@ -321,19 +322,19 @@ public class MainPageActivity extends Activity {
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
-            Programe pr = (Programe) programe.get(position);
+			Programe pr = (Programe) programe.get(position);
 			Viewholder holder = new Viewholder();
 			final int i = position;
 			convertView = MainPageActivity.this.getLayoutInflater().inflate(R.layout.list_item, null);
 
-            holder.imgViAppIcon = (ImageView) convertView.findViewById(R.id.image);
-            holder.imgViAppIcon.setImageDrawable(pr.getIcon());
+			holder.imgViAppIcon = (ImageView) convertView.findViewById(R.id.image);
+			holder.imgViAppIcon.setImageDrawable(pr.getIcon());
 
 			holder.txtAppName = (TextView) convertView.findViewById(R.id.text);
-            holder.txtAppName.setText(pr.getProcessName());
+			holder.txtAppName.setText(pr.getProcessName());
 
 			holder.rdoBtnApp = (RadioButton) convertView.findViewById(R.id.rb);
-            holder.rdoBtnApp.setFocusable(false);
+			holder.rdoBtnApp.setFocusable(false);
 			holder.rdoBtnApp.setId(position);
 			holder.rdoBtnApp.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 				@Override

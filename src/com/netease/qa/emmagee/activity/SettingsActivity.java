@@ -74,11 +74,11 @@ public class SettingsActivity extends Activity {
 		SeekBar timeBar = (SeekBar) findViewById(R.id.timeline);
 		ImageView btnSave = (ImageView) findViewById(R.id.btn_set);
 		ImageView goBack = (ImageView) findViewById(R.id.go_back);
-		RelativeLayout floating_item = (RelativeLayout) findViewById(R.id.floating_item);
+		RelativeLayout floatingItem = (RelativeLayout) findViewById(R.id.floating_item);
 		LinearLayout layGoBack = (LinearLayout) findViewById(R.id.lay_go_back);
-		
+
 		boolean floatingTag = true;
-		
+
 		btnSave.setVisibility(ImageView.INVISIBLE);
 		try {
 			properties.load(new FileInputStream(settingTempFile));
@@ -112,7 +112,7 @@ public class SettingsActivity extends Activity {
 				int interval = arg0.getProgress() + 1;
 				try {
 					Properties properties = new Properties();
-					properties.load(new FileInputStream(settingTempFile));   
+					properties.load(new FileInputStream(settingTempFile));
 					properties.setProperty("interval", Integer.toString(interval));
 					FileOutputStream fos = new FileOutputStream(settingTempFile);
 					properties.store(fos, "Setting Data");
@@ -122,7 +122,7 @@ public class SettingsActivity extends Activity {
 				}
 			}
 		});
-		
+
 		layGoBack.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
@@ -151,13 +151,13 @@ public class SettingsActivity extends Activity {
 			}
 		});
 
-		floating_item.setOnClickListener(new OnClickListener() {
+		floatingItem.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
 				try {
 					chkFloat.setChecked(!chkFloat.isChecked());
 					Properties properties = new Properties();
-					properties.load(new FileInputStream(settingTempFile));  
+					properties.load(new FileInputStream(settingTempFile));
 					properties.setProperty("isfloat", chkFloat.isChecked() ? "true" : "false");
 					FileOutputStream fos = new FileOutputStream(settingTempFile);
 					properties.store(fos, "Setting Data");

@@ -106,10 +106,13 @@ public class CpuInfo {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		read_total_cpu_stat();
+		readTotalCpuStat();
 	}
 
-	private void read_total_cpu_stat() {
+	/**
+	 * read stat of each CPU cores
+	 */
+	private void readTotalCpuStat() {
 		try {
 			// monitor total and idle cpu stat of certain process
 			RandomAccessFile cpuInfo = new RandomAccessFile(CPU_STAT, "r");
@@ -142,6 +145,7 @@ public class CpuInfo {
 				while (null != (line = cpuStat.readLine())) {
 					String[] values = line.split(":");
 					if (values[0].contains(INTEL_CPU_NAME)) {
+						cpuStat.close();
 						return values[1];
 					}
 				}
@@ -257,10 +261,14 @@ public class CpuInfo {
 				if (null != totalCpu2 && totalCpu2.size() > 0) {
 					processCpuRatio = fomart.format(100 * ((double) (processCpu - processCpu2) / ((double) (totalCpu.get(0) - totalCpu2.get(0)))));
 					for (int i = 0; i < (totalCpu.size() > totalCpu2.size() ? totalCpu2.size() : totalCpu.size()); i++) {
-						String cpuRatio = fomart.format(100 * ((double) ((totalCpu.get(i) - idleCpu.get(i)) - (totalCpu2.get(i) - idleCpu2.get(i))) / (double) (totalCpu
-								.get(i) - totalCpu2.get(i))));
+						String cpuRatio = "0.00";
+						if (totalCpu.get(i) - totalCpu2.get(i) > 0) {
+							cpuRatio = fomart
+									.format(100 * ((double) ((totalCpu.get(i) - idleCpu.get(i)) - (totalCpu2.get(i) - idleCpu2.get(i))) / (double) (totalCpu
+											.get(i) - totalCpu2.get(i))));
+						}
 						totalCpuRatio.add(cpuRatio);
-						totalCpuBuffer.append(cpuRatio+",");
+						totalCpuBuffer.append(cpuRatio + ",");
 					}
 				} else {
 					processCpuRatio = "0";
@@ -271,7 +279,7 @@ public class CpuInfo {
 					idleCpu2 = (ArrayList<Long>) idleCpu.clone();
 				}
 				// 多核cpu的值写入csv文件中
-				for(int i =0;i<getCpuNum()-totalCpuRatio.size()+1;i++){
+				for (int i = 0; i < getCpuNum() - totalCpuRatio.size() + 1; i++) {
 					totalCpuBuffer.append("0.00,");
 				}
 				long pidMemory = mi.getPidMemorySize(pid, context);
@@ -287,10 +295,12 @@ public class CpuInfo {
 					// whether certain device supports traffic statics or not
 					if (traffic == -1) {
 						EmmageeService.bw.write(mDateTime2 + "," + pMemory + "," + percent + "," + fMemory + "," + processCpuRatio + ","
-								+ totalCpuBuffer.toString() + "N/A" + "," + totalBatt + "," + currentBatt + "," + temperature + "," + voltage + "\r\n");
+								+ totalCpuBuffer.toString() + "N/A" + "," + totalBatt + "," + currentBatt + "," + temperature + "," + voltage
+								+ "\r\n");
 					} else {
 						EmmageeService.bw.write(mDateTime2 + "," + pMemory + "," + percent + "," + fMemory + "," + processCpuRatio + ","
-								+ totalCpuBuffer.toString() + traffic + "," + totalBatt + "," + currentBatt + "," + temperature + "," + voltage + "\r\n");
+								+ totalCpuBuffer.toString() + traffic + "," + totalBatt + "," + currentBatt + "," + temperature + "," + voltage
+								+ "\r\n");
 					}
 					totalCpu2 = (ArrayList<Long>) totalCpu.clone();
 					processCpu2 = processCpu;

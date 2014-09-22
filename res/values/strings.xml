@@ -8,7 +8,7 @@
     <string name="start_test">Start Test</string>
     <string name="stop_test">Stop Test</string>
 
-    <string name="collecting_frequency">Collecting Frequency(s)</string>
+    <string name="collecting_frequency">Collecting Interval(s)</string>
     <string name="sender">Sender:</string>
     <string name="password">Password:</string>
     <string name="smtp">SMTP Server:</string>
@@ -22,7 +22,7 @@
     <string name="process_free_mem">App/Available Memory:</string>
     <string name="process_overall_cpu">App/System CPU:</string>
     <string name="start_time">Start Time:</string>
-    <string name="total_usage">Total Usage(%)</string>
+    <string name="total_usage">\u0020Total Usage(%)</string>
     <string name="process_package">Package Name</string>
     <string name="process_name">App Name</string>
     <string name="process_pid">App PID</string>
