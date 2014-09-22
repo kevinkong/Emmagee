@@ -11,14 +11,21 @@
 
     <ImageView
         android:id="@+id/image"
-        android:layout_width="60px"
-        android:layout_height="60px"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:maxHeight="80px"
+        android:maxWidth="80px"
         android:layout_gravity="center"
-        android:layout_marginRight="10dip" />
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp" />
 
     <TextView
         android:id="@+id/text"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:textColor="#5B5B5B"
+        android:gravity="center_vertical"/>
 
 </LinearLayout>

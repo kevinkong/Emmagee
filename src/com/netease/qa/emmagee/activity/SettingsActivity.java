@@ -19,21 +19,22 @@ package com.netease.qa.emmagee.activity;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.Properties;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.Toast;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
+import android.widget.TextView;
 
 import com.netease.qa.emmagee.R;
 import com.netease.qa.emmagee.utils.EncryptData;
@@ -45,144 +46,125 @@ import com.netease.qa.emmagee.utils.EncryptData;
  */
 public class SettingsActivity extends Activity {
 
-	private static final String LOG_TAG = "Emmagee-"
-			+ SettingsActivity.class.getSimpleName();
+	private static final String LOG_TAG = "Emmagee-" + SettingsActivity.class.getSimpleName();
 
 	private CheckBox chkFloat;
-	private EditText edtTime;
-	private EditText edtRecipients;
-	private EditText edtSender;
-	private EditText edtPassword;
-	private EditText edtSmtp;
-	private String time, sender;
-	private String prePassword, curPassword;
+	private TextView tvTime;
+	private String time;
 	private String settingTempFile;
-	private String recipients, smtp;
-	private String[] receivers;
+	private LinearLayout about;
+	private LinearLayout mailSettings;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		Log.i(LOG_TAG, "onCreate");
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.settings);
 
+		Properties properties = new Properties();
 		final EncryptData des = new EncryptData("emmagee");
 		Intent intent = this.getIntent();
-		settingTempFile = intent.getStringExtra("settingTempFile");
+		settingTempFile = getBaseContext().getFilesDir().getPath() + "\\EmmageeSettings.properties";
 
 		chkFloat = (CheckBox) findViewById(R.id.floating);
-		edtTime = (EditText) findViewById(R.id.time);
-		edtSender = (EditText) findViewById(R.id.sender);
-		edtPassword = (EditText) findViewById(R.id.password);
-		edtRecipients = (EditText) findViewById(R.id.recipients);
-		edtSmtp = (EditText) findViewById(R.id.smtp);
+		tvTime = (TextView) findViewById(R.id.time);
+		about = (LinearLayout) findViewById(R.id.about);
+		mailSettings = (LinearLayout) findViewById(R.id.mail_settings);
+		SeekBar timeBar = (SeekBar) findViewById(R.id.timeline);
+		ImageView btnSave = (ImageView) findViewById(R.id.btn_set);
+		ImageView goBack = (ImageView) findViewById(R.id.go_back);
+		RelativeLayout floatingItem = (RelativeLayout) findViewById(R.id.floating_item);
+		LinearLayout layGoBack = (LinearLayout) findViewById(R.id.lay_go_back);
 
-		Button btnSave = (Button) findViewById(R.id.save);
 		boolean floatingTag = true;
 
+		btnSave.setVisibility(ImageView.INVISIBLE);
 		try {
-			Properties properties = new Properties();
 			properties.load(new FileInputStream(settingTempFile));
-			String interval = properties.getProperty("interval").trim();
-			String isfloat = properties.getProperty("isfloat").trim();
-			sender = properties.getProperty("sender").trim();
-			prePassword = properties.getProperty("password").trim();
-			recipients = properties.getProperty("recipients").trim();
+			String interval = (null == properties.getProperty("interval")) ? "" : properties.getProperty("interval").trim();
+			String isfloat = (null == properties.getProperty("isfloat")) ? "" : properties.getProperty("isfloat").trim();
 			time = "".equals(interval) ? "5" : interval;
 			floatingTag = "false".equals(isfloat) ? false : true;
-			recipients = properties.getProperty("recipients");
-			smtp = properties.getProperty("smtp");
 		} catch (FileNotFoundException e) {
 			Log.e(LOG_TAG, "FileNotFoundException: " + e.getMessage());
 			e.printStackTrace();
-		} catch (IOException e) {
-			Log.e(LOG_TAG, "IOException: " + e.getMessage());
+		} catch (Exception e) {
+			Log.e(LOG_TAG, "Exception: " + e.getMessage());
 			e.printStackTrace();
 		}
-		edtTime.setText(time);
+		tvTime.setText(time);
 		chkFloat.setChecked(floatingTag);
-		edtRecipients.setText(recipients);
-		edtSender.setText(sender);
-		edtPassword.setText(prePassword);
-		edtSmtp.setText(smtp);
-
-		// edtTime.setInputType(InputType.TYPE_CLASS_NUMBER);
-		btnSave.setOnClickListener(new OnClickListener() {
+		timeBar.setProgress(Integer.parseInt(time));
+		timeBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
 			@Override
-			public void onClick(View v) {
-				time = edtTime.getText().toString().trim();
-				sender = edtSender.getText().toString().trim();
-				if (!"".equals(sender) && !checkMailFormat(sender)) {
-					Toast.makeText(SettingsActivity.this, "发件人邮箱格式不正确",
-							Toast.LENGTH_LONG).show();
-					return;
+			public void onProgressChanged(SeekBar arg0, int arg1, boolean arg2) {
+				tvTime.setText(Integer.toString(arg1 + 1));
+			}
+
+			@Override
+			public void onStartTrackingTouch(SeekBar arg0) {
+			}
+
+			@Override
+			public void onStopTrackingTouch(SeekBar arg0) {
+				// when tracking stoped, update properties file
+				int interval = arg0.getProgress() + 1;
+				try {
+					Properties properties = new Properties();
+					properties.load(new FileInputStream(settingTempFile));
+					properties.setProperty("interval", Integer.toString(interval));
+					FileOutputStream fos = new FileOutputStream(settingTempFile);
+					properties.store(fos, "Setting Data");
+					fos.close();
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
-				recipients = edtRecipients.getText().toString().trim();
-				receivers = recipients.split("\\s+");
-				for (int i = 0; i < receivers.length; i++) {
-					if (!"".equals(receivers[i])
-							&& !checkMailFormat(receivers[i])) {
-						Toast.makeText(SettingsActivity.this,
-								"收件人邮箱" + receivers[i] + "格式不正确",
-								Toast.LENGTH_LONG).show();
-						return;
-					}
-				}
-				curPassword = edtPassword.getText().toString().trim();
-				smtp = edtSmtp.getText().toString().trim();
-				if (checkMailConfig(sender, recipients, smtp, curPassword) == -1) {
-					Toast.makeText(SettingsActivity.this, "邮箱配置不完整，请完善所有信息",
-							Toast.LENGTH_LONG).show();
-					return;
-				}
-				if (!isNumeric(time)) {
-					Toast.makeText(SettingsActivity.this, "输入数据无效，请重新输入",
-							Toast.LENGTH_LONG).show();
-					edtTime.setText("");
-				} else if ("".equals(time) || Long.parseLong(time) == 0) {
-					Toast.makeText(SettingsActivity.this, "输入数据为空,请重新输入",
-							Toast.LENGTH_LONG).show();
-					edtTime.setText("");
-				} else if (Integer.parseInt(time) > 600) {
-					Toast.makeText(SettingsActivity.this, "数据超过最大值600，请重新输入",
-							Toast.LENGTH_LONG).show();
-				} else {
-					try {
-						Properties properties = new Properties();
-						properties.setProperty("interval", time);
-						properties.setProperty("isfloat",
-								chkFloat.isChecked() ? "true" : "false");
-						properties.setProperty("sender", sender);
-						Log.d(LOG_TAG, "sender=" + sender);
-						try {
-							// FIXME 注释
-							properties.setProperty(
-									"password",
-									curPassword.equals(prePassword) ? curPassword
-											: ("".equals(curPassword) ? ""
-													: des.encrypt(curPassword)));
-							Log.d(LOG_TAG, "curPassword=" + curPassword);
-							Log.d(LOG_TAG,
-									"encrtpt=" + des.encrypt(curPassword));
-						} catch (Exception e) {
-							properties.setProperty("password", "");
-						}
-						properties.setProperty("recipients", recipients);
-						properties.setProperty("smtp", smtp);
-						FileOutputStream fos = new FileOutputStream(
-								settingTempFile);
-						properties.store(fos, "Setting Data");
-						fos.close();
-						Toast.makeText(SettingsActivity.this, "保存成功",
-								Toast.LENGTH_LONG).show();
-						Intent intent = new Intent();
-						setResult(Activity.RESULT_FIRST_USER, intent);
-						SettingsActivity.this.finish();
-					} catch (FileNotFoundException e) {
-						e.printStackTrace();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
+			}
+		});
+
+		layGoBack.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				SettingsActivity.this.finish();
+				Intent intent = new Intent();
+				intent.setClass(SettingsActivity.this, MainPageActivity.class);
+				startActivity(intent);
+			}
+		});
+
+		mailSettings.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				Intent intent = new Intent();
+				intent.setClass(SettingsActivity.this, MailSettingsActivity.class);
+				startActivity(intent);
+			}
+		});
+
+		about.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				Intent intent = new Intent();
+				intent.setClass(SettingsActivity.this, AboutActivity.class);
+				startActivity(intent);
+			}
+		});
+
+		floatingItem.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				try {
+					chkFloat.setChecked(!chkFloat.isChecked());
+					Properties properties = new Properties();
+					properties.load(new FileInputStream(settingTempFile));
+					properties.setProperty("isfloat", chkFloat.isChecked() ? "true" : "false");
+					FileOutputStream fos = new FileOutputStream(settingTempFile);
+					properties.store(fos, "Setting Data");
+					fos.close();
+				} catch (Exception e) {
+					e.printStackTrace();
+					chkFloat.setChecked(chkFloat.isChecked() ? false : true);
 				}
 			}
 		});
@@ -196,29 +178,6 @@ public class SettingsActivity extends Activity {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-	}
-
-	private int checkMailConfig(String sender, String recipients, String smtp,
-			String curPassword) {
-		if (!"".equals(curPassword) && !"".equals(sender)
-				&& !"".equals(recipients) && !"".equals(smtp)) {
-			return 1;
-		} else if ("".equals(curPassword) && "".equals(sender)
-				&& "".equals(recipients) && "".equals(smtp)) {
-			return 0;
-		} else
-			return -1;
-	}
-
-	/**
-	 * 检查邮件格式正确性
-	 */
-	private boolean checkMailFormat(String mail) {
-		String strPattern = "^[a-zA-Z][\\w\\.-]*[a-zA-Z0-9]@[a-zA-Z0-9][\\w\\.-]*"
-				+ "[a-zA-Z0-9]\\.[a-zA-Z][a-zA-Z\\.]*[a-zA-Z]$";
-		Pattern p = Pattern.compile(strPattern);
-		Matcher m = p.matcher(mail);
-		return m.matches();
 	}
 
 	/**

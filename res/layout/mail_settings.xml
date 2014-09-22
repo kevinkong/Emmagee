@@ -16,7 +16,7 @@
             layout="@layout/navigation_bar" />
     </LinearLayout>
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:focusable="true"
@@ -32,119 +32,29 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/textview_horizontal_margin"
             android:background="@color/white"
+            android:gravity="center_vertical"
             android:orientation="vertical" >
 
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="@dimen/layout_vertical_margin_small" >
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/collecting_frequency"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/text_size" />
-
-                <LinearLayout
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="right" >
-
-                    <TextView
-                        android:id="@+id/time"
-                        android:layout_width="50sp"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical|right"
-                        android:textSize="@dimen/text_size"
-                        android:textColor="@color/black" >
-                    </TextView>
-                </LinearLayout>
-            </LinearLayout>
-
-            <SeekBar
-                android:id="@+id/timeline"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:focusable="true"
-                android:max="59"
-                android:maxHeight="4.0dip"
-                android:minHeight="4.0dip"
-                android:paddingLeft="16.0dip"
-                android:paddingRight="16.0dip"
-                android:paddingBottom="@dimen/layout_vertical_margin_small"
-                android:progress="5"
-                android:progressDrawable="@drawable/custom_seekbar"
-                android:thumb="@drawable/seekbar_thumb" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/line_height"
-                android:background="@color/light_gray" />
-
-            <RelativeLayout
-                android:id="@+id/floating_item"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="@dimen/layout_vertical_margin_small" >
-
-                <TextView
-                    android:id="@+id/floating_Window"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:text="@string/floating_window"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/text_size" />
-
-                <CheckBox
-                    android:id="@+id/floating"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:background="@drawable/custom_checkbox"
-                    android:button="@null"
-                    android:checked="true"
-                    android:paddingRight="@dimen/image_padding"
-                    android:paddingLeft="@dimen/image_padding" />
-
-            </RelativeLayout>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/textview_horizontal_margin"
-            android:background="@color/white"
-            android:orientation="vertical" >
-
-            <LinearLayout
-                android:id="@+id/mail_settings"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
+                android:orientation="vertical"
                 android:padding="@dimen/layout_vertical_margin_small" >
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/mail_settings"
+                    android:text="@string/sender"
                     android:textColor="@color/black"
                     android:textSize="@dimen/text_size" />
 
-                <LinearLayout
+                <EditText
+                    android:id="@+id/sender"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="right" >
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/right_arrow"
-                        android:textSize="@dimen/text_size" />
-                </LinearLayout>
+                    android:layout_marginTop="@dimen/edit_margin"
+                    android:singleLine="true"
+                    android:textSize="@dimen/text_size" />
             </LinearLayout>
 
             <View
@@ -153,33 +63,81 @@
                 android:background="@color/light_gray" />
 
             <LinearLayout
-                android:id="@+id/about"
-                android:layout_width="match_parent"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
+                android:orientation="vertical"
                 android:padding="@dimen/layout_vertical_margin_small" >
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:text="@string/about"
+                    android:text="@string/password"
                     android:textColor="@color/black"
                     android:textSize="@dimen/text_size" />
 
-                <LinearLayout
+                <EditText
+                    android:id="@+id/password"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="right" >
+                    android:layout_marginTop="@dimen/edit_margin"
+                    android:inputType="textPassword"
+                    android:singleLine="true"
+                    android:textSize="@dimen/text_size" />
+            </LinearLayout>
 
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/right_arrow"
-                        android:textSize="@dimen/text_size" />
-                </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/line_height"
+                android:background="@color/light_gray" />
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/layout_vertical_margin_small" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/smtp"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size" />
+
+                <EditText
+                    android:id="@+id/smtp"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/edit_margin"
+                    android:singleLine="true"
+                    android:textSize="@dimen/text_size" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/line_height"
+                android:background="@color/light_gray" />
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/layout_vertical_margin_small" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/receiver"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size" />
+
+                <EditText
+                    android:id="@+id/recipients"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/edit_margin"
+                    android:textSize="@dimen/text_size" />
             </LinearLayout>
         </LinearLayout>
-    </LinearLayout>
+    </ScrollView>
 
 </LinearLayout>

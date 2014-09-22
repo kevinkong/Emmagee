@@ -123,10 +123,11 @@ public class EmmageeService extends Service {
 	private int getStartTimeCount = 0;
 	private boolean isGetStartTime = true;
 	private String startTime = "";
+	private static final String SERVICE_ACTION = "com.netease.action.emmageeService";
 
 	@Override
 	public void onCreate() {
-		Log.i(LOG_TAG, "onCreate");
+		Log.i(LOG_TAG, "service onCreate");
 		super.onCreate();
 		isServiceStop = false;
 		isStop = false;
@@ -155,7 +156,7 @@ public class EmmageeService extends Service {
 				int level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0);
 
 				int scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
-				totalBatt = String.valueOf(level * 100 / scale) + "%";
+				totalBatt = String.valueOf(level * 100 / scale);
 
 				voltage = String.valueOf(intent.getIntExtra(BatteryManager.EXTRA_VOLTAGE, -1) * 1.0 / 1000);
 
@@ -168,7 +169,7 @@ public class EmmageeService extends Service {
 
 	@Override
 	public void onStart(Intent intent, int startId) {
-		Log.i(LOG_TAG, "onStart");
+		Log.i(LOG_TAG, "service onStart");
 		PendingIntent contentIntent = PendingIntent.getActivity(getBaseContext(), 0, new Intent(this, MainPageActivity.class), 0);
 		NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
 		builder.setContentIntent(contentIntent).setSmallIcon(R.drawable.icon).setWhen(System.currentTimeMillis()).setAutoCancel(true)
@@ -194,11 +195,11 @@ public class EmmageeService extends Service {
 
 			wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
 			if (wifiManager.isWifiEnabled()) {
-				btnWifi.setText(R.string.closewifi);
+				btnWifi.setText(R.string.close_wifi);
 			} else {
-				btnWifi.setText(R.string.openwifi);
+				btnWifi.setText(R.string.open_wifi);
 			}
-			txtUnusedMem.setText("计算中,请稍后...");
+			txtUnusedMem.setText(getString(R.string.calculating));
 			txtUnusedMem.setTextColor(android.graphics.Color.RED);
 			txtTotalMem.setTextColor(android.graphics.Color.RED);
 			txtTraffic.setTextColor(android.graphics.Color.RED);
@@ -208,10 +209,8 @@ public class EmmageeService extends Service {
 				public void onClick(View v) {
 					Intent intent = new Intent();
 					intent.putExtra("isServiceStop", true);
-					intent.setAction("com.netease.action.emmageeService");
+					intent.setAction(SERVICE_ACTION);
 					sendBroadcast(intent);
-					// isServiceStop = true;
-					Toast.makeText(EmmageeService.this, "测试结果文件：" + resultFilePath, Toast.LENGTH_LONG).show();
 					stopSelf();
 				}
 			});
@@ -230,13 +229,12 @@ public class EmmageeService extends Service {
 		try {
 			Properties properties = new Properties();
 			properties.load(new FileInputStream(settingTempFile));
-			String interval = properties.getProperty("interval").trim();
-			isFloating = "true".equals(properties.getProperty("isfloat").trim()) ? true : false;
-			sender = properties.getProperty("sender").trim();
-			password = properties.getProperty("password").trim();
-			recipients = properties.getProperty("recipients").trim();
+			String interval = (null == properties.getProperty("interval")) ? "" : properties.getProperty("interval").trim();
+			isFloating = "true".equals((null == properties.getProperty("isfloat")) ? "" : properties.getProperty("isfloat").trim()) ? true : false;
+			sender = (null == properties.getProperty("sender")) ? "" : properties.getProperty("sender").trim();
+			password = (null == properties.getProperty("password")) ? "" : properties.getProperty("password").trim();
+			recipients = (null == properties.getProperty("recipients")) ? "" : properties.getProperty("recipients").trim();
 			time = "".equals(interval) ? "5" : interval;
-			recipients = properties.getProperty("recipients");
 			receivers = recipients.split("\\s+");
 			smtp = properties.getProperty("smtp");
 		} catch (IOException e) {
@@ -257,9 +255,12 @@ public class EmmageeService extends Service {
 			mDateTime = formatter.format(cal.getTime().getTime() + 8 * 60 * 60 * 1000);
 		else
 			mDateTime = formatter.format(cal.getTime().getTime());
-
 		if (android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)) {
-			resultFilePath = android.os.Environment.getExternalStorageDirectory() + File.separator + "Emmagee_TestResult_" + mDateTime + ".csv";
+			// 在4.0以下的低版本上/sdcard连接至/mnt/sdcard，而4.0以上版本则连接至/storage/sdcard0，所以有外接sdcard，/sdcard路径一定存在
+			resultFilePath = "/sdcard" + File.separator + "Emmagee_TestResult_" + mDateTime + ".csv";
+			// resultFilePath =
+			// android.os.Environment.getExternalStorageDirectory() +
+			// File.separator + "Emmagee_TestResult_" + mDateTime + ".csv";
 		} else {
 			resultFilePath = getBaseContext().getFilesDir().getPath() + File.separator + "Emmagee_TestResult_" + mDateTime + ".csv";
 		}
@@ -271,11 +272,22 @@ public class EmmageeService extends Service {
 			bw = new BufferedWriter(osw);
 			long totalMemorySize = memoryInfo.getTotalMemory();
 			String totalMemory = fomart.format((double) totalMemorySize / 1024);
-			bw.write("指定应用的CPU内存监控情况\r\n" + "应用包名：," + packageName + "\r\n" + "应用名称: ," + processName + "\r\n" + "应用PID: ," + pid + "\r\n"
-					+ "机器内存大小(MB)：," + totalMemory + "MB\r\n" + "机器CPU型号：," + cpuInfo.getCpuName() + "\r\n" + "机器android系统版本：,"
-					+ memoryInfo.getSDKVersion() + "\r\n" + "手机型号：," + memoryInfo.getPhoneType() + "\r\n" + "UID：," + uid + "\r\n" + START_TIME);
-			bw.write("时间" + "," + "应用占用内存PSS(MB)" + "," + "应用占用内存比(%)" + "," + " 机器剩余内存(MB)" + "," + "应用占用CPU率(%)" + "," + "CPU总使用率(%)" + ","
-					+ "流量(KB)" + "," + "电量(%)" + "," + "电流(mA)" + "," + "温度(C)" + "," + "电压(V)" + "\r\n");
+			String multiCpuTitle = "";
+			// titles of multiple cpu cores
+			ArrayList<String> cpuList = cpuInfo.getCpuList();
+			for (int i = 0; i < cpuList.size(); i++) {
+				multiCpuTitle += "," + cpuList.get(i) + getString(R.string.total_usage);
+			}
+			bw.write(getString(R.string.process_package) + ": ," + packageName + "\r\n" + getString(R.string.process_name) + ": ," + processName
+					+ "\r\n" + getString(R.string.process_pid) + ": ," + pid + "\r\n" + getString(R.string.mem_size) + "： ," + totalMemory + "MB\r\n"
+					+ getString(R.string.cpu_type) + ": ," + cpuInfo.getCpuName() + "\r\n" + getString(R.string.android_system_version) + ": ,"
+					+ memoryInfo.getSDKVersion() + "\r\n" + getString(R.string.mobile_type) + ": ," + memoryInfo.getPhoneType() + "\r\n" + "UID"
+					+ ": ," + uid + "\r\n" + START_TIME);
+			bw.write(getString(R.string.timestamp) + "," + getString(R.string.used_mem_PSS) + "," + getString(R.string.used_mem_ratio) + ","
+					+ getString(R.string.mobile_free_mem) + "," + getString(R.string.app_used_cpu_ratio) + ","
+					+ getString(R.string.total_used_cpu_ratio) + multiCpuTitle + "," + getString(R.string.traffic) + ","
+					+ getString(R.string.battery) + "," + getString(R.string.current) + "," + getString(R.string.temperature) + ","
+					+ getString(R.string.voltage) + "\r\n");
 		} catch (IOException e) {
 			Log.e(LOG_TAG, e.getMessage());
 		}
@@ -310,12 +322,10 @@ public class EmmageeService extends Service {
 					startY = y;
 					mTouchStartX = event.getX();
 					mTouchStartY = event.getY();
-					Log.d("startP", "startX" + mTouchStartX + "====startY" + mTouchStartY);
 					break;
 				case MotionEvent.ACTION_MOVE:
 					updateViewPosition();
 					break;
-
 				case MotionEvent.ACTION_UP:
 					updateViewPosition();
 					// showImg();
@@ -332,33 +342,21 @@ public class EmmageeService extends Service {
 				try {
 					btnWifi = (Button) viFloatingWindow.findViewById(R.id.wifi);
 					String buttonText = (String) btnWifi.getText();
-					String wifiText = getResources().getString(R.string.openwifi);
+					String wifiText = getResources().getString(R.string.open_wifi);
 					if (buttonText.equals(wifiText)) {
 						wifiManager.setWifiEnabled(true);
-						btnWifi.setText(R.string.closewifi);
+						btnWifi.setText(R.string.close_wifi);
 					} else {
 						wifiManager.setWifiEnabled(false);
-						btnWifi.setText(R.string.openwifi);
+						btnWifi.setText(R.string.open_wifi);
 					}
 				} catch (Exception e) {
-					Toast.makeText(viFloatingWindow.getContext(), "操作wifi失败", Toast.LENGTH_LONG).show();
+					Toast.makeText(viFloatingWindow.getContext(), getString(R.string.wifi_fail_toast), Toast.LENGTH_LONG).show();
 					Log.e(LOG_TAG, e.toString());
 				}
 			}
 		});
 	}
-
-	// /**
-	// * show the image.
-	// */
-	// private void showImg() {
-	// if (Math.abs(x - startX) < 1.5 && Math.abs(y - startY) < 1.5 &&
-	// !btnStop.isShown()) {
-	// btnStop.setVisibility(View.VISIBLE);
-	// } else if (btnStop.isShown()) {
-	// btnStop.setVisibility(View.GONE);
-	// }
-	// }
 
 	private Runnable task = new Runnable() {
 
@@ -374,7 +372,7 @@ public class EmmageeService extends Service {
 			} else {
 				Intent intent = new Intent();
 				intent.putExtra("isServiceStop", true);
-				intent.setAction("com.netease.action.emmageeService");
+				intent.setAction(SERVICE_ACTION);
 				sendBroadcast(intent);
 				stopSelf();
 			}
@@ -400,21 +398,18 @@ public class EmmageeService extends Service {
 				strBuilder.append(line);
 				strBuilder.append("\r\n");
 				String regex = ".*Displayed.*" + startActivity + ".*\\+(.*)ms.*";
-				Log.d("my logs", regex);
 				if (line.matches(regex)) {
 					Log.w("my logs", line);
 					if (line.contains("total")) {
 						line = line.substring(0, line.indexOf("total"));
 					}
 					startTime = line.substring(line.lastIndexOf("+") + 1, line.lastIndexOf("ms") + 2);
-					Toast.makeText(EmmageeService.this, "启动时间：" + startTime, Toast.LENGTH_LONG).show();
+					Toast.makeText(EmmageeService.this, getString(R.string.start_time) + startTime, Toast.LENGTH_LONG).show();
 					isGetStartTime = false;
 					break;
 				}
 			}
 			getStartTimeCount++;
-			// Log.w("my logs", "Start Time Log：" + strBuilder.toString());
-			Log.w(LOG_TAG, "getStartCount：" + getStartTimeCount);
 		} catch (IOException e) {
 			Log.d(LOG_TAG, e.getMessage());
 		}
@@ -434,21 +429,17 @@ public class EmmageeService extends Service {
 		String processMemory = fomart.format((double) pidMemory / 1024);
 		String currentBatt = String.valueOf(currentInfo.getCurrentValue());
 		// 异常数据过滤
-		Log.d("my logs-before", currentBatt);
 		try {
 			if (Math.abs(Double.parseDouble(currentBatt)) >= 500) {
 				currentBatt = "N/A";
-			} else {
-				currentBatt = currentBatt + "mA";
 			}
 		} catch (Exception e) {
 			currentBatt = "N/A";
 		}
-		Log.d("my logs-after", currentBatt);
 		ArrayList<String> processInfo = cpuInfo.getCpuRatioInfo(totalBatt, currentBatt, temperature, voltage);
 		if (isFloating) {
-			String processCpuRatio = "0";
-			String totalCpuRatio = "0";
+			String processCpuRatio = "0.00";
+			String totalCpuRatio = "0.00";
 			String trafficSize = "0";
 			int tempTraffic = 0;
 			double trafficMb = 0;
@@ -466,18 +457,18 @@ public class EmmageeService extends Service {
 				}
 				// 如果cpu使用率存在且都不小于0，则输出
 				if (processCpuRatio != null && totalCpuRatio != null) {
-					txtUnusedMem.setText("应用/剩余内存:" + processMemory + "/" + freeMemoryKb + "MB");
-					txtTotalMem.setText("应用/总体CPU:" + processCpuRatio + "%/" + totalCpuRatio + "%");
-					String batt = "电流:" + currentBatt;
+					txtUnusedMem.setText(getString(R.string.process_free_mem) + processMemory + "/" + freeMemoryKb + "MB");
+					txtTotalMem.setText(getString(R.string.process_overall_cpu) + processCpuRatio + "%/" + totalCpuRatio + "%");
+					String batt = getString(R.string.current) + currentBatt;
 					if ("-1".equals(trafficSize)) {
-						txtTraffic.setText(batt + ",流量:N/A");
+						txtTraffic.setText(batt + "," + getString(R.string.traffic) + "N/A");
 					} else if (isMb)
-						txtTraffic.setText(batt + ",流量:" + fomart.format(trafficMb) + "MB");
+						txtTraffic.setText(batt + "," + getString(R.string.traffic) + fomart.format(trafficMb) + "MB");
 					else
-						txtTraffic.setText(batt + ",流量:" + trafficSize + "KB");
+						txtTraffic.setText(batt + "," + getString(R.string.traffic) + trafficSize + "KB");
 				}
 				// 当内存为0切cpu使用率为0时则是被测应用退出
-				if ("0".equals(processMemory) && "0.00".equals(processCpuRatio)) {
+				if ("0".equals(processMemory)) {
 					closeOpenedStream();
 					isServiceStop = true;
 					return;
@@ -499,12 +490,11 @@ public class EmmageeService extends Service {
 	/**
 	 * close all opened stream.
 	 */
-	public static void closeOpenedStream() {
+	public void closeOpenedStream() {
 		try {
 			if (bw != null) {
-				bw.write("注释:已知部分不支持的机型可在此查阅:https://github.com/NetEase/Emmagee/wiki/Some-devices-are-not-supported \r\n");
-				bw.write("电流:小于0是放电大于0是充电\r\n启动时间:为空是应用已启动或者未搜集到启动时间\r\n");
-				bw.write("N/A表示不支持或者数据异常\r\n");
+				bw.write(getString(R.string.comment1) + "\r\n" + getString(R.string.comment2) + "\r\n" + getString(R.string.comment3) + "\r\n"
+						+ getString(R.string.comment4) + "\r\n");
 				bw.close();
 			}
 			if (osw != null)
@@ -518,14 +508,14 @@ public class EmmageeService extends Service {
 
 	@Override
 	public void onDestroy() {
-		Log.i(LOG_TAG, "onDestroy");
+		Log.i(LOG_TAG, "service onDestroy");
 		if (windowManager != null)
 			windowManager.removeView(viFloatingWindow);
 		handler.removeCallbacks(task);
 		closeOpenedStream();
 		// replace the start time in file
 		if (!"".equals(startTime)) {
-			replaceFileString(resultFilePath, START_TIME, "启动时间:" + startTime + "\r\n");
+			replaceFileString(resultFilePath, START_TIME, getString(R.string.start_time) + startTime + "\r\n");
 		} else {
 			replaceFileString(resultFilePath, START_TIME, "");
 		}
@@ -539,9 +529,9 @@ public class EmmageeService extends Service {
 			isSendSuccessfully = false;
 		}
 		if (isSendSuccessfully) {
-			Toast.makeText(this, "测试结果报表已发送至邮箱:" + recipients, Toast.LENGTH_LONG).show();
+			Toast.makeText(this, getString(R.string.send_success_toast) + recipients, Toast.LENGTH_LONG).show();
 		} else {
-			Toast.makeText(this, "测试结果未成功发送至邮箱，结果保存在:" + EmmageeService.resultFilePath, Toast.LENGTH_LONG).show();
+			Toast.makeText(this, getString(R.string.send_fail_toast) + EmmageeService.resultFilePath, Toast.LENGTH_LONG).show();
 		}
 		super.onDestroy();
 		stopForeground(true);
