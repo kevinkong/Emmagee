@@ -1,5 +1,6 @@
 package com.netease.qa.emmagee.utils;
 
+import java.io.File;
 import java.util.Date;
 import java.util.Properties;
 
@@ -69,32 +70,30 @@ public class MailSender {
 				// 设置邮件消息的发送者
 				mailMessage.setFrom(from);
 				// 创建邮件的接收者地址，并设置到邮件消息中
-				Address[] tos = null;
-
-				tos = new InternetAddress[maillists.length];
 				for (int i = 0; i < maillists.length; i++) {
-					tos[i] = new InternetAddress(maillists[i]);
+				    // Message.RecipientType.TO属性表示接收者的类型为TO
+					mailMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(maillists[i]));
 				}
 
-				// Message.RecipientType.TO属性表示接收者的类型为TO
-				mailMessage.setRecipients(Message.RecipientType.TO, tos);
 				// 设置邮件消息的主题
 				mailMessage.setSubject(subject);
 				// 设置邮件消息发送的时间
 				mailMessage.setSentDate(new Date());
 
+				Multipart multipart = new MimeMultipart();
 				BodyPart bodyPart = new MimeBodyPart();
 				bodyPart.setText(content);
-
-				MimeBodyPart attachPart = new MimeBodyPart();
-				DataSource source = new FileDataSource(file);
-				attachPart.setDataHandler(new DataHandler(source));
-				attachPart.setFileName(file);
-
-				Multipart multipart = new MimeMultipart();
 				multipart.addBodyPart(bodyPart);
-				multipart.addBodyPart(attachPart);
 
+				File attach = new File(file);
+				if(attach.exists()){
+				    MimeBodyPart attachPart = new MimeBodyPart();
+    				DataSource source = new FileDataSource(attach);
+    				attachPart.setDataHandler(new DataHandler(source));
+    				attachPart.setFileName(attach.getName());
+    
+    				multipart.addBodyPart(attachPart);
+				}
 				mailMessage.setContent(multipart);
 				MailcapCommandMap mc = (MailcapCommandMap) CommandMap
 						.getDefaultCommandMap();

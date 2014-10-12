@@ -19,7 +19,6 @@ package com.netease.qa.emmagee.service;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -30,7 +29,6 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Properties;
 
 import android.app.Activity;
 import android.app.PendingIntent;
@@ -40,6 +38,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.wifi.WifiManager;
 import android.os.BatteryManager;
 import android.os.Build;
@@ -66,6 +65,7 @@ import com.netease.qa.emmagee.utils.EncryptData;
 import com.netease.qa.emmagee.utils.MailSender;
 import com.netease.qa.emmagee.utils.MemoryInfo;
 import com.netease.qa.emmagee.utils.MyApplication;
+import com.netease.qa.emmagee.utils.Settings;
 
 /**
  * Service running in background
@@ -96,9 +96,8 @@ public class EmmageeService extends Service {
 	private WifiManager wifiManager;
 	private Handler handler = new Handler();
 	private CpuInfo cpuInfo;
-	private String time;
 	private boolean isFloating;
-	private String processName, packageName, settingTempFile, startActivity;
+	private String processName, packageName, startActivity;
 	private int pid, uid;
 	private boolean isServiceStop = false;
 	private String sender, password, recipients, smtp;
@@ -168,7 +167,7 @@ public class EmmageeService extends Service {
 	}
 
 	@Override
-	public void onStart(Intent intent, int startId) {
+	public int onStartCommand(Intent intent, int flags, int startId) {
 		Log.i(LOG_TAG, "service onStart");
 		PendingIntent contentIntent = PendingIntent.getActivity(getBaseContext(), 0, new Intent(this, MainPageActivity.class), 0);
 		NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
@@ -180,12 +179,10 @@ public class EmmageeService extends Service {
 		uid = intent.getExtras().getInt("uid");
 		processName = intent.getExtras().getString("processName");
 		packageName = intent.getExtras().getString("packageName");
-		settingTempFile = intent.getExtras().getString("settingTempFile");
 		startActivity = intent.getExtras().getString("startActivity");
 
 		cpuInfo = new CpuInfo(getBaseContext(), pid, Integer.toString(uid));
-		readSettingInfo(intent);
-		delaytime = Integer.parseInt(time) * 1000;
+		readSettingInfo();
 		if (isFloating) {
 			viFloatingWindow = LayoutInflater.from(this).inflate(R.layout.floating, null);
 			txtUnusedMem = (TextView) viFloatingWindow.findViewById(R.id.memunused);
@@ -218,6 +215,7 @@ public class EmmageeService extends Service {
 		}
 		createResultCsv();
 		handler.postDelayed(task, 1000);
+		return START_NOT_STICKY;
 	}
 
 	/**
@@ -225,23 +223,16 @@ public class EmmageeService extends Service {
 	 * 
 	 * @throws IOException
 	 */
-	private void readSettingInfo(Intent intent) {
-		try {
-			Properties properties = new Properties();
-			properties.load(new FileInputStream(settingTempFile));
-			String interval = (null == properties.getProperty("interval")) ? "" : properties.getProperty("interval").trim();
-			isFloating = "true".equals((null == properties.getProperty("isfloat")) ? "" : properties.getProperty("isfloat").trim()) ? true : false;
-			sender = (null == properties.getProperty("sender")) ? "" : properties.getProperty("sender").trim();
-			password = (null == properties.getProperty("password")) ? "" : properties.getProperty("password").trim();
-			recipients = (null == properties.getProperty("recipients")) ? "" : properties.getProperty("recipients").trim();
-			time = "".equals(interval) ? "5" : interval;
-			receivers = recipients.split("\\s+");
-			smtp = properties.getProperty("smtp");
-		} catch (IOException e) {
-			time = "5";
-			isFloating = true;
-			Log.e(LOG_TAG, e.getMessage());
-		}
+	private void readSettingInfo() {
+	    SharedPreferences preferences = Settings.getDefaultSharedPreferences(getApplicationContext());
+        int interval = preferences.getInt(Settings.KEY_INTERVAL, 5);
+        delaytime = interval * 1000;
+        isFloating = preferences.getBoolean(Settings.KEY_ISFLOAT, true);
+        sender = preferences.getString(Settings.KEY_SENDER, "");
+        password = preferences.getString(Settings.KEY_PASSWORD, "");
+        recipients = preferences.getString(Settings.KEY_RECIPIENTS, "");
+        receivers = recipients.split("\\s+");
+        smtp = preferences.getString(Settings.KEY_SMTP, "");
 	}
 
 	/**
@@ -282,7 +273,11 @@ public class EmmageeService extends Service {
 					+ "\r\n" + getString(R.string.process_pid) + ": ," + pid + "\r\n" + getString(R.string.mem_size) + "： ," + totalMemory + "MB\r\n"
 					+ getString(R.string.cpu_type) + ": ," + cpuInfo.getCpuName() + "\r\n" + getString(R.string.android_system_version) + ": ,"
 					+ memoryInfo.getSDKVersion() + "\r\n" + getString(R.string.mobile_type) + ": ," + memoryInfo.getPhoneType() + "\r\n" + "UID"
-					+ ": ," + uid + "\r\n" + START_TIME);
+					+ ": ," + uid + "\r\n");
+			
+			if(isGrantedReadLogsPermission()){
+			    bw.write(START_TIME);
+			}
 			bw.write(getString(R.string.timestamp) + "," + getString(R.string.used_mem_PSS) + "," + getString(R.string.used_mem_ratio) + ","
 					+ getString(R.string.mobile_free_mem) + "," + getString(R.string.app_used_cpu_ratio) + ","
 					+ getString(R.string.total_used_cpu_ratio) + multiCpuTitle + "," + getString(R.string.traffic) + ","
@@ -414,6 +409,14 @@ public class EmmageeService extends Service {
 			Log.d(LOG_TAG, e.getMessage());
 		}
 	}
+	/**
+	 * Above JellyBean, we cannot grant READ_LOGS permission...
+	 * @return
+	 */
+    private boolean isGrantedReadLogsPermission() {
+        int permissionState = getPackageManager().checkPermission(android.Manifest.permission.READ_LOGS, getPackageName());
+        return permissionState == PackageManager.PERMISSION_GRANTED;
+    }
 
 	/**
 	 * refresh the performance data showing in floating window.
@@ -514,11 +517,13 @@ public class EmmageeService extends Service {
 		handler.removeCallbacks(task);
 		closeOpenedStream();
 		// replace the start time in file
-		if (!"".equals(startTime)) {
-			replaceFileString(resultFilePath, START_TIME, getString(R.string.start_time) + startTime + "\r\n");
-		} else {
-			replaceFileString(resultFilePath, START_TIME, "");
-		}
+        if(isGrantedReadLogsPermission()){
+    		if (!"".equals(startTime)) {
+    			replaceFileString(resultFilePath, START_TIME, getString(R.string.start_time) + startTime + "\r\n");
+    		} else {
+    			replaceFileString(resultFilePath, START_TIME, "");
+    		}
+        }
 		isStop = true;
 		unregisterReceiver(batteryBroadcast);
 		boolean isSendSuccessfully = false;

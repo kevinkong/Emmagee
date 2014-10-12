@@ -16,13 +16,9 @@
  */
 package com.netease.qa.emmagee.activity;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.util.Properties;
-
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -37,7 +33,7 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
 import com.netease.qa.emmagee.R;
-import com.netease.qa.emmagee.utils.EncryptData;
+import com.netease.qa.emmagee.utils.Settings;
 
 /**
  * Setting Page of Emmagee
@@ -46,14 +42,14 @@ import com.netease.qa.emmagee.utils.EncryptData;
  */
 public class SettingsActivity extends Activity {
 
-	private static final String LOG_TAG = "Emmagee-" + SettingsActivity.class.getSimpleName();
+    private static final String LOG_TAG = "Emmagee-" + SettingsActivity.class.getSimpleName();
 
 	private CheckBox chkFloat;
 	private TextView tvTime;
-	private String time;
-	private String settingTempFile;
 	private LinearLayout about;
 	private LinearLayout mailSettings;
+
+    private SharedPreferences preferences;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -61,11 +57,6 @@ public class SettingsActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.settings);
-
-		Properties properties = new Properties();
-		final EncryptData des = new EncryptData("emmagee");
-		Intent intent = this.getIntent();
-		settingTempFile = getBaseContext().getFilesDir().getPath() + "\\EmmageeSettings.properties";
 
 		chkFloat = (CheckBox) findViewById(R.id.floating);
 		tvTime = (TextView) findViewById(R.id.time);
@@ -77,25 +68,16 @@ public class SettingsActivity extends Activity {
 		RelativeLayout floatingItem = (RelativeLayout) findViewById(R.id.floating_item);
 		LinearLayout layGoBack = (LinearLayout) findViewById(R.id.lay_go_back);
 
-		boolean floatingTag = true;
 
 		btnSave.setVisibility(ImageView.INVISIBLE);
-		try {
-			properties.load(new FileInputStream(settingTempFile));
-			String interval = (null == properties.getProperty("interval")) ? "" : properties.getProperty("interval").trim();
-			String isfloat = (null == properties.getProperty("isfloat")) ? "" : properties.getProperty("isfloat").trim();
-			time = "".equals(interval) ? "5" : interval;
-			floatingTag = "false".equals(isfloat) ? false : true;
-		} catch (FileNotFoundException e) {
-			Log.e(LOG_TAG, "FileNotFoundException: " + e.getMessage());
-			e.printStackTrace();
-		} catch (Exception e) {
-			Log.e(LOG_TAG, "Exception: " + e.getMessage());
-			e.printStackTrace();
-		}
-		tvTime.setText(time);
-		chkFloat.setChecked(floatingTag);
-		timeBar.setProgress(Integer.parseInt(time));
+		preferences = Settings.getDefaultSharedPreferences(getApplicationContext());
+		int interval = preferences.getInt(Settings.KEY_INTERVAL, 5);
+		boolean isfloat = preferences.getBoolean(Settings.KEY_ISFLOAT, true);
+		
+		
+		tvTime.setText(String.valueOf(interval));
+		chkFloat.setChecked(isfloat);
+		timeBar.setProgress(interval);
 		timeBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
 			@Override
 			public void onProgressChanged(SeekBar arg0, int arg1, boolean arg2) {
@@ -108,18 +90,9 @@ public class SettingsActivity extends Activity {
 
 			@Override
 			public void onStopTrackingTouch(SeekBar arg0) {
-				// when tracking stoped, update properties file
+				// when tracking stoped, update preferences
 				int interval = arg0.getProgress() + 1;
-				try {
-					Properties properties = new Properties();
-					properties.load(new FileInputStream(settingTempFile));
-					properties.setProperty("interval", Integer.toString(interval));
-					FileOutputStream fos = new FileOutputStream(settingTempFile);
-					properties.store(fos, "Setting Data");
-					fos.close();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+				preferences.edit().putInt(Settings.KEY_INTERVAL, interval).commit();
 			}
 		});
 
@@ -154,18 +127,8 @@ public class SettingsActivity extends Activity {
 		floatingItem.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
-				try {
-					chkFloat.setChecked(!chkFloat.isChecked());
-					Properties properties = new Properties();
-					properties.load(new FileInputStream(settingTempFile));
-					properties.setProperty("isfloat", chkFloat.isChecked() ? "true" : "false");
-					FileOutputStream fos = new FileOutputStream(settingTempFile);
-					properties.store(fos, "Setting Data");
-					fos.close();
-				} catch (Exception e) {
-					e.printStackTrace();
-					chkFloat.setChecked(chkFloat.isChecked() ? false : true);
-				}
+			    chkFloat.setChecked(!chkFloat.isChecked());
+			    preferences.edit().putBoolean(Settings.KEY_ISFLOAT, chkFloat.isChecked()).commit();
 			}
 		});
 	}
@@ -178,22 +141,6 @@ public class SettingsActivity extends Activity {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-	}
-
-	/**
-	 * is input a number.
-	 * 
-	 * @param inputStr
-	 *            input string
-	 * @return true is numeric
-	 */
-	private boolean isNumeric(String inputStr) {
-		for (int i = inputStr.length(); --i >= 0;) {
-			if (!Character.isDigit(inputStr.charAt(i))) {
-				return false;
-			}
-		}
-		return true;
 	}
 
 }
