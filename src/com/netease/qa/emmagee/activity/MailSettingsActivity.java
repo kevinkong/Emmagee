@@ -16,17 +16,15 @@
  */
 package com.netease.qa.emmagee.activity;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -39,6 +37,7 @@ import android.widget.Toast;
 
 import com.netease.qa.emmagee.R;
 import com.netease.qa.emmagee.utils.EncryptData;
+import com.netease.qa.emmagee.utils.Settings;
 
 /**
  * Mail Setting Page of Emmagee
@@ -56,7 +55,6 @@ public class MailSettingsActivity extends Activity {
 	private EditText edtSmtp;
 	private String sender;
 	private String prePassword, curPassword;
-	private String settingTempFile;
 	private String recipients, smtp;
 	private String[] receivers;
 	private TextView title;
@@ -69,42 +67,22 @@ public class MailSettingsActivity extends Activity {
 		setContentView(R.layout.mail_settings);
 
 		final EncryptData des = new EncryptData("emmagee");
-		Intent intent = this.getIntent();
-		settingTempFile = getBaseContext().getFilesDir().getPath()
-				+ "\\EmmageeSettings.properties";
-		;
 
 		edtSender = (EditText) findViewById(R.id.sender);
 		edtPassword = (EditText) findViewById(R.id.password);
 		edtRecipients = (EditText) findViewById(R.id.recipients);
 		edtSmtp = (EditText) findViewById(R.id.smtp);
 		title = (TextView)findViewById(R.id.nb_title);
-		ImageView btnSave = (ImageView) findViewById(R.id.btn_set);
 		LinearLayout layGoBack = (LinearLayout) findViewById(R.id.lay_go_back);
 		LinearLayout layBtnSet = (LinearLayout) findViewById(R.id.lay_btn_set);
 		
-		boolean floatingTag = true;
-		
 		title.setText(R.string.mail_settings);
-
-		try {
-			Properties properties = new Properties();
-			properties.load(new FileInputStream(settingTempFile));
-			sender = (null == properties.getProperty("sender")) ? ""
-					: properties.getProperty("sender").trim();
-			prePassword = (null == properties.getProperty("password")) ? ""
-					: properties.getProperty("password").trim();
-			recipients = (null == properties.getProperty("recipients")) ? ""
-					: properties.getProperty("recipients").trim();
-			smtp = (null == properties.getProperty("smtp")) ? "" : properties
-					.getProperty("smtp").trim();
-		} catch (FileNotFoundException e) {
-			Log.e(LOG_TAG, "FileNotFoundException: " + e.getMessage());
-			e.printStackTrace();
-		} catch (IOException e) {
-			Log.e(LOG_TAG, "IOException: " + e.getMessage());
-			e.printStackTrace();
-		}
+		
+		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+		sender = preferences.getString(Settings.KEY_SENDER, "");
+		prePassword = preferences.getString(Settings.KEY_PASSWORD, "");
+		recipients = preferences.getString(Settings.KEY_RECIPIENTS, "");
+		smtp = preferences.getString(Settings.KEY_SMTP, "");
 
 		edtRecipients.setText(recipients);
 		edtSender.setText(sender);
@@ -144,35 +122,23 @@ public class MailSettingsActivity extends Activity {
 							getString(R.string.info_incomplete_toast), Toast.LENGTH_LONG).show();
 					return;
 				}
+				SharedPreferences preferences = Settings.getDefaultSharedPreferences(getApplicationContext());
+				Editor editor = preferences.edit();
+				editor.putString(Settings.KEY_SENDER, sender);
+				
 				try {
-					Properties properties = new Properties();
-					properties.load(new FileInputStream(settingTempFile)); 
-					properties.setProperty("sender", sender);
-					Log.d(LOG_TAG, "sender=" + sender);
-					try {
-						properties.setProperty(
-								"password",
-								curPassword.equals(prePassword) ? curPassword
-										: ("".equals(curPassword) ? "" : des
-												.encrypt(curPassword)));
-					} catch (Exception e) {
-						properties.setProperty("password", "");
-					}
-					properties.setProperty("recipients", recipients);
-					properties.setProperty("smtp", smtp);
-					FileOutputStream fos = new FileOutputStream(settingTempFile);
-					properties.store(fos, "Setting Data");
-					fos.close();
-					Toast.makeText(MailSettingsActivity.this, getString(R.string.save_success_toast),
-							Toast.LENGTH_LONG).show();
-					Intent intent = new Intent();
-					setResult(Activity.RESULT_FIRST_USER, intent);
-					MailSettingsActivity.this.finish();
-				} catch (FileNotFoundException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+                    editor.putString(Settings.KEY_PASSWORD, curPassword.equals(prePassword) ? curPassword : des.encrypt(curPassword));
+                } catch (Exception e) {
+                    editor.putString(Settings.KEY_PASSWORD, curPassword);
+                }
+				editor.putString(Settings.KEY_RECIPIENTS, recipients);
+				editor.putString(Settings.KEY_SMTP, smtp);
+				editor.commit();
+				Toast.makeText(MailSettingsActivity.this, getString(R.string.save_success_toast),
+				        Toast.LENGTH_LONG).show();
+				Intent intent = new Intent();
+				setResult(Activity.RESULT_FIRST_USER, intent);
+				MailSettingsActivity.this.finish();
 			}
 		});
 	}

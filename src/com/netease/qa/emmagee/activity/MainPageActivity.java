@@ -36,12 +36,6 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.*;
 import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.RadioButton;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.netease.qa.emmagee.service.EmmageeService;
 import com.netease.qa.emmagee.utils.ProcessInfo;
@@ -64,9 +58,7 @@ public class MainPageActivity extends Activity {
 	private Intent monitorService;
 	private ListView lstViProgramme;
 	private Button btnTest;
-	private boolean isRadioChecked = false;
 	private int pid, uid;
-	private String processName, packageName, settingTempFile;
 	private boolean isServiceStop = false;
 	private UpdateReceiver receiver;
 
@@ -83,8 +75,6 @@ public class MainPageActivity extends Activity {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.mainpage);
 		initTitleLayout();
-		createNewFile();
-
 		processInfo = new ProcessInfo();
 		btnTest.setOnClickListener(new OnClickListener() {
 			@Override
@@ -92,7 +82,10 @@ public class MainPageActivity extends Activity {
 				monitorService = new Intent();
 				monitorService.setClass(MainPageActivity.this, EmmageeService.class);
 				if (getString(R.string.start_test).equals(btnTest.getText().toString())) {
-					if (isRadioChecked) {
+				    ListAdapter adapter = (ListAdapter) lstViProgramme.getAdapter();
+					if (adapter.checkedProg != null) {
+					    String packageName = adapter.checkedProg.getPackageName();
+					    String processName = adapter.checkedProg.getProcessName();
 						Intent intent = getPackageManager().getLaunchIntentForPackage(packageName);
 						String startActivity = "";
 						Log.d(LOG_TAG, packageName);
@@ -114,9 +107,9 @@ public class MainPageActivity extends Activity {
 						monitorService.putExtra("pid", pid);
 						monitorService.putExtra("uid", uid);
 						monitorService.putExtra("packageName", packageName);
-						monitorService.putExtra("settingTempFile", settingTempFile);
 						monitorService.putExtra("startActivity", startActivity);
 						startService(monitorService);
+						isServiceStop = false;
 						btnTest.setText(getString(R.string.stop_test));
 					} else {
 						Toast.makeText(MainPageActivity.this, getString(R.string.choose_app_toast), Toast.LENGTH_LONG).show();
@@ -147,6 +140,10 @@ public class MainPageActivity extends Activity {
 				goToSettingsActivity();
 			}
 		});
+		receiver = new UpdateReceiver();
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("com.netease.action.emmageeService");
+        registerReceiver(receiver, filter);
 	}
 
 	private void initTitleLayout() {
@@ -177,10 +174,6 @@ public class MainPageActivity extends Activity {
 	@Override
 	protected void onStart() {
 		Log.d(LOG_TAG, "onStart");
-		receiver = new UpdateReceiver();
-		IntentFilter filter = new IntentFilter();
-		filter.addAction("com.netease.action.emmageeService");
-		this.registerReceiver(receiver, filter);
 		super.onStart();
 	}
 
@@ -188,37 +181,11 @@ public class MainPageActivity extends Activity {
 	public void onResume() {
 		super.onResume();
 		Log.d(LOG_TAG, "onResume");
-		if (EmmageeService.isStop) {
+		if (isServiceStop) {
 			btnTest.setText(getString(R.string.start_test));
 		}
 	}
 
-	/**
-	 * create new file to reserve setting data.
-	 */
-	private void createNewFile() {
-		Log.i(LOG_TAG, "create new file to save setting data");
-		settingTempFile = getBaseContext().getFilesDir().getPath() + "\\EmmageeSettings.properties";
-		Log.i(LOG_TAG, "settingFile = " + settingTempFile);
-		File settingFile = new File(settingTempFile);
-		if (!settingFile.exists()) {
-			try {
-				settingFile.createNewFile();
-				Properties properties = new Properties();
-				properties.setProperty("interval", "5");
-				properties.setProperty("isfloat", "true");
-				properties.setProperty("sender", "");
-				properties.setProperty("password", "");
-				properties.setProperty("recipients", "");
-				properties.setProperty("smtp", "");
-				FileOutputStream fos = new FileOutputStream(settingTempFile);
-				properties.store(fos, "Setting Data");
-				fos.close();
-			} catch (IOException e) {
-				Log.d(LOG_TAG, "create new file exception :" + e.getMessage());
-			}
-		}
-	}
 
 	/**
 	 * wait for test application started.
@@ -277,7 +244,6 @@ public class MainPageActivity extends Activity {
 	private void goToSettingsActivity() {
 		Intent intent = new Intent();
 		intent.setClass(MainPageActivity.this, SettingsActivity.class);
-		intent.putExtra("settingTempFile", settingTempFile);
 		startActivityForResult(intent, Activity.RESULT_FIRST_USER);
 	}
 
@@ -287,32 +253,22 @@ public class MainPageActivity extends Activity {
 	 * @author andrewleo
 	 */
 	private class ListAdapter extends BaseAdapter {
-		List<Programe> programe;
-		int tempPosition = -1;
-
-		/**
-		 * save status of all installed processes
-		 * 
-		 * @author andrewleo
-		 */
-		class Viewholder {
-			TextView txtAppName;
-			ImageView imgViAppIcon;
-			RadioButton rdoBtnApp;
-		}
+		List<Programe> programes;
+		Programe checkedProg;
+		int lastCheckedPosition = -1;
 
 		public ListAdapter() {
-			programe = processInfo.getRunningProcess(getBaseContext());
+			programes = processInfo.getRunningProcess(getBaseContext());
 		}
 
 		@Override
 		public int getCount() {
-			return programe.size();
+			return programes.size();
 		}
 
 		@Override
 		public Object getItem(int position) {
-			return programe.get(position);
+			return programes.get(position);
 		}
 
 		@Override
@@ -322,60 +278,61 @@ public class MainPageActivity extends Activity {
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
-			Programe pr = (Programe) programe.get(position);
-			Viewholder holder = new Viewholder();
-			final int i = position;
-			convertView = MainPageActivity.this.getLayoutInflater().inflate(R.layout.list_item, null);
-
-			holder.imgViAppIcon = (ImageView) convertView.findViewById(R.id.image);
+			Programe pr = (Programe) programes.get(position);
+			if(convertView == null)
+			    convertView = getLayoutInflater().inflate(R.layout.list_item, parent, false);
+			Viewholder holder = (Viewholder) convertView.getTag();
+			if(holder == null){
+			    holder = new Viewholder();
+			    convertView.setTag(holder);
+			    holder.imgViAppIcon = (ImageView) convertView.findViewById(R.id.image);
+			    holder.txtAppName = (TextView) convertView.findViewById(R.id.text);
+			    holder.rdoBtnApp = (RadioButton) convertView.findViewById(R.id.rb);
+			    holder.rdoBtnApp.setFocusable(false);
+			    holder.rdoBtnApp.setOnCheckedChangeListener(checkedChangeListener);
+			}
+			
 			holder.imgViAppIcon.setImageDrawable(pr.getIcon());
 
-			holder.txtAppName = (TextView) convertView.findViewById(R.id.text);
 			holder.txtAppName.setText(pr.getProcessName());
 
-			holder.rdoBtnApp = (RadioButton) convertView.findViewById(R.id.rb);
-			holder.rdoBtnApp.setFocusable(false);
 			holder.rdoBtnApp.setId(position);
-			holder.rdoBtnApp.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-				@Override
-				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-					if (isChecked) {
-						isRadioChecked = true;
-						// Radio function
-						if (tempPosition != -1) {
-							RadioButton tempButton = (RadioButton) findViewById(tempPosition);
-							if ((tempButton != null) && (tempPosition != i)) {
-								tempButton.setChecked(false);
-							}
-						}
-
-						tempPosition = buttonView.getId();
-						packageName = programe.get(tempPosition).getPackageName();
-						processName = programe.get(tempPosition).getProcessName();
-					}
-				}
-			});
-			if (tempPosition == position) {
-				if (!holder.rdoBtnApp.isChecked())
-					holder.rdoBtnApp.setChecked(true);
-			}
-
+            holder.rdoBtnApp.setChecked(checkedProg != null && getItem(position) == checkedProg);
 			return convertView;
 		}
+		
+		
+		OnCheckedChangeListener checkedChangeListener = new OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    final int checkedPosition = buttonView.getId();
+                    if (lastCheckedPosition != -1) {
+                        RadioButton tempButton = (RadioButton) findViewById(lastCheckedPosition);
+                        if ((tempButton != null) && (lastCheckedPosition != checkedPosition)) {
+                            tempButton.setChecked(false);
+                        }
+                    }
+                    checkedProg = programes.get(checkedPosition);
+                    lastCheckedPosition = checkedPosition;
+                }
+            }
+        };
 	}
-
-	@Override
-	public void finish() {
-		super.finish();
-	}
-
-	protected void onStop() {
-		unregisterReceiver(receiver);
-		super.onStop();
-	}
+	/**
+     * save status of all installed processes
+     * 
+     * @author andrewleo
+     */
+    static class Viewholder {
+        TextView txtAppName;
+        ImageView imgViAppIcon;
+        RadioButton rdoBtnApp;
+    }
 
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
+		unregisterReceiver(receiver);
 	}
 }
