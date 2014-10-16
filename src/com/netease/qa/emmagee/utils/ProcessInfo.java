@@ -23,10 +23,8 @@ import java.util.List;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningAppProcessInfo;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.util.Log;
 
 /**
@@ -68,15 +66,6 @@ public class ProcessInfo {
 					break;
 				}
 			}
-//			Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
-//			mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
-//			List<ResolveInfo> appList = pm.queryIntentActivities(mainIntent, PackageManager.MATCH_DEFAULT_ONLY);
-//			for (ResolveInfo temp : appList) {
-//				Log.d("my logs", temp.activityInfo.packageName);
-//				if (temp.activityInfo.packageName.toLowerCase().contains("uc")) {
-//					Log.v("my logs", "package and activity name = " + temp.activityInfo.packageName + "    " + temp.activityInfo.name);
-//				}
-//			}
 			programe.setPackageName(appinfo.processName);
 			programe.setProcessName(appinfo.loadLabel(pm).toString());
 			programe.setIcon(appinfo.loadIcon(pm));

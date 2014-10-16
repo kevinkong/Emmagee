@@ -26,6 +26,11 @@ public class CurrentInfo {
 	private static final String BATT_CURRENT_ADC = "/sys/class/power_supply/battery/batt_current_adc";
 	private static final String CURRENT_AVG = "/sys/class/power_supply/battery/current_avg";
 
+	/**
+	 * read system file to get current value
+	 * 
+	 * @return current value
+	 */
 	public Long getCurrentValue() {
 		File f = null;
 		Log.d(LOG_TAG, BUILD_MODEL);
@@ -88,9 +93,9 @@ public class CurrentInfo {
 	}
 
 	/**
-	 * 从smem_text文件中读取电流数据
+	 * get current value from smem_text
 	 * 
-	 * @return
+	 * @return current value
 	 */
 	public Long getSMemValue() {
 		boolean success = false;
@@ -125,11 +130,11 @@ public class CurrentInfo {
 	}
 
 	/**
-	 * 获取当前的电流值
+	 * read system file to get current value
 	 * 
 	 * @param file
-	 * @param convertToMillis
-	 * @return
+	 * @param convertToMillis 
+	 * @return current value
 	 */
 	public Long getCurrentValue(File file, boolean convertToMillis) {
 		Log.d(LOG_TAG, "*** getCurrentValue ***");

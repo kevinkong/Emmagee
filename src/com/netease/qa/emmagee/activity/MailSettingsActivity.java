@@ -30,7 +30,6 @@ import android.view.View;
 import android.view.Window;
 import android.view.View.OnClickListener;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -46,8 +45,8 @@ import com.netease.qa.emmagee.utils.Settings;
  */
 public class MailSettingsActivity extends Activity {
 
-	private static final String LOG_TAG = "Emmagee-"
-			+ MailSettingsActivity.class.getSimpleName();
+	private static final String LOG_TAG = "Emmagee-" + MailSettingsActivity.class.getSimpleName();
+	private static final String BLANK_STRING = "";
 
 	private EditText edtRecipients;
 	private EditText edtSender;
@@ -72,17 +71,17 @@ public class MailSettingsActivity extends Activity {
 		edtPassword = (EditText) findViewById(R.id.password);
 		edtRecipients = (EditText) findViewById(R.id.recipients);
 		edtSmtp = (EditText) findViewById(R.id.smtp);
-		title = (TextView)findViewById(R.id.nb_title);
+		title = (TextView) findViewById(R.id.nb_title);
 		LinearLayout layGoBack = (LinearLayout) findViewById(R.id.lay_go_back);
 		LinearLayout layBtnSet = (LinearLayout) findViewById(R.id.lay_btn_set);
-		
+
 		title.setText(R.string.mail_settings);
-		
+
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-		sender = preferences.getString(Settings.KEY_SENDER, "");
-		prePassword = preferences.getString(Settings.KEY_PASSWORD, "");
-		recipients = preferences.getString(Settings.KEY_RECIPIENTS, "");
-		smtp = preferences.getString(Settings.KEY_SMTP, "");
+		sender = preferences.getString(Settings.KEY_SENDER, BLANK_STRING);
+		prePassword = preferences.getString(Settings.KEY_PASSWORD, BLANK_STRING);
+		recipients = preferences.getString(Settings.KEY_RECIPIENTS, BLANK_STRING);
+		smtp = preferences.getString(Settings.KEY_SMTP, BLANK_STRING);
 
 		edtRecipients.setText(recipients);
 		edtSender.setText(sender);
@@ -97,9 +96,9 @@ public class MailSettingsActivity extends Activity {
 		});
 		layBtnSet.setOnClickListener(new OnClickListener() {
 			@Override
-			public void onClick(View v) {		
+			public void onClick(View v) {
 				sender = edtSender.getText().toString().trim();
-				if (!"".equals(sender) && !checkMailFormat(sender)) {
+				if (!BLANK_STRING.equals(sender) && !checkMailFormat(sender)) {
 					Toast.makeText(MailSettingsActivity.this, getString(R.string.sender_mail_toast) + getString(R.string.format_incorrect_format),
 							Toast.LENGTH_LONG).show();
 					return;
@@ -107,8 +106,7 @@ public class MailSettingsActivity extends Activity {
 				recipients = edtRecipients.getText().toString().trim();
 				receivers = recipients.split("\\s+");
 				for (int i = 0; i < receivers.length; i++) {
-					if (!"".equals(receivers[i])
-							&& !checkMailFormat(receivers[i])) {
+					if (!BLANK_STRING.equals(receivers[i]) && !checkMailFormat(receivers[i])) {
 						Toast.makeText(MailSettingsActivity.this,
 								getString(R.string.receiver_mail_toast) + "[" + receivers[i] + "]" + getString(R.string.format_incorrect_format),
 								Toast.LENGTH_LONG).show();
@@ -118,24 +116,22 @@ public class MailSettingsActivity extends Activity {
 				curPassword = edtPassword.getText().toString().trim();
 				smtp = edtSmtp.getText().toString().trim();
 				if (checkMailConfig(sender, recipients, smtp, curPassword) == -1) {
-					Toast.makeText(MailSettingsActivity.this,
-							getString(R.string.info_incomplete_toast), Toast.LENGTH_LONG).show();
+					Toast.makeText(MailSettingsActivity.this, getString(R.string.info_incomplete_toast), Toast.LENGTH_LONG).show();
 					return;
 				}
 				SharedPreferences preferences = Settings.getDefaultSharedPreferences(getApplicationContext());
 				Editor editor = preferences.edit();
 				editor.putString(Settings.KEY_SENDER, sender);
-				
+
 				try {
-                    editor.putString(Settings.KEY_PASSWORD, curPassword.equals(prePassword) ? curPassword : des.encrypt(curPassword));
-                } catch (Exception e) {
-                    editor.putString(Settings.KEY_PASSWORD, curPassword);
-                }
+					editor.putString(Settings.KEY_PASSWORD, curPassword.equals(prePassword) ? curPassword : des.encrypt(curPassword));
+				} catch (Exception e) {
+					editor.putString(Settings.KEY_PASSWORD, curPassword);
+				}
 				editor.putString(Settings.KEY_RECIPIENTS, recipients);
 				editor.putString(Settings.KEY_SMTP, smtp);
 				editor.commit();
-				Toast.makeText(MailSettingsActivity.this, getString(R.string.save_success_toast),
-				        Toast.LENGTH_LONG).show();
+				Toast.makeText(MailSettingsActivity.this, getString(R.string.save_success_toast), Toast.LENGTH_LONG).show();
 				Intent intent = new Intent();
 				setResult(Activity.RESULT_FIRST_USER, intent);
 				MailSettingsActivity.this.finish();
@@ -153,13 +149,20 @@ public class MailSettingsActivity extends Activity {
 		super.onDestroy();
 	}
 
-	private int checkMailConfig(String sender, String recipients, String smtp,
-			String curPassword) {
-		if (!"".equals(curPassword) && !"".equals(sender)
-				&& !"".equals(recipients) && !"".equals(smtp)) {
+	/**
+	 * check if mail configurations are available
+	 * 
+	 * @param sender
+	 * @param recipients
+	 * @param smtp
+	 * @param curPassword
+	 * @return true: valid configurations
+	 * 		   
+	 */
+	private int checkMailConfig(String sender, String recipients, String smtp, String curPassword) {
+		if (!BLANK_STRING.equals(curPassword) && !BLANK_STRING.equals(sender) && !BLANK_STRING.equals(recipients) && !BLANK_STRING.equals(smtp)) {
 			return 1;
-		} else if ("".equals(curPassword) && "".equals(sender)
-				&& "".equals(recipients) && "".equals(smtp)) {
+		} else if (BLANK_STRING.equals(curPassword) && BLANK_STRING.equals(sender) && BLANK_STRING.equals(recipients) && BLANK_STRING.equals(smtp)) {
 			return 0;
 		} else
 			return -1;
@@ -171,8 +174,7 @@ public class MailSettingsActivity extends Activity {
 	 * @return true: valid email address
 	 */
 	private boolean checkMailFormat(String mail) {
-		String strPattern = "^[a-zA-Z0-9][\\w\\.-]*[a-zA-Z0-9]@[a-zA-Z0-9][\\w\\.-]*"
-				+ "[a-zA-Z0-9]\\.[a-zA-Z][a-zA-Z\\.]*[a-zA-Z]$";
+		String strPattern = "^[a-zA-Z0-9][\\w\\.-]*[a-zA-Z0-9]@[a-zA-Z0-9][\\w\\.-]*" + "[a-zA-Z0-9]\\.[a-zA-Z][a-zA-Z\\.]*[a-zA-Z]$";
 		Pattern p = Pattern.compile(strPattern);
 		Matcher m = p.matcher(mail);
 		return m.matches();

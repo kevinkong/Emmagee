@@ -64,16 +64,13 @@ public class SettingsActivity extends Activity {
 		mailSettings = (LinearLayout) findViewById(R.id.mail_settings);
 		SeekBar timeBar = (SeekBar) findViewById(R.id.timeline);
 		ImageView btnSave = (ImageView) findViewById(R.id.btn_set);
-		ImageView goBack = (ImageView) findViewById(R.id.go_back);
 		RelativeLayout floatingItem = (RelativeLayout) findViewById(R.id.floating_item);
 		LinearLayout layGoBack = (LinearLayout) findViewById(R.id.lay_go_back);
-
 
 		btnSave.setVisibility(ImageView.INVISIBLE);
 		preferences = Settings.getDefaultSharedPreferences(getApplicationContext());
 		int interval = preferences.getInt(Settings.KEY_INTERVAL, 5);
 		boolean isfloat = preferences.getBoolean(Settings.KEY_ISFLOAT, true);
-		
 		
 		tvTime.setText(String.valueOf(interval));
 		chkFloat.setChecked(isfloat);

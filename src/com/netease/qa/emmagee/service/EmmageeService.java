@@ -76,13 +76,13 @@ public class EmmageeService extends Service {
 
 	private final static String LOG_TAG = "Emmagee-" + EmmageeService.class.getSimpleName();
 
+	private static final String BLANK_STRING = "";
+	
 	private WindowManager windowManager = null;
 	private WindowManager.LayoutParams wmParams = null;
 	private View viFloatingWindow;
 	private float mTouchStartX;
 	private float mTouchStartY;
-	private float startX;
-	private float startY;
 	private float x;
 	private float y;
 	private TextView txtTotalMem;
@@ -122,7 +122,7 @@ public class EmmageeService extends Service {
 	private int getStartTimeCount = 0;
 	private boolean isGetStartTime = true;
 	private String startTime = "";
-	private static final String SERVICE_ACTION = "com.netease.action.emmageeService";
+	public static final String SERVICE_ACTION = "com.netease.action.emmageeService";
 
 	@Override
 	public void onCreate() {
@@ -153,12 +153,9 @@ public class EmmageeService extends Service {
 
 			if (Intent.ACTION_BATTERY_CHANGED.equals(intent.getAction())) {
 				int level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0);
-
 				int scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
 				totalBatt = String.valueOf(level * 100 / scale);
-
 				voltage = String.valueOf(intent.getIntExtra(BatteryManager.EXTRA_VOLTAGE, -1) * 1.0 / 1000);
-
 				temperature = String.valueOf(intent.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, -1) * 1.0 / 10);
 			}
 
@@ -224,15 +221,15 @@ public class EmmageeService extends Service {
 	 * @throws IOException
 	 */
 	private void readSettingInfo() {
-	    SharedPreferences preferences = Settings.getDefaultSharedPreferences(getApplicationContext());
-        int interval = preferences.getInt(Settings.KEY_INTERVAL, 5);
-        delaytime = interval * 1000;
-        isFloating = preferences.getBoolean(Settings.KEY_ISFLOAT, true);
-        sender = preferences.getString(Settings.KEY_SENDER, "");
-        password = preferences.getString(Settings.KEY_PASSWORD, "");
-        recipients = preferences.getString(Settings.KEY_RECIPIENTS, "");
-        receivers = recipients.split("\\s+");
-        smtp = preferences.getString(Settings.KEY_SMTP, "");
+		SharedPreferences preferences = Settings.getDefaultSharedPreferences(getApplicationContext());
+		int interval = preferences.getInt(Settings.KEY_INTERVAL, 5);
+		delaytime = interval * 1000;
+		isFloating = preferences.getBoolean(Settings.KEY_ISFLOAT, true);
+		sender = preferences.getString(Settings.KEY_SENDER, BLANK_STRING);
+		password = preferences.getString(Settings.KEY_PASSWORD, BLANK_STRING);
+		recipients = preferences.getString(Settings.KEY_RECIPIENTS, BLANK_STRING);
+		receivers = recipients.split("\\s+");
+		smtp = preferences.getString(Settings.KEY_SMTP, BLANK_STRING);
 	}
 
 	/**
@@ -263,7 +260,7 @@ public class EmmageeService extends Service {
 			bw = new BufferedWriter(osw);
 			long totalMemorySize = memoryInfo.getTotalMemory();
 			String totalMemory = fomart.format((double) totalMemorySize / 1024);
-			String multiCpuTitle = "";
+			String multiCpuTitle = BLANK_STRING;
 			// titles of multiple cpu cores
 			ArrayList<String> cpuList = cpuInfo.getCpuList();
 			for (int i = 0; i < cpuList.size(); i++) {
@@ -274,9 +271,9 @@ public class EmmageeService extends Service {
 					+ getString(R.string.cpu_type) + ": ," + cpuInfo.getCpuName() + "\r\n" + getString(R.string.android_system_version) + ": ,"
 					+ memoryInfo.getSDKVersion() + "\r\n" + getString(R.string.mobile_type) + ": ," + memoryInfo.getPhoneType() + "\r\n" + "UID"
 					+ ": ," + uid + "\r\n");
-			
-			if(isGrantedReadLogsPermission()){
-			    bw.write(START_TIME);
+
+			if (isGrantedReadLogsPermission()) {
+				bw.write(START_TIME);
 			}
 			bw.write(getString(R.string.timestamp) + "," + getString(R.string.used_mem_PSS) + "," + getString(R.string.used_mem_ratio) + ","
 					+ getString(R.string.mobile_free_mem) + "," + getString(R.string.app_used_cpu_ratio) + ","
@@ -313,8 +310,6 @@ public class EmmageeService extends Service {
 				y = event.getRawY() - 25;
 				switch (event.getAction()) {
 				case MotionEvent.ACTION_DOWN:
-					startX = x;
-					startY = y;
 					mTouchStartX = event.getX();
 					mTouchStartY = event.getY();
 					break;
@@ -387,7 +382,7 @@ public class EmmageeService extends Service {
 			Process process = Runtime.getRuntime().exec(logcatCommand);
 			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 			StringBuilder strBuilder = new StringBuilder();
-			String line = "";
+			String line = BLANK_STRING;
 
 			while ((line = bufferedReader.readLine()) != null) {
 				strBuilder.append(line);
@@ -409,14 +404,16 @@ public class EmmageeService extends Service {
 			Log.d(LOG_TAG, e.getMessage());
 		}
 	}
+
 	/**
 	 * Above JellyBean, we cannot grant READ_LOGS permission...
+	 * 
 	 * @return
 	 */
-    private boolean isGrantedReadLogsPermission() {
-        int permissionState = getPackageManager().checkPermission(android.Manifest.permission.READ_LOGS, getPackageName());
-        return permissionState == PackageManager.PERMISSION_GRANTED;
-    }
+	private boolean isGrantedReadLogsPermission() {
+		int permissionState = getPackageManager().checkPermission(android.Manifest.permission.READ_LOGS, getPackageName());
+		return permissionState == PackageManager.PERMISSION_GRANTED;
+	}
 
 	/**
 	 * refresh the performance data showing in floating window.
@@ -451,7 +448,7 @@ public class EmmageeService extends Service {
 				processCpuRatio = processInfo.get(0);
 				totalCpuRatio = processInfo.get(1);
 				trafficSize = processInfo.get(2);
-				if (!("".equals(trafficSize)) && !("-1".equals(trafficSize))) {
+				if (!(BLANK_STRING.equals(trafficSize)) && !("-1".equals(trafficSize))) {
 					tempTraffic = Integer.parseInt(trafficSize);
 					if (tempTraffic > 1024) {
 						isMb = true;
@@ -517,13 +514,13 @@ public class EmmageeService extends Service {
 		handler.removeCallbacks(task);
 		closeOpenedStream();
 		// replace the start time in file
-        if(isGrantedReadLogsPermission()){
-    		if (!"".equals(startTime)) {
-    			replaceFileString(resultFilePath, START_TIME, getString(R.string.start_time) + startTime + "\r\n");
-    		} else {
-    			replaceFileString(resultFilePath, START_TIME, "");
-    		}
-        }
+		if (isGrantedReadLogsPermission()) {
+			if (!BLANK_STRING.equals(startTime)) {
+				replaceFileString(resultFilePath, START_TIME, getString(R.string.start_time) + startTime + "\r\n");
+			} else {
+				replaceFileString(resultFilePath, START_TIME, BLANK_STRING);
+			}
+		}
 		isStop = true;
 		unregisterReceiver(batteryBroadcast);
 		boolean isSendSuccessfully = false;
@@ -554,7 +551,8 @@ public class EmmageeService extends Service {
 		try {
 			File file = new File(filePath);
 			BufferedReader reader = new BufferedReader(new FileReader(file));
-			String line = "", oldtext = "";
+			String line = BLANK_STRING;
+			String oldtext = BLANK_STRING;
 			while ((line = reader.readLine()) != null) {
 				oldtext += line + "\r\n";
 			}

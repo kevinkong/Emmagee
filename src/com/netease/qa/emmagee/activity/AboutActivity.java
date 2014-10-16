@@ -17,7 +17,6 @@
 package com.netease.qa.emmagee.activity;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -42,7 +41,6 @@ public class AboutActivity extends Activity {
 			+ AboutActivity.class.getSimpleName();
 
 	private TextView appVersion;
-	private ImageView goBack;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -60,7 +58,6 @@ public class AboutActivity extends Activity {
 		ImageView btnSave = (ImageView) findViewById(R.id.btn_set);
 		btnSave.setVisibility(ImageView.INVISIBLE);
 		
-		goBack = (ImageView)findViewById(R.id.go_back);
 		LinearLayout layGoBack = (LinearLayout) findViewById(R.id.lay_go_back);
 		
 		layGoBack.setOnClickListener(new OnClickListener() {

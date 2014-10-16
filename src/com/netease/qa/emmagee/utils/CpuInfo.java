@@ -69,6 +69,8 @@ public class CpuInfo {
 	private static final String CPU_X86 = "x86";
 	private static final String CPU_INFO_PATH = "/proc/cpuinfo";
 	private static final String CPU_STAT = "/proc/stat";
+	private static final String NA = "N/A";
+	private static final String COMMA = ",";
 
 	public CpuInfo(Context context, int pid, String uid) {
 		this.pid = pid;
@@ -139,7 +141,7 @@ public class CpuInfo {
 	public String getCpuName() {
 		try {
 			RandomAccessFile cpuStat = new RandomAccessFile(CPU_INFO_PATH, "r");
-			// 需要判断是intel or arm
+			// check cpu type
 			if (Build.CPU_ABI.equalsIgnoreCase(CPU_X86)) {
 				String line;
 				while (null != (line = cpuStat.readLine())) {
@@ -242,10 +244,10 @@ public class CpuInfo {
 			Calendar cal = Calendar.getInstance();
 			if ((Build.MODEL.equals("sdk")) || (Build.MODEL.equals("google_sdk"))) {
 				mDateTime2 = formatterFile.format(cal.getTime().getTime() + 8 * 60 * 60 * 1000);
-				totalBatt = "N/A";
-				currentBatt = "N/A";
-				temperature = "N/A";
-				voltage = "N/A";
+				totalBatt = NA;
+				currentBatt = NA;
+				temperature = NA;
+				voltage = NA;
 			} else
 				mDateTime2 = formatterFile.format(cal.getTime().getTime());
 			if (isInitialStatics) {
@@ -268,7 +270,7 @@ public class CpuInfo {
 											.get(i) - totalCpu2.get(i))));
 						}
 						totalCpuRatio.add(cpuRatio);
-						totalCpuBuffer.append(cpuRatio + ",");
+						totalCpuBuffer.append(cpuRatio + COMMA);
 					}
 				} else {
 					processCpuRatio = "0";
@@ -292,16 +294,16 @@ public class CpuInfo {
 				}
 
 				if (isPositive(processCpuRatio) && isPositive(totalCpuRatio.get(0))) {
+					String trafValue;
 					// whether certain device supports traffic statics or not
 					if (traffic == -1) {
-						EmmageeService.bw.write(mDateTime2 + "," + pMemory + "," + percent + "," + fMemory + "," + processCpuRatio + ","
-								+ totalCpuBuffer.toString() + "N/A" + "," + totalBatt + "," + currentBatt + "," + temperature + "," + voltage
-								+ "\r\n");
+						trafValue = NA;
 					} else {
-						EmmageeService.bw.write(mDateTime2 + "," + pMemory + "," + percent + "," + fMemory + "," + processCpuRatio + ","
-								+ totalCpuBuffer.toString() + traffic + "," + totalBatt + "," + currentBatt + "," + temperature + "," + voltage
-								+ "\r\n");
+						trafValue = String.valueOf(traffic);
 					}
+					EmmageeService.bw.write(mDateTime2 + COMMA + pMemory + COMMA + percent + COMMA + fMemory + COMMA + processCpuRatio + COMMA
+							+ totalCpuBuffer.toString() + trafValue + COMMA + totalBatt + COMMA + currentBatt + COMMA + temperature + COMMA + voltage
+							+ "\r\n");
 					totalCpu2 = (ArrayList<Long>) totalCpu.clone();
 					processCpu2 = processCpu;
 					idleCpu2 = (ArrayList<Long>) idleCpu.clone();

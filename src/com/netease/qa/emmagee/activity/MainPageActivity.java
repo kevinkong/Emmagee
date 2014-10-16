@@ -16,11 +16,8 @@
  */
 package com.netease.qa.emmagee.activity;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
-import java.util.Properties;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -82,10 +79,10 @@ public class MainPageActivity extends Activity {
 				monitorService = new Intent();
 				monitorService.setClass(MainPageActivity.this, EmmageeService.class);
 				if (getString(R.string.start_test).equals(btnTest.getText().toString())) {
-				    ListAdapter adapter = (ListAdapter) lstViProgramme.getAdapter();
+					ListAdapter adapter = (ListAdapter) lstViProgramme.getAdapter();
 					if (adapter.checkedProg != null) {
-					    String packageName = adapter.checkedProg.getPackageName();
-					    String processName = adapter.checkedProg.getProcessName();
+						String packageName = adapter.checkedProg.getPackageName();
+						String processName = adapter.checkedProg.getProcessName();
 						Intent intent = getPackageManager().getLaunchIntentForPackage(packageName);
 						String startActivity = "";
 						Log.d(LOG_TAG, packageName);
@@ -141,9 +138,9 @@ public class MainPageActivity extends Activity {
 			}
 		});
 		receiver = new UpdateReceiver();
-        IntentFilter filter = new IntentFilter();
-        filter.addAction("com.netease.action.emmageeService");
-        registerReceiver(receiver, filter);
+		IntentFilter filter = new IntentFilter();
+		filter.addAction(EmmageeService.SERVICE_ACTION);
+		registerReceiver(receiver, filter);
 	}
 
 	private void initTitleLayout() {
@@ -185,7 +182,6 @@ public class MainPageActivity extends Activity {
 			btnTest.setText(getString(R.string.start_test));
 		}
 	}
-
 
 	/**
 	 * wait for test application started.
@@ -279,56 +275,53 @@ public class MainPageActivity extends Activity {
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			Programe pr = (Programe) programes.get(position);
-			if(convertView == null)
-			    convertView = getLayoutInflater().inflate(R.layout.list_item, parent, false);
+			if (convertView == null)
+				convertView = getLayoutInflater().inflate(R.layout.list_item, parent, false);
 			Viewholder holder = (Viewholder) convertView.getTag();
-			if(holder == null){
-			    holder = new Viewholder();
-			    convertView.setTag(holder);
-			    holder.imgViAppIcon = (ImageView) convertView.findViewById(R.id.image);
-			    holder.txtAppName = (TextView) convertView.findViewById(R.id.text);
-			    holder.rdoBtnApp = (RadioButton) convertView.findViewById(R.id.rb);
-			    holder.rdoBtnApp.setFocusable(false);
-			    holder.rdoBtnApp.setOnCheckedChangeListener(checkedChangeListener);
+			if (holder == null) {
+				holder = new Viewholder();
+				convertView.setTag(holder);
+				holder.imgViAppIcon = (ImageView) convertView.findViewById(R.id.image);
+				holder.txtAppName = (TextView) convertView.findViewById(R.id.text);
+				holder.rdoBtnApp = (RadioButton) convertView.findViewById(R.id.rb);
+				holder.rdoBtnApp.setFocusable(false);
+				holder.rdoBtnApp.setOnCheckedChangeListener(checkedChangeListener);
 			}
-			
 			holder.imgViAppIcon.setImageDrawable(pr.getIcon());
-
 			holder.txtAppName.setText(pr.getProcessName());
-
 			holder.rdoBtnApp.setId(position);
-            holder.rdoBtnApp.setChecked(checkedProg != null && getItem(position) == checkedProg);
+			holder.rdoBtnApp.setChecked(checkedProg != null && getItem(position) == checkedProg);
 			return convertView;
 		}
-		
-		
+
 		OnCheckedChangeListener checkedChangeListener = new OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    final int checkedPosition = buttonView.getId();
-                    if (lastCheckedPosition != -1) {
-                        RadioButton tempButton = (RadioButton) findViewById(lastCheckedPosition);
-                        if ((tempButton != null) && (lastCheckedPosition != checkedPosition)) {
-                            tempButton.setChecked(false);
-                        }
-                    }
-                    checkedProg = programes.get(checkedPosition);
-                    lastCheckedPosition = checkedPosition;
-                }
-            }
-        };
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				if (isChecked) {
+					final int checkedPosition = buttonView.getId();
+					if (lastCheckedPosition != -1) {
+						RadioButton tempButton = (RadioButton) findViewById(lastCheckedPosition);
+						if ((tempButton != null) && (lastCheckedPosition != checkedPosition)) {
+							tempButton.setChecked(false);
+						}
+					}
+					checkedProg = programes.get(checkedPosition);
+					lastCheckedPosition = checkedPosition;
+				}
+			}
+		};
 	}
+
 	/**
-     * save status of all installed processes
-     * 
-     * @author andrewleo
-     */
-    static class Viewholder {
-        TextView txtAppName;
-        ImageView imgViAppIcon;
-        RadioButton rdoBtnApp;
-    }
+	 * save status of all installed processes
+	 * 
+	 * @author andrewleo
+	 */
+	static class Viewholder {
+		TextView txtAppName;
+		ImageView imgViAppIcon;
+		RadioButton rdoBtnApp;
+	}
 
 	@Override
 	protected void onDestroy() {
