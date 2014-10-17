@@ -55,7 +55,7 @@ You are welcome to contribute to Emmagee, meanwhile you'd better follow the rule
 
 ## Contributors
 * NetEase, Inc.
-* yrom
+* [yrom](https://github.com/yrom)
 
 ## License
 (The Apache License)
