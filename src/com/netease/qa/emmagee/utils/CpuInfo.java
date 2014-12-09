@@ -22,9 +22,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 import com.netease.qa.emmagee.service.EmmageeService;
@@ -229,6 +231,7 @@ public class CpuInfo {
 	public ArrayList<String> getCpuRatioInfo(String totalBatt, String currentBatt, String temperature, String voltage) {
 
 		DecimalFormat fomart = new DecimalFormat();
+		fomart.setDecimalFormatSymbols(new DecimalFormatSymbols(Locale.US));
 		fomart.setGroupingUsed(false);
 		fomart.setMaximumFractionDigits(2);
 		fomart.setMinimumFractionDigits(2);
