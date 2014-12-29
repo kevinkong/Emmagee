@@ -441,7 +441,7 @@ public class EmmageeService extends Service {
 			String processCpuRatio = "0.00";
 			String totalCpuRatio = "0.00";
 			String trafficSize = "0";
-			int tempTraffic = 0;
+			long tempTraffic = 0L;
 			double trafficMb = 0;
 			boolean isMb = false;
 			if (!processInfo.isEmpty()) {
@@ -449,7 +449,7 @@ public class EmmageeService extends Service {
 				totalCpuRatio = processInfo.get(1);
 				trafficSize = processInfo.get(2);
 				if (!(BLANK_STRING.equals(trafficSize)) && !("-1".equals(trafficSize))) {
-					tempTraffic = Integer.parseInt(trafficSize);
+					tempTraffic = Long.parseLong(trafficSize);
 					if (tempTraffic > 1024) {
 						isMb = true;
 						trafficMb = (double) tempTraffic / 1024;

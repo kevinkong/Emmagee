@@ -42,7 +42,7 @@ And Enjoy!
 If you want to stop the test, just go back to Emmagee and click Stop button.
 
 ## Coming Soon
-* Integrating FPS
+* We want you to decide!
 
 ## How to Contribute?
 
@@ -56,11 +56,12 @@ You are welcome to contribute to Emmagee, meanwhile you'd better follow the rule
 ## Contributors
 * NetEase, Inc.
 * [yrom](https://github.com/yrom)
+* [LukeOwncloud](https://github.com/LukeOwncloud)
 
 ## License
 (The Apache License)
 
-Copyright (c) 2012-2014 NetEase, Inc. and other contributors
+Copyright (c) 2012-2015 NetEase, Inc. and other contributors
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.

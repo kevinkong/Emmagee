@@ -260,8 +260,11 @@ public class CpuInfo {
 				lastestTraffic = trafficInfo.getTrafficInfo();
 				if (initialTraffic == -1)
 					traffic = -1;
-				else
+				else {
 					traffic = (lastestTraffic - initialTraffic + 1023) / 1024;
+				}
+				Log.d(LOG_TAG, "lastestTraffic===" + lastestTraffic);
+				Log.d(LOG_TAG, "initialTraffic===" + initialTraffic);
 				StringBuffer totalCpuBuffer = new StringBuffer();
 				if (null != totalCpu2 && totalCpu2.size() > 0) {
 					processCpuRatio = fomart.format(100 * ((double) (processCpu - processCpu2) / ((double) (totalCpu.get(0) - totalCpu2.get(0)))));
