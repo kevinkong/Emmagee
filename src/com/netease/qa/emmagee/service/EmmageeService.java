@@ -77,7 +77,7 @@ public class EmmageeService extends Service {
 	private final static String LOG_TAG = "Emmagee-" + EmmageeService.class.getSimpleName();
 
 	private static final String BLANK_STRING = "";
-	
+
 	private WindowManager windowManager = null;
 	private WindowManager.LayoutParams wmParams = null;
 	private View viFloatingWindow;
@@ -354,7 +354,7 @@ public class EmmageeService extends Service {
 			if (!isServiceStop) {
 				dataRefresh();
 				handler.postDelayed(this, delaytime);
-				if (isFloating) {
+				if (isFloating && viFloatingWindow != null) {
 					windowManager.updateViewLayout(viFloatingWindow, wmParams);
 				}
 				// get app start time from logcat on every task running
@@ -484,7 +484,9 @@ public class EmmageeService extends Service {
 	private void updateViewPosition() {
 		wmParams.x = (int) (x - mTouchStartX);
 		wmParams.y = (int) (y - mTouchStartY);
-		windowManager.updateViewLayout(viFloatingWindow, wmParams);
+		if (viFloatingWindow != null) {
+			windowManager.updateViewLayout(viFloatingWindow, wmParams);
+		}
 	}
 
 	/**
@@ -509,8 +511,10 @@ public class EmmageeService extends Service {
 	@Override
 	public void onDestroy() {
 		Log.i(LOG_TAG, "service onDestroy");
-		if (windowManager != null)
+		if (windowManager != null) {
 			windowManager.removeView(viFloatingWindow);
+			viFloatingWindow = null;
+		}
 		handler.removeCallbacks(task);
 		closeOpenedStream();
 		// replace the start time in file
