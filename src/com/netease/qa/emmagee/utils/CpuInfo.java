@@ -71,8 +71,6 @@ public class CpuInfo {
 	private static final String CPU_X86 = "x86";
 	private static final String CPU_INFO_PATH = "/proc/cpuinfo";
 	private static final String CPU_STAT = "/proc/stat";
-	private static final String NA = "N/A";
-	private static final String COMMA = ",";
 
 	public CpuInfo(Context context, int pid, String uid) {
 		this.pid = pid;
@@ -247,10 +245,10 @@ public class CpuInfo {
 			Calendar cal = Calendar.getInstance();
 			if ((Build.MODEL.equals("sdk")) || (Build.MODEL.equals("google_sdk"))) {
 				mDateTime2 = formatterFile.format(cal.getTime().getTime() + 8 * 60 * 60 * 1000);
-				totalBatt = NA;
-				currentBatt = NA;
-				temperature = NA;
-				voltage = NA;
+				totalBatt = Constants.NA;
+				currentBatt = Constants.NA;
+				temperature = Constants.NA;
+				voltage = Constants.NA;
 			} else
 				mDateTime2 = formatterFile.format(cal.getTime().getTime());
 			if (isInitialStatics) {
@@ -276,7 +274,7 @@ public class CpuInfo {
 											.get(i) - totalCpu2.get(i))));
 						}
 						totalCpuRatio.add(cpuRatio);
-						totalCpuBuffer.append(cpuRatio + COMMA);
+						totalCpuBuffer.append(cpuRatio + Constants.COMMA);
 					}
 				} else {
 					processCpuRatio = "0";
@@ -303,13 +301,14 @@ public class CpuInfo {
 					String trafValue;
 					// whether certain device supports traffic statics or not
 					if (traffic == -1) {
-						trafValue = NA;
+						trafValue = Constants.NA;
 					} else {
 						trafValue = String.valueOf(traffic);
 					}
-					EmmageeService.bw.write(mDateTime2 + COMMA + pMemory + COMMA + percent + COMMA + fMemory + COMMA + processCpuRatio + COMMA
-							+ totalCpuBuffer.toString() + trafValue + COMMA + totalBatt + COMMA + currentBatt + COMMA + temperature + COMMA + voltage
-							+ "\r\n");
+					EmmageeService.bw.write(mDateTime2 + Constants.COMMA + ProcessInfo.getTopActivity(context) + Constants.COMMA + pMemory
+							+ Constants.COMMA + percent + Constants.COMMA + fMemory + Constants.COMMA + processCpuRatio + Constants.COMMA
+							+ totalCpuBuffer.toString() + trafValue + Constants.COMMA + totalBatt + Constants.COMMA + currentBatt + Constants.COMMA
+							+ temperature + Constants.COMMA + voltage + Constants.LINE_END);
 					totalCpu2 = (ArrayList<Long>) totalCpu.clone();
 					processCpu2 = processCpu;
 					idleCpu2 = (ArrayList<Long>) idleCpu.clone();

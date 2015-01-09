@@ -73,4 +73,7 @@
         同时支持自定义的监控频率以及性能数据的实时显示.</string>
     <string name="about_team">开发团队：网易(杭州)质量保障部</string>
     <string name="about_project_address">项目地址：https://github.com/NetEase/Emmagee</string>
+    
+    <string name="top_activity">栈顶Activity名称</string>
+    <string name="csv_encoding">GBK</string>
 </resources>

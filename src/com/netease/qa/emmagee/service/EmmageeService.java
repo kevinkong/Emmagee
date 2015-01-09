@@ -59,6 +59,7 @@ import android.widget.Toast;
 
 import com.netease.qa.emmagee.R;
 import com.netease.qa.emmagee.activity.MainPageActivity;
+import com.netease.qa.emmagee.utils.Constants;
 import com.netease.qa.emmagee.utils.CpuInfo;
 import com.netease.qa.emmagee.utils.CurrentInfo;
 import com.netease.qa.emmagee.utils.EncryptData;
@@ -256,7 +257,7 @@ public class EmmageeService extends Service {
 			File resultFile = new File(resultFilePath);
 			resultFile.createNewFile();
 			out = new FileOutputStream(resultFile);
-			osw = new OutputStreamWriter(out, "UTF-8");
+			osw = new OutputStreamWriter(out, getString(R.string.csv_encoding));
 			bw = new BufferedWriter(osw);
 			long totalMemorySize = memoryInfo.getTotalMemory();
 			String totalMemory = fomart.format((double) totalMemorySize / 1024);
@@ -264,22 +265,24 @@ public class EmmageeService extends Service {
 			// titles of multiple cpu cores
 			ArrayList<String> cpuList = cpuInfo.getCpuList();
 			for (int i = 0; i < cpuList.size(); i++) {
-				multiCpuTitle += "," + cpuList.get(i) + getString(R.string.total_usage);
+				multiCpuTitle += Constants.COMMA + cpuList.get(i) + getString(R.string.total_usage);
 			}
-			bw.write(getString(R.string.process_package) + ": ," + packageName + "\r\n" + getString(R.string.process_name) + ": ," + processName
-					+ "\r\n" + getString(R.string.process_pid) + ": ," + pid + "\r\n" + getString(R.string.mem_size) + "： ," + totalMemory + "MB\r\n"
-					+ getString(R.string.cpu_type) + ": ," + cpuInfo.getCpuName() + "\r\n" + getString(R.string.android_system_version) + ": ,"
-					+ memoryInfo.getSDKVersion() + "\r\n" + getString(R.string.mobile_type) + ": ," + memoryInfo.getPhoneType() + "\r\n" + "UID"
-					+ ": ," + uid + "\r\n");
+			bw.write(getString(R.string.process_package) + ": ," + packageName + Constants.LINE_END + getString(R.string.process_name) + ": ,"
+					+ processName + Constants.LINE_END + getString(R.string.process_pid) + ": ," + pid + Constants.LINE_END
+					+ getString(R.string.mem_size) + "： ," + totalMemory + "MB" + Constants.LINE_END + getString(R.string.cpu_type) + ": ,"
+					+ cpuInfo.getCpuName() + Constants.LINE_END + getString(R.string.android_system_version) + ": ," + memoryInfo.getSDKVersion()
+					+ Constants.LINE_END + getString(R.string.mobile_type) + ": ," + memoryInfo.getPhoneType() + Constants.LINE_END + "UID" + ": ,"
+					+ uid + Constants.LINE_END);
 
 			if (isGrantedReadLogsPermission()) {
 				bw.write(START_TIME);
 			}
-			bw.write(getString(R.string.timestamp) + "," + getString(R.string.used_mem_PSS) + "," + getString(R.string.used_mem_ratio) + ","
-					+ getString(R.string.mobile_free_mem) + "," + getString(R.string.app_used_cpu_ratio) + ","
-					+ getString(R.string.total_used_cpu_ratio) + multiCpuTitle + "," + getString(R.string.traffic) + ","
-					+ getString(R.string.battery) + "," + getString(R.string.current) + "," + getString(R.string.temperature) + ","
-					+ getString(R.string.voltage) + "\r\n");
+			bw.write(getString(R.string.timestamp) + Constants.COMMA + getString(R.string.top_activity) + Constants.COMMA
+					+ getString(R.string.used_mem_PSS) + Constants.COMMA + getString(R.string.used_mem_ratio) + Constants.COMMA
+					+ getString(R.string.mobile_free_mem) + Constants.COMMA + getString(R.string.app_used_cpu_ratio) + Constants.COMMA
+					+ getString(R.string.total_used_cpu_ratio) + multiCpuTitle + Constants.COMMA + getString(R.string.traffic) + Constants.COMMA
+					+ getString(R.string.battery) + Constants.COMMA + getString(R.string.current) + Constants.COMMA + getString(R.string.temperature)
+					+ Constants.COMMA + getString(R.string.voltage) + Constants.LINE_END);
 		} catch (IOException e) {
 			Log.e(LOG_TAG, e.getMessage());
 		}

@@ -73,5 +73,8 @@
          Additionally, it also provides several cool features such as customizing interval of collecting
          data, rendering real-time process status in a floating window, and much more.</string>
     <string name="about_team">Team：QA, Netease(Hangzhou)</string>
-    <string name="about_project_address">Project Address：https://github.com/NetEase/Emmagee</string>
+    <string name="about_project_address">Project Site：https://github.com/NetEase/Emmagee</string>
+    
+    <string name="top_activity">Top Activity Name</string>
+    <string name="csv_encoding">UTF-8</string>
 </resources>
