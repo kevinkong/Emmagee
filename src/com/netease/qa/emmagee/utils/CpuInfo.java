@@ -54,7 +54,7 @@ public class CpuInfo {
 	private SimpleDateFormat formatterFile;
 	private MemoryInfo mi;
 	private long totalMemorySize;
-	private long initialTraffic;
+	private long preTraffic;
 	private long lastestTraffic;
 	private long traffic;
 	private TrafficInfo trafficInfo;
@@ -252,17 +252,20 @@ public class CpuInfo {
 			} else
 				mDateTime2 = formatterFile.format(cal.getTime().getTime());
 			if (isInitialStatics) {
-				initialTraffic = trafficInfo.getTrafficInfo();
+				preTraffic = trafficInfo.getTrafficInfo();
 				isInitialStatics = false;
 			} else {
 				lastestTraffic = trafficInfo.getTrafficInfo();
-				if (initialTraffic == -1)
+				if (preTraffic == -1)
 					traffic = -1;
 				else {
-					traffic = (lastestTraffic - initialTraffic + 1023) / 1024;
+					if (lastestTraffic > preTraffic) {
+						traffic += (lastestTraffic - preTraffic + 1023) / 1024;
+					}
 				}
+				preTraffic = lastestTraffic;
 				Log.d(LOG_TAG, "lastestTraffic===" + lastestTraffic);
-				Log.d(LOG_TAG, "initialTraffic===" + initialTraffic);
+				Log.d(LOG_TAG, "preTraffic===" + preTraffic);
 				StringBuffer totalCpuBuffer = new StringBuffer();
 				if (null != totalCpu2 && totalCpu2.size() > 0) {
 					processCpuRatio = fomart.format(100 * ((double) (processCpu - processCpu2) / ((double) (totalCpu.get(0) - totalCpu2.get(0)))));

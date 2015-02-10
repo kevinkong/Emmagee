@@ -389,7 +389,7 @@ public class EmmageeService extends Service {
 
 			while ((line = bufferedReader.readLine()) != null) {
 				strBuilder.append(line);
-				strBuilder.append("\r\n");
+				strBuilder.append(Constants.LINE_END);
 				String regex = ".*Displayed.*" + startActivity + ".*\\+(.*)ms.*";
 				if (line.matches(regex)) {
 					Log.w("my logs", line);
@@ -434,10 +434,10 @@ public class EmmageeService extends Service {
 		// 异常数据过滤
 		try {
 			if (Math.abs(Double.parseDouble(currentBatt)) >= 500) {
-				currentBatt = "N/A";
+				currentBatt = Constants.NA;
 			}
 		} catch (Exception e) {
-			currentBatt = "N/A";
+			currentBatt = Constants.NA;
 		}
 		ArrayList<String> processInfo = cpuInfo.getCpuRatioInfo(totalBatt, currentBatt, temperature, voltage);
 		if (isFloating) {
@@ -464,7 +464,7 @@ public class EmmageeService extends Service {
 					txtTotalMem.setText(getString(R.string.process_overall_cpu) + processCpuRatio + "%/" + totalCpuRatio + "%");
 					String batt = getString(R.string.current) + currentBatt;
 					if ("-1".equals(trafficSize)) {
-						txtTraffic.setText(batt + "," + getString(R.string.traffic) + "N/A");
+						txtTraffic.setText(batt + "," + getString(R.string.traffic) + Constants.NA);
 					} else if (isMb)
 						txtTraffic.setText(batt + "," + getString(R.string.traffic) + fomart.format(trafficMb) + "MB");
 					else
@@ -498,8 +498,8 @@ public class EmmageeService extends Service {
 	public void closeOpenedStream() {
 		try {
 			if (bw != null) {
-				bw.write(getString(R.string.comment1) + "\r\n" + getString(R.string.comment2) + "\r\n" + getString(R.string.comment3) + "\r\n"
-						+ getString(R.string.comment4) + "\r\n");
+				bw.write(getString(R.string.comment1) + Constants.LINE_END + getString(R.string.comment2) + Constants.LINE_END + getString(R.string.comment3) + Constants.LINE_END
+						+ getString(R.string.comment4) + Constants.LINE_END);
 				bw.close();
 			}
 			if (osw != null)
@@ -523,7 +523,7 @@ public class EmmageeService extends Service {
 		// replace the start time in file
 		if (isGrantedReadLogsPermission()) {
 			if (!BLANK_STRING.equals(startTime)) {
-				replaceFileString(resultFilePath, START_TIME, getString(R.string.start_time) + startTime + "\r\n");
+				replaceFileString(resultFilePath, START_TIME, getString(R.string.start_time) + startTime + Constants.LINE_END);
 			} else {
 				replaceFileString(resultFilePath, START_TIME, BLANK_STRING);
 			}
@@ -561,7 +561,7 @@ public class EmmageeService extends Service {
 			String line = BLANK_STRING;
 			String oldtext = BLANK_STRING;
 			while ((line = reader.readLine()) != null) {
-				oldtext += line + "\r\n";
+				oldtext += line + Constants.LINE_END;
 			}
 			reader.close();
 			// replace a word in a file
