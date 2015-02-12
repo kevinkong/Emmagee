@@ -98,6 +98,7 @@ public class EmmageeService extends Service {
 	private Handler handler = new Handler();
 	private CpuInfo cpuInfo;
 	private boolean isFloating;
+	private boolean isRoot;
 	private String processName, packageName, startActivity;
 	private int pid, uid;
 	private boolean isServiceStop = false;
@@ -231,6 +232,7 @@ public class EmmageeService extends Service {
 		recipients = preferences.getString(Settings.KEY_RECIPIENTS, BLANK_STRING);
 		receivers = recipients.split("\\s+");
 		smtp = preferences.getString(Settings.KEY_SMTP, BLANK_STRING);
+		isRoot = preferences.getBoolean(Settings.KEY_ROOT, false);
 	}
 
 	/**
@@ -240,6 +242,7 @@ public class EmmageeService extends Service {
 		Calendar cal = Calendar.getInstance();
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
 		String mDateTime;
+		String heapData = "";
 		if ((Build.MODEL.equals("sdk")) || (Build.MODEL.equals("google_sdk")))
 			mDateTime = formatter.format(cal.getTime().getTime() + 8 * 60 * 60 * 1000);
 		else
@@ -257,7 +260,7 @@ public class EmmageeService extends Service {
 			File resultFile = new File(resultFilePath);
 			resultFile.createNewFile();
 			out = new FileOutputStream(resultFile);
-			osw = new OutputStreamWriter(out, getString(R.string.csv_encoding));
+			osw = new OutputStreamWriter(out);
 			bw = new BufferedWriter(osw);
 			long totalMemorySize = memoryInfo.getTotalMemory();
 			String totalMemory = fomart.format((double) totalMemorySize / 1024);
@@ -277,7 +280,10 @@ public class EmmageeService extends Service {
 			if (isGrantedReadLogsPermission()) {
 				bw.write(START_TIME);
 			}
-			bw.write(getString(R.string.timestamp) + Constants.COMMA + getString(R.string.top_activity) + Constants.COMMA
+			if(isRoot){
+				heapData = getString(R.string.native_heap) + Constants.COMMA+getString(R.string.dalvik_heap) + Constants.COMMA;
+			}
+			bw.write(getString(R.string.timestamp) + Constants.COMMA + getString(R.string.top_activity) + Constants.COMMA+heapData
 					+ getString(R.string.used_mem_PSS) + Constants.COMMA + getString(R.string.used_mem_ratio) + Constants.COMMA
 					+ getString(R.string.mobile_free_mem) + Constants.COMMA + getString(R.string.app_used_cpu_ratio) + Constants.COMMA
 					+ getString(R.string.total_used_cpu_ratio) + multiCpuTitle + Constants.COMMA + getString(R.string.traffic) + Constants.COMMA
@@ -439,7 +445,7 @@ public class EmmageeService extends Service {
 		} catch (Exception e) {
 			currentBatt = Constants.NA;
 		}
-		ArrayList<String> processInfo = cpuInfo.getCpuRatioInfo(totalBatt, currentBatt, temperature, voltage);
+		ArrayList<String> processInfo = cpuInfo.getCpuRatioInfo(totalBatt, currentBatt, temperature, voltage,isRoot);
 		if (isFloating) {
 			String processCpuRatio = "0.00";
 			String totalCpuRatio = "0.00";
@@ -521,12 +527,10 @@ public class EmmageeService extends Service {
 		handler.removeCallbacks(task);
 		closeOpenedStream();
 		// replace the start time in file
-		if (isGrantedReadLogsPermission()) {
-			if (!BLANK_STRING.equals(startTime)) {
-				replaceFileString(resultFilePath, START_TIME, getString(R.string.start_time) + startTime + Constants.LINE_END);
-			} else {
-				replaceFileString(resultFilePath, START_TIME, BLANK_STRING);
-			}
+		if (!BLANK_STRING.equals(startTime)) {
+			replaceFileString(resultFilePath, START_TIME, getString(R.string.start_time) + startTime + Constants.LINE_END);
+		} else {
+			replaceFileString(resultFilePath, START_TIME, BLANK_STRING);
 		}
 		isStop = true;
 		unregisterReceiver(batteryBroadcast);
@@ -566,7 +570,7 @@ public class EmmageeService extends Service {
 			reader.close();
 			// replace a word in a file
 			String newtext = oldtext.replaceAll(replaceType, replaceString);
-			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filePath), "UTF-8"));
+			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filePath), getString(R.string.csv_encoding)));
 			writer.write(newtext);
 			writer.close();
 		} catch (IOException e) {

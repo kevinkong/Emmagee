@@ -76,4 +76,12 @@
     
     <string name="top_activity">栈顶Activity名称</string>
     <string name="csv_encoding">GBK</string>
+    
+    <string name="dalvik_heap">Dalvik heap alloc/size(KB)</string>
+    <string name="native_heap">Native heap alloc/size(KB)</string>
+    
+    <string name="collect_heap">统计Heap数据</string>
+    <string name="root_notification">(需要root)</string>
+    
+    <string name="root_failed_notification">无法获取root权限，请确认手机是否已经root过</string>
 </resources>

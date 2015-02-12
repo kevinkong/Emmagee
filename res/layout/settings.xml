@@ -58,8 +58,8 @@
                         android:layout_width="50sp"
                         android:layout_height="wrap_content"
                         android:gravity="center_vertical|right"
-                        android:textSize="@dimen/text_size"
-                        android:textColor="@color/black" >
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/text_size" >
                     </TextView>
                 </LinearLayout>
             </LinearLayout>
@@ -72,9 +72,9 @@
                 android:max="59"
                 android:maxHeight="4.0dip"
                 android:minHeight="4.0dip"
+                android:paddingBottom="@dimen/layout_vertical_margin_small"
                 android:paddingLeft="16.0dip"
                 android:paddingRight="16.0dip"
-                android:paddingBottom="@dimen/layout_vertical_margin_small"
                 android:progress="5"
                 android:progressDrawable="@drawable/custom_seekbar"
                 android:thumb="@drawable/seekbar_thumb" />
@@ -107,10 +107,49 @@
                     android:background="@drawable/custom_checkbox"
                     android:button="@null"
                     android:checked="true"
-                    android:paddingRight="@dimen/image_padding"
-                    android:paddingLeft="@dimen/image_padding" />
-
+                    android:paddingLeft="@dimen/image_padding"
+                    android:paddingRight="@dimen/image_padding" />
             </RelativeLayout>
+
+            <LinearLayout
+                android:id="@+id/heap_item"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/layout_vertical_margin_small" >
+
+                <TextView
+                    android:id="@+id/collect_heap"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/collect_heap"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/root_notification"
+                    android:textColor="@color/gray"
+                    android:textSize="@dimen/text_size" />
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="right" >
+
+                    <CheckBox
+                        android:id="@+id/is_root"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="right"
+                        android:background="@drawable/custom_checkbox"
+                        android:button="@null"
+                        android:checked="false"
+                        android:gravity="right"
+                        android:paddingLeft="@dimen/image_padding"
+                        android:paddingRight="@dimen/image_padding" />
+                </LinearLayout>
+            </LinearLayout>
         </LinearLayout>
 
         <LinearLayout

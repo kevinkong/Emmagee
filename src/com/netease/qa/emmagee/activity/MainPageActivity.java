@@ -16,6 +16,7 @@
  */
 package com.netease.qa.emmagee.activity;
 
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.List;
 
@@ -31,13 +32,22 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.widget.*;
+import android.widget.AdapterView;
+import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.RadioButton;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.netease.qa.emmagee.R;
 import com.netease.qa.emmagee.service.EmmageeService;
 import com.netease.qa.emmagee.utils.ProcessInfo;
 import com.netease.qa.emmagee.utils.Programe;
-import com.netease.qa.emmagee.R;
 
 /**
  * Main Page of Emmagee
@@ -71,6 +81,7 @@ public class MainPageActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.mainpage);
+		
 		initTitleLayout();
 		processInfo = new ProcessInfo();
 		btnTest.setOnClickListener(new OnClickListener() {

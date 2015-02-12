@@ -226,8 +226,9 @@ public class CpuInfo {
 	 * @return network traffic ,used ratio of process CPU and total CPU in
 	 *         certain interval
 	 */
-	public ArrayList<String> getCpuRatioInfo(String totalBatt, String currentBatt, String temperature, String voltage) {
+	public ArrayList<String> getCpuRatioInfo(String totalBatt, String currentBatt, String temperature, String voltage,boolean isRoot) {
 
+		String heapData = "";
 		DecimalFormat fomart = new DecimalFormat();
 		fomart.setDecimalFormatSymbols(new DecimalFormatSymbols(Locale.US));
 		fomart.setGroupingUsed(false);
@@ -308,7 +309,11 @@ public class CpuInfo {
 					} else {
 						trafValue = String.valueOf(traffic);
 					}
-					EmmageeService.bw.write(mDateTime2 + Constants.COMMA + ProcessInfo.getTopActivity(context) + Constants.COMMA + pMemory
+					if(isRoot){
+						String[][] heapArray = MemoryInfo.getHeapSize(pid, context);
+						heapData = heapArray[0][1]+"/"+heapArray[0][0]+Constants.COMMA+heapArray[1][1]+"/"+heapArray[1][0]+Constants.COMMA;
+					}
+					EmmageeService.bw.write(mDateTime2 + Constants.COMMA + ProcessInfo.getTopActivity(context) + Constants.COMMA +heapData+ pMemory
 							+ Constants.COMMA + percent + Constants.COMMA + fMemory + Constants.COMMA + processCpuRatio + Constants.COMMA
 							+ totalCpuBuffer.toString() + trafValue + Constants.COMMA + totalBatt + Constants.COMMA + currentBatt + Constants.COMMA
 							+ temperature + Constants.COMMA + voltage + Constants.LINE_END);

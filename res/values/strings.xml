@@ -77,4 +77,10 @@
     
     <string name="top_activity">Top Activity Name</string>
     <string name="csv_encoding">UTF-8</string>
+    <string name="dalvik_heap">Dalvik heap alloc/size(KB)</string>
+    <string name="native_heap">Native heap alloc/size(KB)</string>
+    
+    <string name="collect_heap">Collect Heap</string>
+    <string name="root_notification">(root is necessary)</string>
+    <string name="root_failed_notification">Fail to get root permission, please check if this phone is rooted</string>
 </resources>
