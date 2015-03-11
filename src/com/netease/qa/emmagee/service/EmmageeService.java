@@ -26,9 +26,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Locale;
 
 import android.app.Activity;
 import android.app.PendingIntent;
@@ -134,6 +136,8 @@ public class EmmageeService extends Service {
 		isStop = false;
 		memoryInfo = new MemoryInfo();
 		fomart = new DecimalFormat();
+		fomart.setDecimalFormatSymbols(new DecimalFormatSymbols(Locale.US));
+		fomart.setGroupingUsed(false);
 		fomart.setMaximumFractionDigits(2);
 		fomart.setMinimumFractionDigits(0);
 		des = new EncryptData("emmagee");
@@ -270,11 +274,11 @@ public class EmmageeService extends Service {
 			for (int i = 0; i < cpuList.size(); i++) {
 				multiCpuTitle += Constants.COMMA + cpuList.get(i) + getString(R.string.total_usage);
 			}
-			bw.write(getString(R.string.process_package) + ": ," + packageName + Constants.LINE_END + getString(R.string.process_name) + ": ,"
-					+ processName + Constants.LINE_END + getString(R.string.process_pid) + ": ," + pid + Constants.LINE_END
-					+ getString(R.string.mem_size) + "： ," + totalMemory + "MB" + Constants.LINE_END + getString(R.string.cpu_type) + ": ,"
-					+ cpuInfo.getCpuName() + Constants.LINE_END + getString(R.string.android_system_version) + ": ," + memoryInfo.getSDKVersion()
-					+ Constants.LINE_END + getString(R.string.mobile_type) + ": ," + memoryInfo.getPhoneType() + Constants.LINE_END + "UID" + ": ,"
+			bw.write(getString(R.string.process_package) + Constants.COMMA + packageName + Constants.LINE_END + getString(R.string.process_name) + Constants.COMMA
+					+ processName + Constants.LINE_END + getString(R.string.process_pid) + Constants.COMMA + pid + Constants.LINE_END
+					+ getString(R.string.mem_size) + Constants.COMMA + totalMemory + "MB" + Constants.LINE_END + getString(R.string.cpu_type) + Constants.COMMA
+					+ cpuInfo.getCpuName() + Constants.LINE_END + getString(R.string.android_system_version) + Constants.COMMA + memoryInfo.getSDKVersion()
+					+ Constants.LINE_END + getString(R.string.mobile_type) + Constants.COMMA + memoryInfo.getPhoneType() + Constants.LINE_END + "UID" + Constants.COMMA
 					+ uid + Constants.LINE_END);
 
 			if (isGrantedReadLogsPermission()) {
