@@ -111,6 +111,33 @@
                     android:paddingRight="@dimen/image_padding" />
             </RelativeLayout>
 
+            <RelativeLayout
+                android:id="@+id/auto_stop_item"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="@dimen/layout_vertical_margin_small" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/stop_when_exited"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size" />
+
+                <CheckBox
+                    android:id="@+id/auto_stop"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:background="@drawable/custom_checkbox"
+                    android:button="@null"
+                    android:checked="true"
+                    android:paddingLeft="@dimen/image_padding"
+                    android:paddingRight="@dimen/image_padding" />
+            </RelativeLayout>
+
             <LinearLayout
                 android:id="@+id/heap_item"
                 android:layout_width="match_parent"

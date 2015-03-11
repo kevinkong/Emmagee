@@ -68,6 +68,8 @@ import com.netease.qa.emmagee.utils.EncryptData;
 import com.netease.qa.emmagee.utils.MailSender;
 import com.netease.qa.emmagee.utils.MemoryInfo;
 import com.netease.qa.emmagee.utils.MyApplication;
+import com.netease.qa.emmagee.utils.ProcessInfo;
+import com.netease.qa.emmagee.utils.Programe;
 import com.netease.qa.emmagee.utils.Settings;
 
 /**
@@ -101,12 +103,14 @@ public class EmmageeService extends Service {
 	private CpuInfo cpuInfo;
 	private boolean isFloating;
 	private boolean isRoot;
+	private boolean isAutoStop = false;
 	private String processName, packageName, startActivity;
 	private int pid, uid;
 	private boolean isServiceStop = false;
 	private String sender, password, recipients, smtp;
 	private String[] receivers;
 	private EncryptData des;
+	private ProcessInfo procInfo;
 
 	public static BufferedWriter bw;
 	public static FileOutputStream out;
@@ -127,6 +131,7 @@ public class EmmageeService extends Service {
 	private boolean isGetStartTime = true;
 	private String startTime = "";
 	public static final String SERVICE_ACTION = "com.netease.action.emmageeService";
+	private static final String BATTERY_CHANGED = "android.intent.action.BATTERY_CHANGED";
 
 	@Override
 	public void onCreate() {
@@ -135,6 +140,7 @@ public class EmmageeService extends Service {
 		isServiceStop = false;
 		isStop = false;
 		memoryInfo = new MemoryInfo();
+		procInfo = new ProcessInfo();
 		fomart = new DecimalFormat();
 		fomart.setDecimalFormatSymbols(new DecimalFormatSymbols(Locale.US));
 		fomart.setGroupingUsed(false);
@@ -143,7 +149,7 @@ public class EmmageeService extends Service {
 		des = new EncryptData("emmagee");
 		currentInfo = new CurrentInfo();
 		batteryBroadcast = new BatteryInfoBroadcastReceiver();
-		registerReceiver(batteryBroadcast, new IntentFilter("android.intent.action.BATTERY_CHANGED"));
+		registerReceiver(batteryBroadcast, new IntentFilter(BATTERY_CHANGED));
 	}
 
 	/**
@@ -237,6 +243,7 @@ public class EmmageeService extends Service {
 		receivers = recipients.split("\\s+");
 		smtp = preferences.getString(Settings.KEY_SMTP, BLANK_STRING);
 		isRoot = preferences.getBoolean(Settings.KEY_ROOT, false);
+		isAutoStop = preferences.getBoolean(Settings.KEY_AUTO_STOP, true);
 	}
 
 	/**
@@ -274,20 +281,21 @@ public class EmmageeService extends Service {
 			for (int i = 0; i < cpuList.size(); i++) {
 				multiCpuTitle += Constants.COMMA + cpuList.get(i) + getString(R.string.total_usage);
 			}
-			bw.write(getString(R.string.process_package) + Constants.COMMA + packageName + Constants.LINE_END + getString(R.string.process_name) + Constants.COMMA
-					+ processName + Constants.LINE_END + getString(R.string.process_pid) + Constants.COMMA + pid + Constants.LINE_END
-					+ getString(R.string.mem_size) + Constants.COMMA + totalMemory + "MB" + Constants.LINE_END + getString(R.string.cpu_type) + Constants.COMMA
-					+ cpuInfo.getCpuName() + Constants.LINE_END + getString(R.string.android_system_version) + Constants.COMMA + memoryInfo.getSDKVersion()
-					+ Constants.LINE_END + getString(R.string.mobile_type) + Constants.COMMA + memoryInfo.getPhoneType() + Constants.LINE_END + "UID" + Constants.COMMA
+			bw.write(getString(R.string.process_package) + Constants.COMMA + packageName + Constants.LINE_END + getString(R.string.process_name)
+					+ Constants.COMMA + processName + Constants.LINE_END + getString(R.string.process_pid) + Constants.COMMA + pid
+					+ Constants.LINE_END + getString(R.string.mem_size) + Constants.COMMA + totalMemory + "MB" + Constants.LINE_END
+					+ getString(R.string.cpu_type) + Constants.COMMA + cpuInfo.getCpuName() + Constants.LINE_END
+					+ getString(R.string.android_system_version) + Constants.COMMA + memoryInfo.getSDKVersion() + Constants.LINE_END
+					+ getString(R.string.mobile_type) + Constants.COMMA + memoryInfo.getPhoneType() + Constants.LINE_END + "UID" + Constants.COMMA
 					+ uid + Constants.LINE_END);
 
 			if (isGrantedReadLogsPermission()) {
 				bw.write(START_TIME);
 			}
-			if(isRoot){
-				heapData = getString(R.string.native_heap) + Constants.COMMA+getString(R.string.dalvik_heap) + Constants.COMMA;
+			if (isRoot) {
+				heapData = getString(R.string.native_heap) + Constants.COMMA + getString(R.string.dalvik_heap) + Constants.COMMA;
 			}
-			bw.write(getString(R.string.timestamp) + Constants.COMMA + getString(R.string.top_activity) + Constants.COMMA+heapData
+			bw.write(getString(R.string.timestamp) + Constants.COMMA + getString(R.string.top_activity) + Constants.COMMA + heapData
 					+ getString(R.string.used_mem_PSS) + Constants.COMMA + getString(R.string.used_mem_ratio) + Constants.COMMA
 					+ getString(R.string.mobile_free_mem) + Constants.COMMA + getString(R.string.app_used_cpu_ratio) + Constants.COMMA
 					+ getString(R.string.total_used_cpu_ratio) + multiCpuTitle + Constants.COMMA + getString(R.string.traffic) + Constants.COMMA
@@ -449,7 +457,7 @@ public class EmmageeService extends Service {
 		} catch (Exception e) {
 			currentBatt = Constants.NA;
 		}
-		ArrayList<String> processInfo = cpuInfo.getCpuRatioInfo(totalBatt, currentBatt, temperature, voltage,isRoot);
+		ArrayList<String> processInfo = cpuInfo.getCpuRatioInfo(totalBatt, currentBatt, temperature, voltage, isRoot);
 		if (isFloating) {
 			String processCpuRatio = "0.00";
 			String totalCpuRatio = "0.00";
@@ -474,17 +482,28 @@ public class EmmageeService extends Service {
 					txtTotalMem.setText(getString(R.string.process_overall_cpu) + processCpuRatio + "%/" + totalCpuRatio + "%");
 					String batt = getString(R.string.current) + currentBatt;
 					if ("-1".equals(trafficSize)) {
-						txtTraffic.setText(batt + "," + getString(R.string.traffic) + Constants.NA);
+						txtTraffic.setText(batt + Constants.COMMA + getString(R.string.traffic) + Constants.NA);
 					} else if (isMb)
-						txtTraffic.setText(batt + "," + getString(R.string.traffic) + fomart.format(trafficMb) + "MB");
+						txtTraffic.setText(batt + Constants.COMMA + getString(R.string.traffic) + fomart.format(trafficMb) + "MB");
 					else
-						txtTraffic.setText(batt + "," + getString(R.string.traffic) + trafficSize + "KB");
+						txtTraffic.setText(batt + Constants.COMMA + getString(R.string.traffic) + trafficSize + "KB");
 				}
 				// 当内存为0切cpu使用率为0时则是被测应用退出
 				if ("0".equals(processMemory)) {
-					closeOpenedStream();
-					isServiceStop = true;
-					return;
+					if (isAutoStop) {
+						closeOpenedStream();
+						isServiceStop = true;
+						return;
+					} else {
+						Log.i(LOG_TAG, "未设置自动停止测试，继续监听");
+						// 如果设置应用退出后不自动停止，则需要每次监听时重新获取pid
+						Programe programe = procInfo.getProgrameByPackageName(this, packageName);
+						if (programe != null && programe.getPid() > 0) {
+							pid = programe.getPid();
+							uid = programe.getUid();
+							cpuInfo = new CpuInfo(getBaseContext(), pid, Integer.toString(uid));
+						}
+					}
 				}
 			}
 
@@ -508,8 +527,8 @@ public class EmmageeService extends Service {
 	public void closeOpenedStream() {
 		try {
 			if (bw != null) {
-				bw.write(getString(R.string.comment1) + Constants.LINE_END + getString(R.string.comment2) + Constants.LINE_END + getString(R.string.comment3) + Constants.LINE_END
-						+ getString(R.string.comment4) + Constants.LINE_END);
+				bw.write(getString(R.string.comment1) + Constants.LINE_END + getString(R.string.comment2) + Constants.LINE_END
+						+ getString(R.string.comment3) + Constants.LINE_END + getString(R.string.comment4) + Constants.LINE_END);
 				bw.close();
 			}
 			if (osw != null)

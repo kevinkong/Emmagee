@@ -103,8 +103,7 @@ public class CpuInfo {
 			processCpu = Long.parseLong(tok[13]) + Long.parseLong(tok[14]);
 			processCpuInfo.close();
 		} catch (FileNotFoundException e) {
-			Log.e(LOG_TAG, "FileNotFoundException: " + e.getMessage());
-			e.printStackTrace();
+			Log.w(LOG_TAG, "FileNotFoundException: " + e.getMessage());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

@@ -91,6 +91,25 @@ public class ProcessInfo {
 	}
 
 	/**
+	 * get pid by package name
+	 * 
+	 * @param context
+	 *            context of activity
+	 * @param packageName
+	 *            package name of monitoring app
+	 * @return pid
+	 */
+	public Programe getProgrameByPackageName(Context context, String packageName) {
+		List<Programe> processList = getRunningProcess(context);
+		for (Programe programe : processList) {
+			if ((programe.getPackageName() != null) && (programe.getPackageName().equals(packageName))) {
+				return programe;
+			}
+		}
+		return null;
+	}
+
+	/**
 	 * get top activity name
 	 * 
 	 * @param context

@@ -16,10 +16,7 @@
  */
 package com.netease.qa.emmagee.activity;
 
-import java.io.BufferedReader;
 import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -52,6 +49,7 @@ public class SettingsActivity extends Activity {
 
 	private CheckBox chkFloat;
 	private CheckBox chkRoot;
+	private CheckBox chkAutoStop;
 	private TextView tvTime;
 	private LinearLayout about;
 	private LinearLayout mailSettings;
@@ -67,14 +65,17 @@ public class SettingsActivity extends Activity {
 
 		chkFloat = (CheckBox) findViewById(R.id.floating);
 		chkRoot = (CheckBox) findViewById(R.id.is_root);
+		chkAutoStop = (CheckBox) findViewById(R.id.auto_stop);
 		tvTime = (TextView) findViewById(R.id.time);
 		about = (LinearLayout) findViewById(R.id.about);
 		mailSettings = (LinearLayout) findViewById(R.id.mail_settings);
 		SeekBar timeBar = (SeekBar) findViewById(R.id.timeline);
 		ImageView btnSave = (ImageView) findViewById(R.id.btn_set);
 		RelativeLayout floatingItem = (RelativeLayout) findViewById(R.id.floating_item);
+		RelativeLayout autoStopItem = (RelativeLayout) findViewById(R.id.auto_stop_item);
 		LinearLayout layGoBack = (LinearLayout) findViewById(R.id.lay_go_back);
 		LinearLayout layHeapItem = (LinearLayout) findViewById(R.id.heap_item);
+		
 
 		btnSave.setVisibility(ImageView.INVISIBLE);
 		
@@ -82,10 +83,12 @@ public class SettingsActivity extends Activity {
 		int interval = preferences.getInt(Settings.KEY_INTERVAL, 5);
 		boolean isfloat = preferences.getBoolean(Settings.KEY_ISFLOAT, true);
 		boolean isRoot = preferences.getBoolean(Settings.KEY_ROOT, false);
-
+		boolean autoStop = preferences.getBoolean(Settings.KEY_AUTO_STOP, true);
+		
 		tvTime.setText(String.valueOf(interval));
 		chkFloat.setChecked(isfloat);
 		chkRoot.setChecked(isRoot);
+		chkAutoStop.setChecked(autoStop);
 		
 		timeBar.setProgress(interval);
 		timeBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
@@ -142,7 +145,16 @@ public class SettingsActivity extends Activity {
 				preferences.edit().putBoolean(Settings.KEY_ISFLOAT, !isChecked).commit();
 			}
 		});
-
+		
+		autoStopItem.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				boolean isChecked = chkAutoStop.isChecked();
+				chkAutoStop.setChecked(!isChecked);
+				preferences.edit().putBoolean(Settings.KEY_AUTO_STOP, !isChecked).commit();
+			}
+		});
+		
 		// get root permission
 		layHeapItem.setOnClickListener(new OnClickListener() {
 			@Override

@@ -19,6 +19,7 @@ public final class Settings {
 	public static final String KEY_ISFLOAT = "isfloat";
 	public static final String KEY_INTERVAL = "interval";
 	public static final String KEY_ROOT = "root";
+	public static final String KEY_AUTO_STOP = "autoStop";
 	
 	public static SharedPreferences getDefaultSharedPreferences(Context context) {
 		return PreferenceManager.getDefaultSharedPreferences(context);

@@ -83,4 +83,5 @@
     <string name="collect_heap">Collect Heap</string>
     <string name="root_notification">(root is necessary)</string>
     <string name="root_failed_notification">Fail to get root permission, please check if this phone is rooted</string>
+	<string name="stop_when_exited">Stop monitoring when app exited</string>
 </resources>
