@@ -65,6 +65,7 @@ import com.netease.qa.emmagee.utils.Constants;
 import com.netease.qa.emmagee.utils.CpuInfo;
 import com.netease.qa.emmagee.utils.CurrentInfo;
 import com.netease.qa.emmagee.utils.EncryptData;
+import com.netease.qa.emmagee.utils.FpsInfo;
 import com.netease.qa.emmagee.utils.MailSender;
 import com.netease.qa.emmagee.utils.MemoryInfo;
 import com.netease.qa.emmagee.utils.MyApplication;
@@ -122,6 +123,7 @@ public class EmmageeService extends Service {
 	private String temperature;
 	private String voltage;
 	private CurrentInfo currentInfo;
+	private FpsInfo fpsInfo;
 	private BatteryInfoBroadcastReceiver batteryBroadcast = null;
 
 	// get start time
@@ -139,6 +141,7 @@ public class EmmageeService extends Service {
 		super.onCreate();
 		isServiceStop = false;
 		isStop = false;
+		fpsInfo = new FpsInfo();
 		memoryInfo = new MemoryInfo();
 		procInfo = new ProcessInfo();
 		fomart = new DecimalFormat();
@@ -300,7 +303,7 @@ public class EmmageeService extends Service {
 					+ getString(R.string.mobile_free_mem) + Constants.COMMA + getString(R.string.app_used_cpu_ratio) + Constants.COMMA
 					+ getString(R.string.total_used_cpu_ratio) + multiCpuTitle + Constants.COMMA + getString(R.string.traffic) + Constants.COMMA
 					+ getString(R.string.battery) + Constants.COMMA + getString(R.string.current) + Constants.COMMA + getString(R.string.temperature)
-					+ Constants.COMMA + getString(R.string.voltage) + Constants.LINE_END);
+					+ Constants.COMMA + getString(R.string.voltage) + Constants.COMMA + getString(R.string.fps) + Constants.LINE_END);
 		} catch (IOException e) {
 			Log.e(LOG_TAG, e.getMessage());
 		}
@@ -457,7 +460,7 @@ public class EmmageeService extends Service {
 		} catch (Exception e) {
 			currentBatt = Constants.NA;
 		}
-		ArrayList<String> processInfo = cpuInfo.getCpuRatioInfo(totalBatt, currentBatt, temperature, voltage, isRoot);
+		ArrayList<String> processInfo = cpuInfo.getCpuRatioInfo(totalBatt, currentBatt, temperature, voltage, String.valueOf(fpsInfo.fps()), isRoot);
 		if (isFloating) {
 			String processCpuRatio = "0.00";
 			String totalCpuRatio = "0.00";

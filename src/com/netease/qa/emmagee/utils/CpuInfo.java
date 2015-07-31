@@ -225,7 +225,7 @@ public class CpuInfo {
 	 * @return network traffic ,used ratio of process CPU and total CPU in
 	 *         certain interval
 	 */
-	public ArrayList<String> getCpuRatioInfo(String totalBatt, String currentBatt, String temperature, String voltage,boolean isRoot) {
+	public ArrayList<String> getCpuRatioInfo(String totalBatt, String currentBatt, String temperature, String voltage, String fps, boolean isRoot) {
 
 		String heapData = "";
 		DecimalFormat fomart = new DecimalFormat();
@@ -315,7 +315,7 @@ public class CpuInfo {
 					EmmageeService.bw.write(mDateTime2 + Constants.COMMA + ProcessInfo.getTopActivity(context) + Constants.COMMA +heapData+ pMemory
 							+ Constants.COMMA + percent + Constants.COMMA + fMemory + Constants.COMMA + processCpuRatio + Constants.COMMA
 							+ totalCpuBuffer.toString() + trafValue + Constants.COMMA + totalBatt + Constants.COMMA + currentBatt + Constants.COMMA
-							+ temperature + Constants.COMMA + voltage + Constants.LINE_END);
+							+ temperature + Constants.COMMA + voltage + Constants.COMMA + fps + Constants.LINE_END);
 					totalCpu2 = (ArrayList<Long>) totalCpu.clone();
 					processCpu2 = processCpu;
 					idleCpu2 = (ArrayList<Long>) idleCpu.clone();

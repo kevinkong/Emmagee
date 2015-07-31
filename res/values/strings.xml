@@ -41,6 +41,7 @@
     <string name="current">Current(mA)</string>
     <string name="temperature">Temperature(C)</string>
     <string name="voltage">Voltage(V)</string>
+    <string name="fps">FPS</string>
     <string name="stat_error">Stat Error</string>
 
     <string name="comment1">Note: for unsupported devices refer to: https://github.com/NetEase/Emmagee/wiki/Some-devices-are-not-supported</string>

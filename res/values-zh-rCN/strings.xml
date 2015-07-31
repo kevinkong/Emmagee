@@ -41,6 +41,7 @@
     <string name="current">电流(mA)</string>
     <string name="temperature">温度(C)</string>
     <string name="voltage">电压(V)</string>
+    <string name="fps">帧率</string>
     <string name="stat_error">统计出错</string>
 
     <string name="comment1">注释:已知部分不支持的机型可在此查阅:https://github.com/NetEase/Emmagee/wiki/Some-devices-are-not-supported</string>
