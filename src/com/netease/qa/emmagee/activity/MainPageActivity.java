@@ -205,17 +205,10 @@ public class MainPageActivity extends Activity {
 		boolean isProcessStarted = false;
 		long startTime = System.currentTimeMillis();
 		while (System.currentTimeMillis() < startTime + TIMEOUT) {
-			processList = processInfo.getRunningProcess(getBaseContext());
-			for (Programe programe : processList) {
-				if ((programe.getPackageName() != null) && (programe.getPackageName().equals(packageName))) {
-					pid = programe.getPid();
-					Log.d(LOG_TAG, "pid:" + pid);
-					uid = programe.getUid();
-					if (pid != 0) {
-						isProcessStarted = true;
-						break;
-					}
-				}
+			pid = processInfo.getPidByPackageName(getBaseContext(), packageName);
+			if (pid != 0) {
+				isProcessStarted = true;
+				break;
 			}
 			if (isProcessStarted) {
 				break;
@@ -265,7 +258,7 @@ public class MainPageActivity extends Activity {
 		int lastCheckedPosition = -1;
 
 		public ListAdapter() {
-			programes = processInfo.getRunningProcess(getBaseContext());
+			programes = processInfo.getAllPackages(getBaseContext());
 		}
 
 		@Override
