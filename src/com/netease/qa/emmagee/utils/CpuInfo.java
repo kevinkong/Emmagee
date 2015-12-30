@@ -141,19 +141,14 @@ public class CpuInfo {
 		try {
 			RandomAccessFile cpuStat = new RandomAccessFile(CPU_INFO_PATH, "r");
 			// check cpu type
-			if (Build.CPU_ABI.equalsIgnoreCase(CPU_X86)) {
-				String line;
-				while (null != (line = cpuStat.readLine())) {
-					String[] values = line.split(":");
-					if (values[0].contains(INTEL_CPU_NAME)) {
-						cpuStat.close();
-						return values[1];
-					}
+			String line;
+			while (null != (line = cpuStat.readLine())) {
+				String[] values = line.split(":");
+				if (values[0].contains(INTEL_CPU_NAME) || values[0].contains("Processor")) {
+					cpuStat.close();
+					Log.d(LOG_TAG, "CPU name="+values[1]);
+					return values[1];
 				}
-			} else {
-				String[] cpu = cpuStat.readLine().split(":"); // cpu信息的前一段是含有processor字符串，此处替换为不显示
-				cpuStat.close();
-				return cpu[1];
 			}
 		} catch (IOException e) {
 			Log.e(LOG_TAG, "IOException: " + e.getMessage());

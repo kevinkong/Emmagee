@@ -97,6 +97,7 @@ public class ProcessInfo {
 		Log.i(LOG_TAG, "start getLaunchedPid");
 		ActivityManager am = (ActivityManager) context
 				.getSystemService(Context.ACTIVITY_SERVICE);
+		// Note: getRunningAppProcesses return itself in API 22
 		if (Build.VERSION.SDK_INT < ANDROID_M) {
 			List<RunningAppProcessInfo> run = am.getRunningAppProcesses();
 			for (RunningAppProcessInfo runningProcess : run) {
@@ -208,6 +209,7 @@ public class ProcessInfo {
 	public static String getTopActivity(Context context) {
 		ActivityManager manager = (ActivityManager) context
 				.getSystemService(Context.ACTIVITY_SERVICE);
+		// Note: getRunningTasks is deprecated in API 21(Official)
 		List<RunningTaskInfo> runningTaskInfos = manager.getRunningTasks(1);
 		if (runningTaskInfos != null)
 			return (runningTaskInfos.get(0).topActivity).toString();
