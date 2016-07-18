@@ -40,6 +40,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.net.wifi.WifiManager;
 import android.os.BatteryManager;
@@ -197,11 +198,18 @@ public class EmmageeService extends Service {
 		startForeground(startId, builder.build());
 
 		pid = intent.getExtras().getInt("pid");
-		uid = intent.getExtras().getInt("uid");
+		//uid = intent.getExtras().getInt("uid");
 		processName = intent.getExtras().getString("processName");
 		packageName = intent.getExtras().getString("packageName");
 		startActivity = intent.getExtras().getString("startActivity");
 
+		try {
+			PackageManager pm = getPackageManager();
+			ApplicationInfo ainfo = pm.getApplicationInfo(packageName, PackageManager.GET_ACTIVITIES);
+			uid = ainfo.uid;
+		}catch (PackageManager.NameNotFoundException e) {
+			e.printStackTrace();
+		}
 		cpuInfo = new CpuInfo(getBaseContext(), pid, Integer.toString(uid));
 		readSettingInfo();
 		if (isFloating) {
