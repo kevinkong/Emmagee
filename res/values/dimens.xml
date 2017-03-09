@@ -20,7 +20,7 @@
     <dimen name="button_height">40dp</dimen>
     
     <dimen name="image_padding">10dp</dimen>
-	<dimen name="image_padding_small">5dp</dimen>
+	<dimen name="image_padding_small">10dp</dimen>
 	
 	<dimen name="line_height">1px</dimen>
 	

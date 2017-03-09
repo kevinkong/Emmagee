@@ -72,6 +72,7 @@ public class MainPageActivity extends Activity {
 	private ImageView ivBtnSet;
 	private LinearLayout layBtnSet;
 	private Long mExitTime = (long) 0;
+	private ListAdapter la;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -128,7 +129,9 @@ public class MainPageActivity extends Activity {
 				}
 			}
 		});
-		lstViProgramme.setAdapter(new ListAdapter());
+
+		la = new ListAdapter(processInfo.getAllPackages(getBaseContext()));
+		lstViProgramme.setAdapter(la);
 		lstViProgramme.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -138,7 +141,7 @@ public class MainPageActivity extends Activity {
 		});
 
 		nbTitle.setText(getString(R.string.app_name));
-		ivGoBack.setVisibility(ImageView.INVISIBLE);
+		ivGoBack.setImageResource(R.drawable.refresh);
 		ivBtnSet.setImageResource(R.drawable.settings_button);
 		layBtnSet.setOnClickListener(new OnClickListener() {
 			@Override
@@ -146,6 +149,15 @@ public class MainPageActivity extends Activity {
 				goToSettingsActivity();
 			}
 		});
+		
+		ivGoBack.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				Toast.makeText(MainPageActivity.this, R.string.update_list, Toast.LENGTH_SHORT).show();
+				la.swapItems(processInfo.getAllPackages(getBaseContext()));
+			}
+		});
+		
 		receiver = new UpdateReceiver();
 		IntentFilter filter = new IntentFilter();
 		filter.addAction(EmmageeService.SERVICE_ACTION);
@@ -255,8 +267,8 @@ public class MainPageActivity extends Activity {
 		Programe checkedProg;
 		int lastCheckedPosition = -1;
 
-		public ListAdapter() {
-			programes = processInfo.getAllPackages(getBaseContext());
+		public ListAdapter(List<Programe> programes) {
+			this.programes = programes;
 		}
 
 		@Override
@@ -272,6 +284,11 @@ public class MainPageActivity extends Activity {
 		@Override
 		public long getItemId(int position) {
 			return position;
+		}
+		
+		public void swapItems(List<Programe> programes) {
+		    this.programes = programes;
+		    notifyDataSetChanged();
 		}
 
 		@Override

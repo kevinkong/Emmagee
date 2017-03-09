@@ -86,4 +86,6 @@
     
     <string name="root_failed_notification">无法获取root权限，请确认手机是否已root</string>
     <string name="stop_when_exited">应用退出后停止监听</string>
+    
+    <string name="update_list">列表更新成功</string>
 </resources>
