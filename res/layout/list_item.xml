@@ -14,8 +14,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:adjustViewBounds="true"
-        android:maxHeight="80px"
-        android:maxWidth="80px"
+        android:maxHeight="100px"
+        android:maxWidth="100px"
         android:layout_gravity="center"
         android:layout_marginRight="10dp"
         android:layout_marginLeft="10dp" />
@@ -26,6 +26,8 @@
         android:layout_height="wrap_content"
         android:textSize="18sp"
         android:textColor="#5B5B5B"
+        android:singleLine="true"
+        android:ellipsize="end"
         android:gravity="center_vertical"/>
 
 </LinearLayout>

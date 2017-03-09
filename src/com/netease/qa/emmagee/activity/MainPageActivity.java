@@ -16,9 +16,13 @@
  */
 package com.netease.qa.emmagee.activity;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.List;
+
+import com.netease.qa.emmagee.R;
+import com.netease.qa.emmagee.service.EmmageeService;
+import com.netease.qa.emmagee.utils.ProcessInfo;
+import com.netease.qa.emmagee.utils.Programe;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -44,11 +48,6 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.netease.qa.emmagee.R;
-import com.netease.qa.emmagee.service.EmmageeService;
-import com.netease.qa.emmagee.utils.ProcessInfo;
-import com.netease.qa.emmagee.utils.Programe;
-
 /**
  * Main Page of Emmagee
  * 
@@ -60,7 +59,6 @@ public class MainPageActivity extends Activity {
 
 	private static final int TIMEOUT = 20000;
 
-	private List<Programe> processList;
 	private ProcessInfo processInfo;
 	private Intent monitorService;
 	private ListView lstViProgramme;
