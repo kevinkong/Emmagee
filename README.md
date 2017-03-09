@@ -1,4 +1,4 @@
-##Emmagee - a practical, handy performance test tool for specified Android App
+## Emmagee - a practical, handy performance test tool for specified Android App
 
 Emmagee is a practical, handy performance test tool for specified Android App, which can monitor CPU, memory, 
 network traffic, battery current and status([Some devices are not supported](https://github.com/NetEase/Emmagee/wiki/Some-devices-are-not-supported)), new features such as top activity and heap size if rooted([Root Toast may continously show](https://github.com/NetEase/Emmagee/wiki/FAQ)), are also supported in the [latest version](https://github.com/NetEase/Emmagee/releases). Additionally, it also provides several cool features such as customizing interval of collecting data,
@@ -41,6 +41,11 @@ build the apk file youself [here](https://github.com/NetEase/Emmagee/wiki/How-to
 And Enjoy!
 
 If you want to stop the test, just go back to Emmagee and click Stop button.
+
+## Android 5.0 and above
+
+* `Android 5.0 and above`: getRunningTasks() and getRunningAppProcesses() are deprecated and only return your application process, so it is unable to get TopActivity from Android 5.0.
+* `Android 7.0`: Google has restricted access to /proc, and also can not get pid of target application from TOP command in Android 7.0, I am so sorry to tell that 7.0 can not be supported.
 
 ## Coming Soon
 * We want you to decide!

@@ -29,6 +29,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -86,46 +87,50 @@ public class MainPageActivity extends Activity {
 		btnTest.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				monitorService = new Intent();
-				monitorService.setClass(MainPageActivity.this, EmmageeService.class);
-				if (getString(R.string.start_test).equals(btnTest.getText().toString())) {
-					ListAdapter adapter = (ListAdapter) lstViProgramme.getAdapter();
-					if (adapter.checkedProg != null) {
-						String packageName = adapter.checkedProg.getPackageName();
-						String processName = adapter.checkedProg.getProcessName();
-						Intent intent = getPackageManager().getLaunchIntentForPackage(packageName);
-						String startActivity = "";
-						Log.d(LOG_TAG, packageName);
-						// clear logcat
-						try {
-							Runtime.getRuntime().exec("logcat -c");
-						} catch (IOException e) {
-							Log.d(LOG_TAG, e.getMessage());
+				if (Build.VERSION.SDK_INT < 24) {
+					monitorService = new Intent();
+					monitorService.setClass(MainPageActivity.this, EmmageeService.class);
+					if (getString(R.string.start_test).equals(btnTest.getText().toString())) {
+						ListAdapter adapter = (ListAdapter) lstViProgramme.getAdapter();
+						if (adapter.checkedProg != null) {
+							String packageName = adapter.checkedProg.getPackageName();
+							String processName = adapter.checkedProg.getProcessName();
+							Intent intent = getPackageManager().getLaunchIntentForPackage(packageName);
+							String startActivity = "";
+							Log.d(LOG_TAG, packageName);
+							// clear logcat
+							try {
+								Runtime.getRuntime().exec("logcat -c");
+							} catch (IOException e) {
+								Log.d(LOG_TAG, e.getMessage());
+							}
+							try {
+								startActivity = intent.resolveActivity(getPackageManager()).getShortClassName();
+								startActivity(intent);
+							} catch (Exception e) {
+								Toast.makeText(MainPageActivity.this, getString(R.string.can_not_start_app_toast), Toast.LENGTH_LONG).show();
+								return;
+							}
+							waitForAppStart(packageName);
+							monitorService.putExtra("processName", processName);
+							monitorService.putExtra("pid", pid);
+							monitorService.putExtra("uid", uid);
+							monitorService.putExtra("packageName", packageName);
+							monitorService.putExtra("startActivity", startActivity);
+							startService(monitorService);
+							isServiceStop = false;
+							btnTest.setText(getString(R.string.stop_test));
+						} else {
+							Toast.makeText(MainPageActivity.this, getString(R.string.choose_app_toast), Toast.LENGTH_LONG).show();
 						}
-						try {
-							startActivity = intent.resolveActivity(getPackageManager()).getShortClassName();
-							startActivity(intent);
-						} catch (Exception e) {
-							Toast.makeText(MainPageActivity.this, getString(R.string.can_not_start_app_toast), Toast.LENGTH_LONG).show();
-							return;
-						}
-						waitForAppStart(packageName);
-						monitorService.putExtra("processName", processName);
-						monitorService.putExtra("pid", pid);
-						monitorService.putExtra("uid", uid);
-						monitorService.putExtra("packageName", packageName);
-						monitorService.putExtra("startActivity", startActivity);
-						startService(monitorService);
-						isServiceStop = false;
-						btnTest.setText(getString(R.string.stop_test));
 					} else {
-						Toast.makeText(MainPageActivity.this, getString(R.string.choose_app_toast), Toast.LENGTH_LONG).show();
+						btnTest.setText(getString(R.string.start_test));
+						Toast.makeText(MainPageActivity.this, getString(R.string.test_result_file_toast) + EmmageeService.resultFilePath,
+								Toast.LENGTH_LONG).show();
+						stopService(monitorService);
 					}
 				} else {
-					btnTest.setText(getString(R.string.start_test));
-					Toast.makeText(MainPageActivity.this, getString(R.string.test_result_file_toast) + EmmageeService.resultFilePath,
-							Toast.LENGTH_LONG).show();
-					stopService(monitorService);
+					Toast.makeText(MainPageActivity.this, getString(R.string.nougat_warning),Toast.LENGTH_LONG).show();
 				}
 			}
 		});

@@ -29,13 +29,12 @@ import java.util.Calendar;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
+import com.netease.qa.emmagee.R;
 import com.netease.qa.emmagee.service.EmmageeService;
 
 import android.content.Context;
 import android.os.Build;
 import android.util.Log;
-
-import com.netease.qa.emmagee.R;
 
 /**
  * operate CPU information

@@ -1,6 +1,7 @@
 package com.netease.qa.emmagee.utils;
 
-import javax.mail.*;
+import javax.mail.Authenticator;
+import javax.mail.PasswordAuthentication;
 
 /**
  * Customized Authenticator

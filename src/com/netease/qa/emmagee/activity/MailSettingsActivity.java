@@ -19,6 +19,10 @@ package com.netease.qa.emmagee.activity;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.netease.qa.emmagee.R;
+import com.netease.qa.emmagee.utils.EncryptData;
+import com.netease.qa.emmagee.utils.Settings;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -27,16 +31,12 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.netease.qa.emmagee.R;
-import com.netease.qa.emmagee.utils.EncryptData;
-import com.netease.qa.emmagee.utils.Settings;
 
 /**
  * Mail Setting Page of Emmagee

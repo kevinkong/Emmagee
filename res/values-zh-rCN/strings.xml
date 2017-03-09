@@ -88,4 +88,5 @@
     <string name="stop_when_exited">应用退出后停止监听</string>
     
     <string name="update_list">列表更新成功</string>
+    <string name="nougat_warning">由于Google的限制，Emmagee无法支持7.0及以上版本</string>
 </resources>

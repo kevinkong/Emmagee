@@ -32,6 +32,20 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
 
+import com.netease.qa.emmagee.R;
+import com.netease.qa.emmagee.activity.MainPageActivity;
+import com.netease.qa.emmagee.utils.Constants;
+import com.netease.qa.emmagee.utils.CpuInfo;
+import com.netease.qa.emmagee.utils.CurrentInfo;
+import com.netease.qa.emmagee.utils.EncryptData;
+import com.netease.qa.emmagee.utils.FpsInfo;
+import com.netease.qa.emmagee.utils.MailSender;
+import com.netease.qa.emmagee.utils.MemoryInfo;
+import com.netease.qa.emmagee.utils.MyApplication;
+import com.netease.qa.emmagee.utils.ProcessInfo;
+import com.netease.qa.emmagee.utils.Programe;
+import com.netease.qa.emmagee.utils.Settings;
+
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -59,20 +73,6 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.netease.qa.emmagee.R;
-import com.netease.qa.emmagee.activity.MainPageActivity;
-import com.netease.qa.emmagee.utils.Constants;
-import com.netease.qa.emmagee.utils.CpuInfo;
-import com.netease.qa.emmagee.utils.CurrentInfo;
-import com.netease.qa.emmagee.utils.EncryptData;
-import com.netease.qa.emmagee.utils.FpsInfo;
-import com.netease.qa.emmagee.utils.MailSender;
-import com.netease.qa.emmagee.utils.MemoryInfo;
-import com.netease.qa.emmagee.utils.MyApplication;
-import com.netease.qa.emmagee.utils.ProcessInfo;
-import com.netease.qa.emmagee.utils.Programe;
-import com.netease.qa.emmagee.utils.Settings;
 
 /**
  * Service running in background

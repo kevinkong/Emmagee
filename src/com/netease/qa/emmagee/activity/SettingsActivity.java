@@ -18,14 +18,17 @@ package com.netease.qa.emmagee.activity;
 
 import java.io.DataOutputStream;
 
+import com.netease.qa.emmagee.R;
+import com.netease.qa.emmagee.utils.Settings;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -34,9 +37,6 @@ import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.netease.qa.emmagee.R;
-import com.netease.qa.emmagee.utils.Settings;
 
 /**
  * Setting Page of Emmagee

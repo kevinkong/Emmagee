@@ -16,10 +16,6 @@
  */
 package com.netease.qa.emmagee.utils;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.RandomAccessFile;
-
 import android.net.TrafficStats;
 import android.util.Log;
 
