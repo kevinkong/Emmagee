@@ -16,15 +16,20 @@
  */
 package com.netease.qa.emmagee.activity;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.List;
+
+import com.netease.qa.emmagee.R;
+import com.netease.qa.emmagee.service.EmmageeService;
+import com.netease.qa.emmagee.utils.ProcessInfo;
+import com.netease.qa.emmagee.utils.Programe;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -44,11 +49,6 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.netease.qa.emmagee.R;
-import com.netease.qa.emmagee.service.EmmageeService;
-import com.netease.qa.emmagee.utils.ProcessInfo;
-import com.netease.qa.emmagee.utils.Programe;
-
 /**
  * Main Page of Emmagee
  * 
@@ -60,7 +60,6 @@ public class MainPageActivity extends Activity {
 
 	private static final int TIMEOUT = 20000;
 
-	private List<Programe> processList;
 	private ProcessInfo processInfo;
 	private Intent monitorService;
 	private ListView lstViProgramme;
@@ -74,6 +73,7 @@ public class MainPageActivity extends Activity {
 	private ImageView ivBtnSet;
 	private LinearLayout layBtnSet;
 	private Long mExitTime = (long) 0;
+	private ListAdapter la;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -87,50 +87,56 @@ public class MainPageActivity extends Activity {
 		btnTest.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				monitorService = new Intent();
-				monitorService.setClass(MainPageActivity.this, EmmageeService.class);
-				if (getString(R.string.start_test).equals(btnTest.getText().toString())) {
-					ListAdapter adapter = (ListAdapter) lstViProgramme.getAdapter();
-					if (adapter.checkedProg != null) {
-						String packageName = adapter.checkedProg.getPackageName();
-						String processName = adapter.checkedProg.getProcessName();
-						Intent intent = getPackageManager().getLaunchIntentForPackage(packageName);
-						String startActivity = "";
-						Log.d(LOG_TAG, packageName);
-						// clear logcat
-						try {
-							Runtime.getRuntime().exec("logcat -c");
-						} catch (IOException e) {
-							Log.d(LOG_TAG, e.getMessage());
+				if (Build.VERSION.SDK_INT < 24) {
+					monitorService = new Intent();
+					monitorService.setClass(MainPageActivity.this, EmmageeService.class);
+					if (getString(R.string.start_test).equals(btnTest.getText().toString())) {
+						ListAdapter adapter = (ListAdapter) lstViProgramme.getAdapter();
+						if (adapter.checkedProg != null) {
+							String packageName = adapter.checkedProg.getPackageName();
+							String processName = adapter.checkedProg.getProcessName();
+							Intent intent = getPackageManager().getLaunchIntentForPackage(packageName);
+							String startActivity = "";
+							Log.d(LOG_TAG, packageName);
+							// clear logcat
+							try {
+								Runtime.getRuntime().exec("logcat -c");
+							} catch (IOException e) {
+								Log.d(LOG_TAG, e.getMessage());
+							}
+							try {
+								startActivity = intent.resolveActivity(getPackageManager()).getShortClassName();
+								startActivity(intent);
+							} catch (Exception e) {
+								Toast.makeText(MainPageActivity.this, getString(R.string.can_not_start_app_toast), Toast.LENGTH_LONG).show();
+								return;
+							}
+							waitForAppStart(packageName);
+							monitorService.putExtra("processName", processName);
+							monitorService.putExtra("pid", pid);
+							monitorService.putExtra("uid", uid);
+							monitorService.putExtra("packageName", packageName);
+							monitorService.putExtra("startActivity", startActivity);
+							startService(monitorService);
+							isServiceStop = false;
+							btnTest.setText(getString(R.string.stop_test));
+						} else {
+							Toast.makeText(MainPageActivity.this, getString(R.string.choose_app_toast), Toast.LENGTH_LONG).show();
 						}
-						try {
-							startActivity = intent.resolveActivity(getPackageManager()).getShortClassName();
-							startActivity(intent);
-						} catch (Exception e) {
-							Toast.makeText(MainPageActivity.this, getString(R.string.can_not_start_app_toast), Toast.LENGTH_LONG).show();
-							return;
-						}
-						waitForAppStart(packageName);
-						monitorService.putExtra("processName", processName);
-						monitorService.putExtra("pid", pid);
-						monitorService.putExtra("uid", uid);
-						monitorService.putExtra("packageName", packageName);
-						monitorService.putExtra("startActivity", startActivity);
-						startService(monitorService);
-						isServiceStop = false;
-						btnTest.setText(getString(R.string.stop_test));
 					} else {
-						Toast.makeText(MainPageActivity.this, getString(R.string.choose_app_toast), Toast.LENGTH_LONG).show();
+						btnTest.setText(getString(R.string.start_test));
+						Toast.makeText(MainPageActivity.this, getString(R.string.test_result_file_toast) + EmmageeService.resultFilePath,
+								Toast.LENGTH_LONG).show();
+						stopService(monitorService);
 					}
 				} else {
-					btnTest.setText(getString(R.string.start_test));
-					Toast.makeText(MainPageActivity.this, getString(R.string.test_result_file_toast) + EmmageeService.resultFilePath,
-							Toast.LENGTH_LONG).show();
-					stopService(monitorService);
+					Toast.makeText(MainPageActivity.this, getString(R.string.nougat_warning),Toast.LENGTH_LONG).show();
 				}
 			}
 		});
-		lstViProgramme.setAdapter(new ListAdapter());
+
+		la = new ListAdapter(processInfo.getAllPackages(getBaseContext()));
+		lstViProgramme.setAdapter(la);
 		lstViProgramme.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -140,7 +146,7 @@ public class MainPageActivity extends Activity {
 		});
 
 		nbTitle.setText(getString(R.string.app_name));
-		ivGoBack.setVisibility(ImageView.INVISIBLE);
+		ivGoBack.setImageResource(R.drawable.refresh);
 		ivBtnSet.setImageResource(R.drawable.settings_button);
 		layBtnSet.setOnClickListener(new OnClickListener() {
 			@Override
@@ -148,6 +154,15 @@ public class MainPageActivity extends Activity {
 				goToSettingsActivity();
 			}
 		});
+		
+		ivGoBack.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				Toast.makeText(MainPageActivity.this, R.string.update_list, Toast.LENGTH_SHORT).show();
+				la.swapItems(processInfo.getAllPackages(getBaseContext()));
+			}
+		});
+		
 		receiver = new UpdateReceiver();
 		IntentFilter filter = new IntentFilter();
 		filter.addAction(EmmageeService.SERVICE_ACTION);
@@ -257,8 +272,8 @@ public class MainPageActivity extends Activity {
 		Programe checkedProg;
 		int lastCheckedPosition = -1;
 
-		public ListAdapter() {
-			programes = processInfo.getAllPackages(getBaseContext());
+		public ListAdapter(List<Programe> programes) {
+			this.programes = programes;
 		}
 
 		@Override
@@ -274,6 +289,11 @@ public class MainPageActivity extends Activity {
 		@Override
 		public long getItemId(int position) {
 			return position;
+		}
+		
+		public void swapItems(List<Programe> programes) {
+		    this.programes = programes;
+		    notifyDataSetChanged();
 		}
 
 		@Override

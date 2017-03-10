@@ -16,19 +16,19 @@
  */
 package com.netease.qa.emmagee.activity;
 
+import com.netease.qa.emmagee.R;
+
 import android.app.Activity;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import com.netease.qa.emmagee.R;
 
 /**
  * About Page of Emmagee

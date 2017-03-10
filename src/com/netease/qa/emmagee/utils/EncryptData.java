@@ -1,6 +1,6 @@
 package com.netease.qa.emmagee.utils;
 
-import java.security.*;
+import java.security.Key;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;

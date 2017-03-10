@@ -210,6 +210,9 @@ public class ProcessInfo {
 		ActivityManager manager = (ActivityManager) context
 				.getSystemService(Context.ACTIVITY_SERVICE);
 		// Note: getRunningTasks is deprecated in API 21(Official)
+//		if (Build.VERSION.SDK_INT >= 21) {
+//			return Constants.NA;
+//		} 
 		List<RunningTaskInfo> runningTaskInfos = manager.getRunningTasks(1);
 		if (runningTaskInfos != null)
 			return (runningTaskInfos.get(0).topActivity).toString();
