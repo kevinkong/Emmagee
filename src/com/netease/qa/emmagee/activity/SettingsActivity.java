@@ -20,6 +20,7 @@ import java.io.DataOutputStream;
 
 import com.netease.qa.emmagee.R;
 import com.netease.qa.emmagee.utils.Settings;
+import com.netease.qa.emmagee.utils.WakeLockHelper;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -50,11 +51,13 @@ public class SettingsActivity extends Activity {
 	private CheckBox chkFloat;
 	private CheckBox chkRoot;
 	private CheckBox chkAutoStop;
+	private CheckBox chkWakeLock;
 	private TextView tvTime;
 	private LinearLayout about;
 	private LinearLayout mailSettings;
 
 	private SharedPreferences preferences;
+	private WakeLockHelper wakeLockHelper;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -63,9 +66,12 @@ public class SettingsActivity extends Activity {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.settings);
 
+		wakeLockHelper = Settings.getDefaultWakeLock(this);
+		
 		chkFloat = (CheckBox) findViewById(R.id.floating);
 		chkRoot = (CheckBox) findViewById(R.id.is_root);
 		chkAutoStop = (CheckBox) findViewById(R.id.auto_stop);
+		chkWakeLock = (CheckBox) findViewById(R.id.wake_lock); 
 		tvTime = (TextView) findViewById(R.id.time);
 		about = (LinearLayout) findViewById(R.id.about);
 		mailSettings = (LinearLayout) findViewById(R.id.mail_settings);
@@ -73,9 +79,9 @@ public class SettingsActivity extends Activity {
 		ImageView btnSave = (ImageView) findViewById(R.id.btn_set);
 		RelativeLayout floatingItem = (RelativeLayout) findViewById(R.id.floating_item);
 		RelativeLayout autoStopItem = (RelativeLayout) findViewById(R.id.auto_stop_item);
+		RelativeLayout wakeLockItem = (RelativeLayout) findViewById(R.id.wake_lock_item);
 		LinearLayout layGoBack = (LinearLayout) findViewById(R.id.lay_go_back);
 		LinearLayout layHeapItem = (LinearLayout) findViewById(R.id.heap_item);
-		
 
 		btnSave.setVisibility(ImageView.INVISIBLE);
 		
@@ -84,11 +90,13 @@ public class SettingsActivity extends Activity {
 		boolean isfloat = preferences.getBoolean(Settings.KEY_ISFLOAT, true);
 		boolean isRoot = preferences.getBoolean(Settings.KEY_ROOT, false);
 		boolean autoStop = preferences.getBoolean(Settings.KEY_AUTO_STOP, true);
+		boolean wakeLock = preferences.getBoolean(Settings.KEY_WACK_LOCK, false);
 		
 		tvTime.setText(String.valueOf(interval));
 		chkFloat.setChecked(isfloat);
 		chkRoot.setChecked(isRoot);
 		chkAutoStop.setChecked(autoStop);
+		chkWakeLock.setChecked(wakeLock);
 		
 		timeBar.setProgress(interval);
 		timeBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
@@ -155,6 +163,20 @@ public class SettingsActivity extends Activity {
 			}
 		});
 		
+		wakeLockItem.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				boolean isChecked = chkWakeLock.isChecked();
+				chkWakeLock.setChecked(!isChecked);
+				preferences.edit().putBoolean(Settings.KEY_WACK_LOCK, !isChecked).commit();
+				if (chkWakeLock.isChecked()) {
+					wakeLockHelper.acquireFullWakeLock();
+				} else {
+					wakeLockHelper.releaseWakeLock();
+				}
+			}
+		});
+		
 		// get root permission
 		layHeapItem.setOnClickListener(new OnClickListener() {
 			@Override
@@ -179,11 +201,6 @@ public class SettingsActivity extends Activity {
 
 			}
 		});
-	}
-
-	@Override
-	public void finish() {
-		super.finish();
 	}
 
 	@Override

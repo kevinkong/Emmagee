@@ -89,4 +89,7 @@
     
     <string name="update_list">列表更新成功</string>
     <string name="nougat_warning">由于Google的限制，Emmagee无法支持7.0及以上版本</string>
+    
+    <string name="wake_lock">屏幕保持常亮</string>
+    <string name="wake_lock_on_toast">WakeLock已开启，屏幕会保持常亮</string>
 </resources>

@@ -289,9 +289,6 @@ public class EmmageeService extends Service {
 			// 在4.0以下的低版本上/sdcard连接至/mnt/sdcard，而4.0以上版本则连接至/storage/sdcard0，所以有外接sdcard，/sdcard路径一定存在
 			resultFilePath = "/sdcard" + File.separator + "Emmagee_TestResult_"
 					+ mDateTime + ".csv";
-			// resultFilePath =
-			// android.os.Environment.getExternalStorageDirectory() +
-			// File.separator + "Emmagee_TestResult_" + mDateTime + ".csv";
 		} else {
 			resultFilePath = getBaseContext().getFilesDir().getPath()
 					+ File.separator + "Emmagee_TestResult_" + mDateTime

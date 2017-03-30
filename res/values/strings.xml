@@ -88,4 +88,6 @@
 	
 	<string name="update_list">Update List Successfully</string>
 	<string name="nougat_warning">Don\'t support 7.0 and above while Google has restricted access to shell commands and file system</string>
+	<string name="wake_lock">WakeLock</string>
+	<string name="wake_lock_on_toast">WakeLock is on，screen will stay awake</string>
 </resources>
