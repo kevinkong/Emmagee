@@ -23,12 +23,15 @@ import com.netease.qa.emmagee.R;
 import com.netease.qa.emmagee.service.EmmageeService;
 import com.netease.qa.emmagee.utils.ProcessInfo;
 import com.netease.qa.emmagee.utils.Programe;
+import com.netease.qa.emmagee.utils.Settings;
+import com.netease.qa.emmagee.utils.WakeLockHelper;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -83,6 +86,7 @@ public class MainPageActivity extends Activity {
 		setContentView(R.layout.mainpage);
 		
 		initTitleLayout();
+		loadSettings();
 		processInfo = new ProcessInfo();
 		btnTest.setOnClickListener(new OnClickListener() {
 			@Override
@@ -177,6 +181,15 @@ public class MainPageActivity extends Activity {
 		btnTest = (Button) findViewById(R.id.test);
 		layBtnSet = (LinearLayout) findViewById(R.id.lay_btn_set);
 	}
+	
+	private void loadSettings() {
+		SharedPreferences preferences = Settings.getDefaultSharedPreferences(this);
+		boolean wakeLock = preferences.getBoolean(Settings.KEY_WACK_LOCK, false);
+		if (wakeLock) {
+			Toast.makeText(this, R.string.wake_lock_on_toast, Toast.LENGTH_LONG).show();
+			Settings.getDefaultWakeLock(this).acquireFullWakeLock();
+		}
+	}
 
 	/**
 	 * customized BroadcastReceiver
@@ -248,8 +261,7 @@ public class MainPageActivity extends Activity {
 					Log.d(LOG_TAG, "stop service");
 					stopService(monitorService);
 				}
-				Log.d(LOG_TAG, "exit Emmagee");
-				finish();
+				System.exit(0);
 			}
 			return true;
 		}
@@ -349,7 +361,7 @@ public class MainPageActivity extends Activity {
 
 	@Override
 	protected void onDestroy() {
+		unregisterReceiver(receiver);  
 		super.onDestroy();
-		unregisterReceiver(receiver);
 	}
 }

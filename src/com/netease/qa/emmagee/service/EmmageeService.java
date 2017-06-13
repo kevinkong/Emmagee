@@ -277,28 +277,13 @@ public class EmmageeService extends Service {
 	private void createResultCsv() {
 		Calendar cal = Calendar.getInstance();
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
-		String mDateTime;
 		String heapData = "";
-		if ((Build.MODEL.equals("sdk")) || (Build.MODEL.equals("google_sdk")))
-			mDateTime = formatter.format(cal.getTime().getTime() + 8 * 60 * 60
-					* 1000);
-		else
-			mDateTime = formatter.format(cal.getTime().getTime());
-		if (android.os.Environment.getExternalStorageState().equals(
-				android.os.Environment.MEDIA_MOUNTED)) {
-			// 在4.0以下的低版本上/sdcard连接至/mnt/sdcard，而4.0以上版本则连接至/storage/sdcard0，所以有外接sdcard，/sdcard路径一定存在
-			resultFilePath = "/sdcard" + File.separator + "Emmagee_TestResult_"
-					+ mDateTime + ".csv";
-			// resultFilePath =
-			// android.os.Environment.getExternalStorageDirectory() +
-			// File.separator + "Emmagee_TestResult_" + mDateTime + ".csv";
-		} else {
-			resultFilePath = getBaseContext().getFilesDir().getPath()
-					+ File.separator + "Emmagee_TestResult_" + mDateTime
-					+ ".csv";
-		}
+		String mDateTime = formatter.format(cal.getTime().getTime());
+		resultFilePath = Settings.EMMAGEE_RESULT_DIR + mDateTime + "_" + packageName
+				+ ".csv";
 		try {
 			File resultFile = new File(resultFilePath);
+			resultFile.getParentFile().mkdirs();
 			resultFile.createNewFile();
 			out = new FileOutputStream(resultFile);
 			osw = new OutputStreamWriter(out);
@@ -598,10 +583,6 @@ public class EmmageeService extends Service {
 	public void closeOpenedStream() {
 		try {
 			if (bw != null) {
-				bw.write(getString(R.string.comment1) + Constants.LINE_END
-						+ getString(R.string.comment2) + Constants.LINE_END
-						+ getString(R.string.comment3) + Constants.LINE_END
-						+ getString(R.string.comment4) + Constants.LINE_END);
 				bw.close();
 			}
 			if (osw != null)

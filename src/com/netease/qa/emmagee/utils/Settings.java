@@ -20,9 +20,19 @@ public final class Settings {
 	public static final String KEY_INTERVAL = "interval";
 	public static final String KEY_ROOT = "root";
 	public static final String KEY_AUTO_STOP = "autoStop";
+	public static final String KEY_WACK_LOCK = "wakeLock";
+	public static final String EMMAGEE_RESULT_DIR = "/sdcard/Emmagee/";
+	private static WakeLockHelper wakeLockHelper;
 	
 	public static SharedPreferences getDefaultSharedPreferences(Context context) {
 		return PreferenceManager.getDefaultSharedPreferences(context);
+	}
+	
+	public static WakeLockHelper getDefaultWakeLock(Context context) {
+		if (wakeLockHelper == null) {
+			wakeLockHelper = new WakeLockHelper(context);
+		}
+		return wakeLockHelper;
 	}
 
 }

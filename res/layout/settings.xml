@@ -104,6 +104,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
+                    android:clickable="false"
                     android:background="@drawable/custom_checkbox"
                     android:button="@null"
                     android:checked="true"
@@ -131,9 +132,38 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
+                    android:clickable="false"
                     android:background="@drawable/custom_checkbox"
                     android:button="@null"
                     android:checked="true"
+                    android:paddingLeft="@dimen/image_padding"
+                    android:paddingRight="@dimen/image_padding" />
+            </RelativeLayout>
+            
+            <RelativeLayout
+                android:id="@+id/wake_lock_item"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="@dimen/layout_vertical_margin_small" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/wake_lock"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size" />
+
+                <CheckBox
+                    android:id="@+id/wake_lock"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:clickable="false"
+                    android:background="@drawable/custom_checkbox"
+                    android:button="@null"
+                    android:checked="false"
                     android:paddingLeft="@dimen/image_padding"
                     android:paddingRight="@dimen/image_padding" />
             </RelativeLayout>
@@ -169,6 +199,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="right"
+                        android:clickable="false"
                         android:background="@drawable/custom_checkbox"
                         android:button="@null"
                         android:checked="false"
@@ -185,7 +216,38 @@
             android:layout_marginTop="@dimen/textview_horizontal_margin"
             android:background="@color/white"
             android:orientation="vertical" >
+			<LinearLayout
+                android:id="@+id/test_report"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:padding="@dimen/layout_vertical_margin_small" >
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/test_report"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size" />
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="right" >
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/right_arrow"
+                        android:textSize="@dimen/text_size" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/line_height"
+                android:background="@color/light_gray" />
+            
             <LinearLayout
                 android:id="@+id/mail_settings"
                 android:layout_width="match_parent"
