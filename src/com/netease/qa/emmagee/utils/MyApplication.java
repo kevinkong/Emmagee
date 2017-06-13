@@ -16,6 +16,8 @@
  */
 package com.netease.qa.emmagee.utils;
 
+import java.io.File;
+
 import android.app.Application;
 import android.view.WindowManager;
 
@@ -31,4 +33,19 @@ public class MyApplication extends Application {
 	public WindowManager.LayoutParams getMywmParams() {
 		return wmParams;
 	}
+
+	@Override
+	public void onCreate() {
+		initAppConfig();
+		super.onCreate();
+	}
+	
+	private void initAppConfig() {
+		// create directory of emmagee
+		File dir = new File(Settings.EMMAGEE_RESULT_DIR);
+		if (!dir.exists()) {
+			dir.mkdirs();
+		}
+	}
+	
 }

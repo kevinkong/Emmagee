@@ -55,6 +55,7 @@ public class SettingsActivity extends Activity {
 	private TextView tvTime;
 	private LinearLayout about;
 	private LinearLayout mailSettings;
+	private LinearLayout testReport;
 
 	private SharedPreferences preferences;
 	private WakeLockHelper wakeLockHelper;
@@ -68,11 +69,13 @@ public class SettingsActivity extends Activity {
 
 		wakeLockHelper = Settings.getDefaultWakeLock(this);
 		
+		// init views
 		chkFloat = (CheckBox) findViewById(R.id.floating);
 		chkRoot = (CheckBox) findViewById(R.id.is_root);
 		chkAutoStop = (CheckBox) findViewById(R.id.auto_stop);
 		chkWakeLock = (CheckBox) findViewById(R.id.wake_lock); 
 		tvTime = (TextView) findViewById(R.id.time);
+		testReport = (LinearLayout) findViewById(R.id.test_report);
 		about = (LinearLayout) findViewById(R.id.about);
 		mailSettings = (LinearLayout) findViewById(R.id.mail_settings);
 		SeekBar timeBar = (SeekBar) findViewById(R.id.timeline);
@@ -98,6 +101,12 @@ public class SettingsActivity extends Activity {
 		chkAutoStop.setChecked(autoStop);
 		chkWakeLock.setChecked(wakeLock);
 		
+		// start activity listener
+		layGoBack.setOnClickListener(startActivityListener(MainPageActivity.class));
+		testReport.setOnClickListener(startActivityListener(TestListActivity.class));
+		mailSettings.setOnClickListener(startActivityListener(MailSettingsActivity.class));
+		about.setOnClickListener(startActivityListener(AboutActivity.class));
+		
 		timeBar.setProgress(interval);
 		timeBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
 			@Override
@@ -114,34 +123,6 @@ public class SettingsActivity extends Activity {
 				// when tracking stoped, update preferences
 				int interval = arg0.getProgress() + 1;
 				preferences.edit().putInt(Settings.KEY_INTERVAL, interval).commit();
-			}
-		});
-
-		layGoBack.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
-				SettingsActivity.this.finish();
-				Intent intent = new Intent();
-				intent.setClass(SettingsActivity.this, MainPageActivity.class);
-				startActivity(intent);
-			}
-		});
-
-		mailSettings.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
-				Intent intent = new Intent();
-				intent.setClass(SettingsActivity.this, MailSettingsActivity.class);
-				startActivity(intent);
-			}
-		});
-
-		about.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
-				Intent intent = new Intent();
-				intent.setClass(SettingsActivity.this, AboutActivity.class);
-				startActivity(intent);
 			}
 		});
 
@@ -203,6 +184,17 @@ public class SettingsActivity extends Activity {
 		});
 	}
 
+	private OnClickListener startActivityListener(final Class<?> specClass) {
+		return new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				Intent intent = new Intent();
+				intent.setClass(SettingsActivity.this, specClass);
+				startActivityForResult(intent, Activity.RESULT_FIRST_USER);
+			}
+		};
+	} 
+	
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();

@@ -33,6 +33,12 @@
         <activity
             android:name=".activity.MailSettingsActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.TestListActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.TestReportActivity"
+            android:screenOrientation="portrait" />
 
         <service android:name="com.netease.qa.emmagee.service.EmmageeService" />
     </application>

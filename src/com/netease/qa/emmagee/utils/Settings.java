@@ -21,6 +21,7 @@ public final class Settings {
 	public static final String KEY_ROOT = "root";
 	public static final String KEY_AUTO_STOP = "autoStop";
 	public static final String KEY_WACK_LOCK = "wakeLock";
+	public static final String EMMAGEE_RESULT_DIR = "/sdcard/Emmagee/";
 	private static WakeLockHelper wakeLockHelper;
 	
 	public static SharedPreferences getDefaultSharedPreferences(Context context) {
