@@ -10,11 +10,7 @@ rendering real-time process status in a floating window, and much more.
  * FAQ: https://github.com/NetEase/Emmagee/wiki/FAQ
  * Tags: Android, Java 
 
-<img src="https://github.com/andrewleo/pictures/blob/master/Emmagee/V2.0/homepage.png" width="180px" />
-&nbsp;
-<img src="https://github.com/andrewleo/pictures/blob/master/Emmagee/V2.0/settings.png" width="180px" />
-&nbsp;
-<img src="https://github.com/andrewleo/pictures/blob/master/Emmagee/V2.0/mailsettings.png" width="180px" />
+<img src="https://github.com/andrewleo/pictures/blob/master/Emmagee/V2.0/homepage.png" width="180px" />&nbsp;<img src="https://github.com/andrewleo/pictures/blob/master/Emmagee/V2.0/settings.png" width="180px" />&nbsp;<img src="https://github.com/andrewleo/pictures/blob/master/Emmagee/V2.0/mailsettings.png" width="180px" />
 
 ## Why should I use Emmagee?
 
