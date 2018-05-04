@@ -16,134 +16,222 @@
  */
 package com.netease.qa.emmagee.activity;
 
-import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.RandomAccessFile;
+import java.io.DataOutputStream;
+
+import com.netease.qa.emmagee.R;
+import com.netease.qa.emmagee.utils.Settings;
+import com.netease.qa.emmagee.utils.WakeLockHelper;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
+import android.view.Window;
 import android.widget.CheckBox;
-import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import com.netease.qa.emmagee.R;
-
+/**
+ * Setting Page of Emmagee
+ * 
+ * @author andrewleo
+ */
 public class SettingsActivity extends Activity {
 
-	private final String LOG_TAG = "Emmagee-"
-			+ SettingsActivity.class.getSimpleName();
-	
+	private static final String LOG_TAG = "Emmagee-" + SettingsActivity.class.getSimpleName();
+
 	private CheckBox chkFloat;
-	private EditText edtTime;
-	private String time;
-	private String settingTempFile;
+	private CheckBox chkRoot;
+	private CheckBox chkAutoStop;
+	private CheckBox chkWakeLock;
+	private TextView tvTime;
+	private LinearLayout about;
+	private LinearLayout mailSettings;
+	private LinearLayout testReport;
+
+	private SharedPreferences preferences;
+	private WakeLockHelper wakeLockHelper;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		Log.i(LOG_TAG, "onCreate");
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.settings);
 
-		Intent intent = this.getIntent();
-		settingTempFile = intent.getStringExtra("settingTempFile");
+		wakeLockHelper = Settings.getDefaultWakeLock(this);
 		
+		// init views
 		chkFloat = (CheckBox) findViewById(R.id.floating);
-		edtTime = (EditText) findViewById(R.id.time);
-		Button btnSave = (Button) findViewById(R.id.save);
-		boolean floatingTag = true;
+		chkRoot = (CheckBox) findViewById(R.id.is_root);
+		chkAutoStop = (CheckBox) findViewById(R.id.auto_stop);
+		chkWakeLock = (CheckBox) findViewById(R.id.wake_lock); 
+		tvTime = (TextView) findViewById(R.id.time);
+		testReport = (LinearLayout) findViewById(R.id.test_report);
+		about = (LinearLayout) findViewById(R.id.about);
+		mailSettings = (LinearLayout) findViewById(R.id.mail_settings);
+		SeekBar timeBar = (SeekBar) findViewById(R.id.timeline);
+		ImageView btnSave = (ImageView) findViewById(R.id.btn_set);
+		RelativeLayout floatingItem = (RelativeLayout) findViewById(R.id.floating_item);
+		RelativeLayout autoStopItem = (RelativeLayout) findViewById(R.id.auto_stop_item);
+		RelativeLayout wakeLockItem = (RelativeLayout) findViewById(R.id.wake_lock_item);
+		LinearLayout layGoBack = (LinearLayout) findViewById(R.id.lay_go_back);
+		LinearLayout layHeapItem = (LinearLayout) findViewById(R.id.heap_item);
 
-		try {
-			RandomAccessFile raf = new RandomAccessFile(settingTempFile, "r");
-			String f = raf.readLine();
-			if (f == null || (f != null && f.equals(""))) {
-				time = "5";
-			} else
-				time = f;
-			String tag = raf.readLine();
-			if (tag != null && tag.equals("false"))
-				floatingTag = false;
-		} catch (FileNotFoundException e) {
-			Log.e(LOG_TAG,
-					"FileNotFoundException: " + e.getMessage());
-			e.printStackTrace();
-		} catch (IOException e) {
-			Log.e(LOG_TAG, "IOException: " + e.getMessage());
-			e.printStackTrace();
-		}
-
-		edtTime.setText(time);
-		chkFloat.setChecked(floatingTag);
-		// edtTime.setInputType(InputType.TYPE_CLASS_NUMBER); 
-		btnSave.setOnClickListener(new OnClickListener() {
+		btnSave.setVisibility(ImageView.INVISIBLE);
+		
+		preferences = Settings.getDefaultSharedPreferences(getApplicationContext());
+		int interval = preferences.getInt(Settings.KEY_INTERVAL, 5);
+		boolean isfloat = preferences.getBoolean(Settings.KEY_ISFLOAT, true);
+		boolean isRoot = preferences.getBoolean(Settings.KEY_ROOT, false);
+		boolean autoStop = preferences.getBoolean(Settings.KEY_AUTO_STOP, true);
+		boolean wakeLock = preferences.getBoolean(Settings.KEY_WACK_LOCK, false);
+		
+		tvTime.setText(String.valueOf(interval));
+		chkFloat.setChecked(isfloat);
+		chkRoot.setChecked(isRoot);
+		chkAutoStop.setChecked(autoStop);
+		chkWakeLock.setChecked(wakeLock);
+		
+		// start activity listener
+		layGoBack.setOnClickListener(startActivityListener(MainPageActivity.class));
+		testReport.setOnClickListener(startActivityListener(TestListActivity.class));
+		mailSettings.setOnClickListener(startActivityListener(MailSettingsActivity.class));
+		about.setOnClickListener(startActivityListener(AboutActivity.class));
+		
+		timeBar.setProgress(interval);
+		timeBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
 			@Override
-			public void onClick(View v) {
-				time = edtTime.getText().toString().trim();
-				if (!isNumeric(time)) {
-					Toast.makeText(SettingsActivity.this, "输入数据无效，请重新输入",
-							Toast.LENGTH_LONG).show();
-					edtTime.setText("");
-				} else if (time.equals("") || Long.parseLong(time) == 0) {
-					Toast.makeText(SettingsActivity.this, "输入数据为空,请重新输入",
-							Toast.LENGTH_LONG).show();
-					edtTime.setText("");
-				} else if (Integer.parseInt(time) > 600) {
-					Toast.makeText(SettingsActivity.this, "数据超过最大值600，请重新输入",
-							Toast.LENGTH_LONG).show();
+			public void onProgressChanged(SeekBar arg0, int arg1, boolean arg2) {
+				tvTime.setText(Integer.toString(arg1 + 1));
+			}
+
+			@Override
+			public void onStartTrackingTouch(SeekBar arg0) {
+			}
+
+			@Override
+			public void onStopTrackingTouch(SeekBar arg0) {
+				// when tracking stoped, update preferences
+				int interval = arg0.getProgress() + 1;
+				preferences.edit().putInt(Settings.KEY_INTERVAL, interval).commit();
+			}
+		});
+
+		floatingItem.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				boolean isChecked = chkFloat.isChecked();
+				chkFloat.setChecked(!isChecked);
+				preferences.edit().putBoolean(Settings.KEY_ISFLOAT, !isChecked).commit();
+			}
+		});
+		
+		autoStopItem.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				boolean isChecked = chkAutoStop.isChecked();
+				chkAutoStop.setChecked(!isChecked);
+				preferences.edit().putBoolean(Settings.KEY_AUTO_STOP, !isChecked).commit();
+			}
+		});
+		
+		wakeLockItem.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				boolean isChecked = chkWakeLock.isChecked();
+				chkWakeLock.setChecked(!isChecked);
+				preferences.edit().putBoolean(Settings.KEY_WACK_LOCK, !isChecked).commit();
+				if (chkWakeLock.isChecked()) {
+					wakeLockHelper.acquireFullWakeLock();
 				} else {
-					try {
-						BufferedWriter bw = new BufferedWriter(
-								new OutputStreamWriter(new FileOutputStream(
-										settingTempFile)));
-						time = Integer.toString(Integer.parseInt(time));
-						bw.write(time + "\r\n" + chkFloat.isChecked());
-						bw.close();
-						Toast.makeText(SettingsActivity.this, "保存成功",
-								Toast.LENGTH_LONG).show();
-						Intent intent = new Intent();
-						setResult(Activity.RESULT_FIRST_USER, intent);
-						SettingsActivity.this.finish();
-					} catch (FileNotFoundException e) {
-						e.printStackTrace();
-					} catch (IOException e) {
-						e.printStackTrace();
+					wakeLockHelper.releaseWakeLock();
+				}
+			}
+		});
+		
+		// get root permission
+		layHeapItem.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				// if root checkbox is checked, change status to
+				// opposite;otherwise, try to upgrade app to root
+				boolean isChecked = chkRoot.isChecked();
+				if (isChecked) {
+					chkRoot.setChecked(!isChecked);
+					preferences.edit().putBoolean(Settings.KEY_ROOT, !isChecked).commit();
+				} else {
+					boolean root = upgradeRootPermission(getPackageCodePath());
+					if (root) {
+						Log.d(LOG_TAG, "root succeed");
+						chkRoot.setChecked(!isChecked);
+						preferences.edit().putBoolean(Settings.KEY_ROOT, !isChecked).commit();
+					} else {
+						// if root failed, tell user to check if phone is rooted
+						Toast.makeText(getBaseContext(), getString(R.string.root_failed_notification), Toast.LENGTH_LONG).show();
 					}
 				}
+
 			}
 		});
 	}
 
-	@Override
-	public void finish() {
-		super.finish();
-	}
-
+	private OnClickListener startActivityListener(final Class<?> specClass) {
+		return new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				Intent intent = new Intent();
+				intent.setClass(SettingsActivity.this, specClass);
+				startActivityForResult(intent, Activity.RESULT_FIRST_USER);
+			}
+		};
+	} 
+	
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
 	}
 
 	/**
-	 * is input a number
+	 * upgrade app to get root permission
 	 * 
-	 * @param inputStr
-	 *            input string
-	 * @return
+	 * @return is root successfully
 	 */
-	private boolean isNumeric(String inputStr) {
-		for (int i = inputStr.length(); --i >= 0;) {
-			if (!Character.isDigit(inputStr.charAt(i))) {
+	public static boolean upgradeRootPermission(String pkgCodePath) {
+		Process process = null;
+		DataOutputStream os = null;
+		try {
+			String cmd = "chmod 777 " + pkgCodePath;
+			process = Runtime.getRuntime().exec("su"); // 切换到root帐号
+			os = new DataOutputStream(process.getOutputStream());
+			os.writeBytes(cmd + "\n");
+			os.writeBytes("exit\n");
+			os.flush();
+			int existValue = process.waitFor();
+			if (existValue == 0) {
+				return true;
+			} else {
 				return false;
 			}
+		} catch (Exception e) {
+			Log.w(LOG_TAG, "upgradeRootPermission exception=" + e.getMessage());
+			return false;
+		} finally {
+			try {
+				if (os != null) {
+					os.close();
+				}
+				process.destroy();
+			} catch (Exception e) {
+			}
 		}
-		return true;
 	}
-
 }

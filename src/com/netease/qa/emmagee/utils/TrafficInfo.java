@@ -16,52 +16,82 @@
  */
 package com.netease.qa.emmagee.utils;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
+import android.net.TrafficStats;
 import android.util.Log;
 
+/**
+ * information of network traffic
+ * 
+ * @author andrewleo
+ */
 public class TrafficInfo {
 
-	private static final String LOG_TAG = "Emmagee-"
-			+ TrafficInfo.class.getSimpleName();
-	
+	private static final String LOG_TAG = "Emmagee-" + TrafficInfo.class.getSimpleName();
+	private static final int UNSUPPORTED = -1;
+
 	private String uid;
-	
-	public TrafficInfo(String uid){
+
+	public TrafficInfo(String uid) {
 		this.uid = uid;
 	}
 
 	/**
-	 * get total network traffic, which is the sum of upload and download traffic
+	 * get total network traffic, which is the sum of upload and download
+	 * traffic.
 	 * 
 	 * @return total traffic include received and send traffic
 	 */
 	public long getTrafficInfo() {
-		Log.i(LOG_TAG,"get traffic information");
+		Log.i(LOG_TAG, "get traffic information");
+		Log.d(LOG_TAG, "uid = " + uid);
+		long traffic = trafficFromApi();
+		return traffic <= 0 ? trafficFromFiles() : traffic;
+	}
+
+	/**
+	 * Use TrafficStats getUidRxBytes and getUidTxBytes to get network
+	 * traffic,these API return both tcp and udp usage
+	 * 
+	 * @return
+	 */
+	private long trafficFromApi() {
+		long rcvTraffic = UNSUPPORTED, sndTraffic = UNSUPPORTED;
+		rcvTraffic = TrafficStats.getUidRxBytes(Integer.parseInt(uid));
+		sndTraffic = TrafficStats.getUidTxBytes(Integer.parseInt(uid));
+		return rcvTraffic + sndTraffic < 0 ? UNSUPPORTED : rcvTraffic + sndTraffic;
+	}
+
+	/**
+	 * read files in uid_stat to get traffic info
+	 * 
+	 * @return
+	 */
+	private long trafficFromFiles() {
+		RandomAccessFile rafRcv = null, rafSnd = null;
+		long rcvTraffic = UNSUPPORTED, sndTraffic = UNSUPPORTED;
 		String rcvPath = "/proc/uid_stat/" + uid + "/tcp_rcv";
 		String sndPath = "/proc/uid_stat/" + uid + "/tcp_snd";
-		long rcvTraffic = -1;
-		long sndTraffic = -1;
 		try {
-			RandomAccessFile rafRcv = new RandomAccessFile(rcvPath, "r");
-			RandomAccessFile rafSnd = new RandomAccessFile(sndPath, "r");
+			rafRcv = new RandomAccessFile(rcvPath, "r");
+			rafSnd = new RandomAccessFile(sndPath, "r");
 			rcvTraffic = Long.parseLong(rafRcv.readLine());
 			sndTraffic = Long.parseLong(rafSnd.readLine());
-		} catch (FileNotFoundException e) {
-			rcvTraffic = -1;
-			sndTraffic = -1;
-		} catch (NumberFormatException e) {
-			Log.e(LOG_TAG, "NumberFormatException: " + e.getMessage());
-			e.printStackTrace();
-		} catch (IOException e) {
-			Log.e(LOG_TAG, "IOException: " + e.getMessage());
-			e.printStackTrace();
+			Log.d(LOG_TAG, String.format("rcvTraffic, sndTraffic = %s, %s", rcvTraffic, sndTraffic));
+		} catch (Exception e) {
+		} 
+		finally {
+			try {
+				if (rafRcv != null) {
+					rafRcv.close();
+				}
+				if (rafSnd != null)
+					rafSnd.close();
+			} catch (IOException e) {}
 		}
-		if (rcvTraffic == -1 || sndTraffic == -1) {
-			return -1;
-		} else
-			return (rcvTraffic + sndTraffic);
+		return rcvTraffic + sndTraffic < 0 ? UNSUPPORTED : rcvTraffic + sndTraffic;
 	}
+
 }

@@ -16,43 +16,60 @@
  */
 package com.netease.qa.emmagee.utils;
 
+import java.io.File;
+import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Locale;
+import java.util.regex.Pattern;
 
+import com.netease.qa.emmagee.R;
 import com.netease.qa.emmagee.service.EmmageeService;
 
 import android.content.Context;
+import android.os.Build;
 import android.util.Log;
 
+/**
+ * operate CPU information
+ * 
+ * @author andrewleo
+ */
 public class CpuInfo {
 
-	private static final String LOG_TAG = "Emmagee-"
-			+ CpuInfo.class.getSimpleName();
+	private static final String LOG_TAG = "Emmagee-" + CpuInfo.class.getSimpleName();
 
 	private Context context;
 	private long processCpu;
-	private long idleCpu;
-	private long totalCpu;
+	private ArrayList<Long> idleCpu = new ArrayList<Long>();
+	private ArrayList<Long> totalCpu = new ArrayList<Long>();
 	private boolean isInitialStatics = true;
 	private SimpleDateFormat formatterFile;
 	private MemoryInfo mi;
 	private long totalMemorySize;
-	private long initialTraffic;
+	private long preTraffic;
 	private long lastestTraffic;
 	private long traffic;
 	private TrafficInfo trafficInfo;
-	private ArrayList<String> CpuUsedRatio;
-	private long totalCpu2;
+	private ArrayList<String> cpuUsedRatio = new ArrayList<String>();
+	private ArrayList<Long> totalCpu2 = new ArrayList<Long>();
 	private long processCpu2;
-	private long idleCpu2;
+	private ArrayList<Long> idleCpu2 = new ArrayList<Long>();
 	private String processCpuRatio = "";
-	private String totalCpuRatio = "";
+	private ArrayList<String> totalCpuRatio = new ArrayList<String>();
 	private int pid;
+
+	private static final String INTEL_CPU_NAME = "model name";
+	private static final String CPU_DIR_PATH = "/sys/devices/system/cpu/";
+	private static final String CPU_X86 = "x86";
+	private static final String CPU_INFO_PATH = "/proc/cpuinfo";
+	private static final String CPU_STAT = "/proc/stat";
 
 	public CpuInfo(Context context, int pid, String uid) {
 		this.pid = pid;
@@ -61,11 +78,11 @@ public class CpuInfo {
 		formatterFile = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		mi = new MemoryInfo();
 		totalMemorySize = mi.getTotalMemory();
-		CpuUsedRatio = new ArrayList<String>();
+		cpuUsedRatio = new ArrayList<String>();
 	}
 
 	/**
-	 * read the status of CPU
+	 * read the status of CPU.
 	 * 
 	 * @throws FileNotFoundException
 	 */
@@ -74,8 +91,7 @@ public class CpuInfo {
 		String cpuStatPath = "/proc/" + processPid + "/stat";
 		try {
 			// monitor cpu stat of certain process
-			RandomAccessFile processCpuInfo = new RandomAccessFile(cpuStatPath,
-					"r");
+			RandomAccessFile processCpuInfo = new RandomAccessFile(cpuStatPath, "r");
 			String line = "";
 			StringBuffer stringBuffer = new StringBuffer();
 			stringBuffer.setLength(0);
@@ -86,21 +102,27 @@ public class CpuInfo {
 			processCpu = Long.parseLong(tok[13]) + Long.parseLong(tok[14]);
 			processCpuInfo.close();
 		} catch (FileNotFoundException e) {
-			Log.e(LOG_TAG, "FileNotFoundException: " + e.getMessage());
-			e.printStackTrace();
+			Log.w(LOG_TAG, "FileNotFoundException: " + e.getMessage());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		readTotalCpuStat();
+	}
 
+	/**
+	 * read stat of each CPU cores
+	 */
+	private void readTotalCpuStat() {
 		try {
 			// monitor total and idle cpu stat of certain process
-			RandomAccessFile cpuInfo = new RandomAccessFile("/proc/stat", "r");
-			String[] toks = cpuInfo.readLine().split(" ");
-			idleCpu = Long.parseLong(toks[5]);
-			totalCpu = Long.parseLong(toks[2]) + Long.parseLong(toks[3])
-					+ Long.parseLong(toks[4]) + Long.parseLong(toks[6])
-					+ Long.parseLong(toks[5]) + Long.parseLong(toks[7])
-					+ Long.parseLong(toks[8]);
+			RandomAccessFile cpuInfo = new RandomAccessFile(CPU_STAT, "r");
+			String line = "";
+			while ((null != (line = cpuInfo.readLine())) && line.startsWith("cpu")) {
+				String[] toks = line.split("\\s+");
+				idleCpu.add(Long.parseLong(toks[4]));
+				totalCpu.add(Long.parseLong(toks[1]) + Long.parseLong(toks[2]) + Long.parseLong(toks[3]) + Long.parseLong(toks[4])
+						+ Long.parseLong(toks[6]) + Long.parseLong(toks[5]) + Long.parseLong(toks[7]));
+			}
 			cpuInfo.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -110,16 +132,23 @@ public class CpuInfo {
 	}
 
 	/**
-	 * get CPU name
+	 * get CPU name.
 	 * 
 	 * @return CPU name
 	 */
 	public String getCpuName() {
 		try {
-			RandomAccessFile cpu_stat = new RandomAccessFile("/proc/cpuinfo",
-					"r");
-			String[] cpu = cpu_stat.readLine().split(":"); // cpu信息的前一段是含有processor字符串，此处替换为不显示
-			return cpu[1];
+			RandomAccessFile cpuStat = new RandomAccessFile(CPU_INFO_PATH, "r");
+			// check cpu type
+			String line;
+			while (null != (line = cpuStat.readLine())) {
+				String[] values = line.split(":");
+				if (values[0].contains(INTEL_CPU_NAME) || values[0].contains("Processor")) {
+					cpuStat.close();
+					Log.d(LOG_TAG, "CPU name="+values[1]);
+					return values[1];
+				}
+			}
 		} catch (IOException e) {
 			Log.e(LOG_TAG, "IOException: " + e.getMessage());
 		}
@@ -127,188 +156,188 @@ public class CpuInfo {
 	}
 
 	/**
+	 * display directories naming with "cpu*"
+	 * 
+	 * @author andrewleo
+	 */
+	class CpuFilter implements FileFilter {
+		@Override
+		public boolean accept(File pathname) {
+			// Check if filename matchs "cpu[0-9]"
+			if (Pattern.matches("cpu[0-9]", pathname.getName())) {
+				return true;
+			}
+			return false;
+		}
+	}
+
+	/**
+	 * get CPU core numbers
+	 * 
+	 * @return cpu core numbers
+	 */
+	public int getCpuNum() {
+		try {
+			// Get directory containing CPU info
+			File dir = new File(CPU_DIR_PATH);
+			// Filter to only list the devices we care about
+			File[] files = dir.listFiles(new CpuFilter());
+			return files.length;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return 1;
+		}
+	}
+
+	/**
+	 * get CPU core list
+	 * 
+	 * @return cpu core list
+	 */
+	public ArrayList<String> getCpuList() {
+		ArrayList<String> cpuList = new ArrayList<String>();
+		try {
+			// Get directory containing CPU info
+			File dir = new File(CPU_DIR_PATH);
+			// Filter to only list the devices we care about
+			File[] files = dir.listFiles(new CpuFilter());
+			for (int i = 0; i < files.length; i++) {
+				cpuList.add(files[i].getName());
+			}
+			return cpuList;
+		} catch (Exception e) {
+			e.printStackTrace();
+			cpuList.add("cpu0");
+			return cpuList;
+		}
+	}
+
+	/**
 	 * reserve used ratio of process CPU and total CPU, meanwhile collect
-	 * network traffic
+	 * network traffic.
 	 * 
 	 * @return network traffic ,used ratio of process CPU and total CPU in
 	 *         certain interval
 	 */
-	public ArrayList<String> getCpuRatioInfo() {
+	public ArrayList<String> getCpuRatioInfo(String totalBatt, String currentBatt, String temperature, String voltage, String fps, boolean isRoot) {
 
+		String heapData = "";
 		DecimalFormat fomart = new DecimalFormat();
+		fomart.setDecimalFormatSymbols(new DecimalFormatSymbols(Locale.US));
+		fomart.setGroupingUsed(false);
 		fomart.setMaximumFractionDigits(2);
 		fomart.setMinimumFractionDigits(2);
 
+		cpuUsedRatio.clear();
+		idleCpu.clear();
+		totalCpu.clear();
+		totalCpuRatio.clear();
 		readCpuStat();
-		CpuUsedRatio.clear();
 
 		try {
+			String mDateTime2;
 			Calendar cal = Calendar.getInstance();
-			String mDateTime2 = formatterFile.format(cal.getTime().getTime()
-					+ 8 * 60 * 60 * 1000);
-
-			if (isInitialStatics == true) {
-				initialTraffic = trafficInfo.getTrafficInfo();
+			if ((Build.MODEL.equals("sdk")) || (Build.MODEL.equals("google_sdk"))) {
+				mDateTime2 = formatterFile.format(cal.getTime().getTime() + 8 * 60 * 60 * 1000);
+				totalBatt = Constants.NA;
+				currentBatt = Constants.NA;
+				temperature = Constants.NA;
+				voltage = Constants.NA;
+			} else
+				mDateTime2 = formatterFile.format(cal.getTime().getTime());
+			if (isInitialStatics) {
+				preTraffic = trafficInfo.getTrafficInfo();
 				isInitialStatics = false;
 			} else {
 				lastestTraffic = trafficInfo.getTrafficInfo();
-				if (initialTraffic == -1)
+				if (preTraffic == -1)
 					traffic = -1;
-				else
-					traffic = (lastestTraffic - initialTraffic + 1023) / 1024;
-				processCpuRatio = fomart
-						.format(100 * ((double) (processCpu - processCpu2) / (double) (totalCpu - totalCpu2)));
-				totalCpuRatio = fomart
-						.format(100 * ((double) ((totalCpu - idleCpu) - (totalCpu2 - idleCpu2)) / (double) (totalCpu - totalCpu2)));
+				else {
+					if (lastestTraffic > preTraffic) {
+						traffic += (lastestTraffic - preTraffic + 1023) / 1024;
+					}
+				}
+				preTraffic = lastestTraffic;
+				Log.d(LOG_TAG, "lastestTraffic===" + lastestTraffic);
+				Log.d(LOG_TAG, "preTraffic===" + preTraffic);
+				StringBuffer totalCpuBuffer = new StringBuffer();
+				if (null != totalCpu2 && totalCpu2.size() > 0) {
+					processCpuRatio = fomart.format(100 * ((double) (processCpu - processCpu2) / ((double) (totalCpu.get(0) - totalCpu2.get(0)))));
+					for (int i = 0; i < (totalCpu.size() > totalCpu2.size() ? totalCpu2.size() : totalCpu.size()); i++) {
+						String cpuRatio = "0.00";
+						if (totalCpu.get(i) - totalCpu2.get(i) > 0) {
+							cpuRatio = fomart
+									.format(100 * ((double) ((totalCpu.get(i) - idleCpu.get(i)) - (totalCpu2.get(i) - idleCpu2.get(i))) / (double) (totalCpu
+											.get(i) - totalCpu2.get(i))));
+						}
+						totalCpuRatio.add(cpuRatio);
+						totalCpuBuffer.append(cpuRatio + Constants.COMMA);
+					}
+				} else {
+					processCpuRatio = "0";
+					totalCpuRatio.add("0");
+					totalCpuBuffer.append("0,");
+					totalCpu2 = (ArrayList<Long>) totalCpu.clone();
+					processCpu2 = processCpu;
+					idleCpu2 = (ArrayList<Long>) idleCpu.clone();
+				}
+				// 多核cpu的值写入csv文件中
+				for (int i = 0; i < getCpuNum() - totalCpuRatio.size() + 1; i++) {
+					totalCpuBuffer.append("0.00,");
+				}
 				long pidMemory = mi.getPidMemorySize(pid, context);
 				String pMemory = fomart.format((double) pidMemory / 1024);
 				long freeMemory = mi.getFreeMemorySize(context);
 				String fMemory = fomart.format((double) freeMemory / 1024);
-				String percent = "统计出错";
+				String percent = context.getString(R.string.stat_error);
 				if (totalMemorySize != 0) {
-					percent = fomart
-							.format(((double) pidMemory / (double) totalMemorySize) * 100);
+					percent = fomart.format(((double) pidMemory / (double) totalMemorySize) * 100);
 				}
 
-				// whether certain device supports traffic statics
-				if (traffic == -1) {
-					EmmageeService.bw.write(mDateTime2 + "," + pMemory + ","
-							+ percent + "," + fMemory + "," + processCpuRatio
-							+ "," + totalCpuRatio + "," + "本程序或本设备不支持流量统计"
-							+ "\r\n");
-				} else {
-					EmmageeService.bw.write(mDateTime2 + "," + pMemory + ","
-							+ percent + "," + fMemory + "," + processCpuRatio
-							+ "," + totalCpuRatio + "," + traffic + "\r\n");
+				if (isPositive(processCpuRatio) && isPositive(totalCpuRatio.get(0))) {
+					String trafValue;
+					// whether certain device supports traffic statics or not
+					if (traffic == -1) {
+						trafValue = Constants.NA;
+					} else {
+						trafValue = String.valueOf(traffic);
+					}
+					if(isRoot){
+						String[][] heapArray = MemoryInfo.getHeapSize(pid, context);
+						heapData = heapArray[0][1]+"/"+heapArray[0][0]+Constants.COMMA+heapArray[1][1]+"/"+heapArray[1][0]+Constants.COMMA;
+					}
+					EmmageeService.bw.write(mDateTime2 + Constants.COMMA + ProcessInfo.getTopActivity(context) + Constants.COMMA +heapData+ pMemory
+							+ Constants.COMMA + percent + Constants.COMMA + fMemory + Constants.COMMA + processCpuRatio + Constants.COMMA
+							+ totalCpuBuffer.toString() + trafValue + Constants.COMMA + totalBatt + Constants.COMMA + currentBatt + Constants.COMMA
+							+ temperature + Constants.COMMA + voltage + Constants.COMMA + fps + Constants.LINE_END);
+					totalCpu2 = (ArrayList<Long>) totalCpu.clone();
+					processCpu2 = processCpu;
+					idleCpu2 = (ArrayList<Long>) idleCpu.clone();
+					cpuUsedRatio.add(processCpuRatio);
+					cpuUsedRatio.add(totalCpuRatio.get(0));
+					cpuUsedRatio.add(String.valueOf(traffic));
 				}
 			}
-			totalCpu2 = totalCpu;
-			processCpu2 = processCpu;
-			idleCpu2 = idleCpu;
-			CpuUsedRatio.add(processCpuRatio);
-			CpuUsedRatio.add(totalCpuRatio);
-			CpuUsedRatio.add(String.valueOf(traffic));
 		} catch (IOException e) {
 			e.printStackTrace();
-			// PttService.closeOpenedStream()
 		}
-		return CpuUsedRatio;
-
+		return cpuUsedRatio;
 	}
 
-	// TODO coming soon
-	// public String cpuinfo() {
-	// String sys_info = "";
-	// String s;
-	// try {
-	// RandomAccessFile reader_stat = new RandomAccessFile("/proc/stat",
-	// "r");
-	// RandomAccessFile reader_info = new RandomAccessFile(
-	// "/proc/cpuinfo", "r");
-	// sys_info = reader_info.readLine(); // CPU型号
-	// String load_info;
-	// String cpu_stat = reader_stat.readLine(); // cpu行信息
-	// String cpu0_stat = reader_stat.readLine(); // cpu0
-	// String cpu1_stat = reader_stat.readLine(); // cpu1
-	//
-	// String[] tok = cpu_stat.split(" ");
-	// String[] tok1 = cpu0_stat.split(" ");
-	// String[] tok2 = cpu1_stat.split(" ");
-	//
-	// // 判断单核
-	// if (tok[2].equals(tok1[1])) {
-	// long idle_s1 = Long.parseLong(tok[5]);
-	// long cpu_s1 = Long.parseLong(tok[2]) + Long.parseLong(tok[3])
-	// + Long.parseLong(tok[4]) + Long.parseLong(tok[6])
-	// + Long.parseLong(tok[5]) + Long.parseLong(tok[7])
-	// + Long.parseLong(tok[8]);
-	//
-	// try {
-	// Thread.sleep(1000);
-	//
-	// } catch (Exception e) {
-	// }
-	//
-	// reader_stat.seek(0);
-	//
-	// load_info = reader_stat.readLine();
-	//
-	// reader_stat.close();
-	//
-	// tok = load_info.split(" ");
-	// long idle_s2 = Long.parseLong(tok[5]);
-	//
-	// long cpu_s2 = Long.parseLong(tok[2]) + Long.parseLong(tok[3])
-	// + Long.parseLong(tok[4]) + Long.parseLong(tok[6])
-	// + Long.parseLong(tok[5]) + Long.parseLong(tok[7])
-	// + Long.parseLong(tok[8]);
-	//
-	// return "CPU使用率为："
-	// + (100 * ((cpu_s2 - idle_s2) - (cpu_s1 - idle_s1)) / (cpu_s2 - cpu_s1))
-	// + "%";
-	//
-	// }
-	//
-	// // 双核情况
-	// else if (tok2[0].equals("cpu1")) {
-	// // 双核
-	// reader_stat = new RandomAccessFile("/proc/stat", "r");
-	// long[] idle_d1 = null;
-	// long[] cpu_d1 = null;
-	// long[] idle_d2 = null;
-	// long[] cpu_d2 = null;
-	// idle_d1[0] = Long.parseLong(tok1[4]); // cpu0空闲时间
-	// cpu_d1[0] = Long.parseLong(tok1[2]) + Long.parseLong(tok1[3])
-	// + Long.parseLong(tok1[4]) + Long.parseLong(tok1[6])
-	// + Long.parseLong(tok1[5]) + Long.parseLong(tok1[7])
-	// + Long.parseLong(tok1[1]); // cpu0非空闲时间
-	// idle_d1[1] = Long.parseLong(tok2[4]);
-	// cpu_d1[1] = Long.parseLong(tok2[2]) + Long.parseLong(tok2[3])
-	// + Long.parseLong(tok2[4]) + Long.parseLong(tok2[6])
-	// + Long.parseLong(tok2[5]) + Long.parseLong(tok2[7])
-	// + Long.parseLong(tok2[1]);
-	//
-	// try {
-	// Thread.sleep(1000);
-	//
-	// } catch (Exception e) {
-	// }
-	//
-	// reader_stat.seek(0);
-	//
-	// cpu_stat = reader_stat.readLine(); // cpu行信息
-	// cpu0_stat = reader_stat.readLine(); // cpu0
-	// cpu1_stat = reader_stat.readLine();
-	//
-	// tok1 = cpu0_stat.split(" ");
-	// tok2 = cpu1_stat.split(" ");
-	//
-	// idle_d2[0] = Long.parseLong(tok1[4]); // cpu0空闲时间
-	// cpu_d2[0] = Long.parseLong(tok1[2]) + Long.parseLong(tok1[3])
-	// + Long.parseLong(tok1[4]) + Long.parseLong(tok1[6])
-	// + Long.parseLong(tok1[5]) + Long.parseLong(tok1[7])
-	// + Long.parseLong(tok1[1]); // cpu0非空闲时间
-	// idle_d2[1] = Long.parseLong(tok2[4]);
-	// cpu_d2[1] = Long.parseLong(tok2[2]) + Long.parseLong(tok2[3])
-	// + Long.parseLong(tok2[4]) + Long.parseLong(tok2[6])
-	// + Long.parseLong(tok2[5]) + Long.parseLong(tok2[7])
-	// + Long.parseLong(tok2[1]);
-	//
-	// reader_stat.close();
-	// return "CPU1使用率为："
-	// + (100 * ((cpu_d2[0] - idle_d2[0]) - (cpu_d1[0] - idle_d1[0])) /
-	// (cpu_d2[0] - cpu_d1[0]))
-	// + "%"
-	// + "\n"
-	// + "CPU2使用率为："
-	// + (100 * ((cpu_d2[1] - idle_d2[1]) - (cpu_d1[1] - idle_d1[1])) /
-	// (cpu_d2[1] - cpu_d1[1]))
-	// + "%";
-	// }
-	// } catch (IOException ex) {
-	// Log.e(LOG_TAG, ex.getMessage());
-	//
-	// }
-	// return "0";
-	// }
+	/**
+	 * is text a positive number
+	 * 
+	 * @param text
+	 * @return
+	 */
+	private boolean isPositive(String text) {
+		Double num;
+		try {
+			num = Double.parseDouble(text);
+		} catch (NumberFormatException e) {
+			return false;
+		}
+		return num >= 0;
+	}
+
 }

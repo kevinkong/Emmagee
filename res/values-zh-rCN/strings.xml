@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Emmagee</string>
+    <string name="setting">设置</string>
+    <string name="exit">退出</string>
+
+    <string name="start_test">开始测试</string>
+    <string name="stop_test">停止测试</string>
+
+    <string name="collecting_frequency">采集频率(s)</string>
+    <string name="sender">发件人:</string>
+    <string name="password">密码:</string>
+    <string name="smtp">SMTP服务器:</string>
+    <string name="receiver">收件人(多人以空格分割):</string>
+    <string name="floating_window">显示浮窗</string>
+    <string name="save">保存</string>
+
+    <string name="calculating">计算中...</string>
+    <string name="open_wifi">开启WIFI</string>
+    <string name="close_wifi">关闭WIFI</string>
+    <string name="process_free_mem">应用/剩余内存:</string>
+    <string name="process_overall_cpu">应用/总体CPU:</string>
+    <string name="start_time">启动时间:</string>
+    <string name="total_usage">总使用率(%)</string>
+    <string name="process_package">应用包名</string>
+    <string name="process_name">应用名称</string>
+    <string name="process_pid">应用PID</string>
+    <string name="mem_size">机器内存大小(MB)</string>
+    <string name="cpu_type">机器CPU型号</string>
+    <string name="android_system_version">Android系统版本</string>
+    <string name="mobile_type">手机型号</string>
+    <string name="timestamp">时间</string>
+    <string name="used_mem_PSS">应用占用内存PSS(MB)</string>
+    <string name="used_mem_ratio">应用占用内存比(%)</string>
+    <string name="mobile_free_mem">机器剩余内存(MB)</string>
+    <string name="app_used_cpu_ratio">应用占用CPU率(%)</string>
+    <string name="total_used_cpu_ratio">CPU总使用率(%)</string>
+    <string name="traffic">流量(KB)</string>
+    <string name="battery">电量(%)</string>
+    <string name="current">电流(mA)</string>
+    <string name="temperature">温度(C)</string>
+    <string name="voltage">电压(V)</string>
+    <string name="fps">帧率</string>
+    <string name="stat_error">统计出错</string>
+
+    <string name="comment1">注释:已知部分不支持的机型可在此查阅:https://github.com/NetEase/Emmagee/wiki/Some-devices-are-not-supported</string>
+    <string name="comment2">电流: 小于0是放电大于0是充电</string>
+    <string name="comment3">启动时间: 为空是应用已启动或者未搜集到启动时间</string>
+    <string name="comment4">N/A: 不支持或者数据异常</string>
+
+    <string name="can_not_start_app_toast">该程序无法启动</string>
+    <string name="choose_app_toast">请选择需要测试的应用程序</string>
+    <string name="test_result_file_toast">测试结果文件：</string>
+    <string name="save_success_toast">保存成功</string>
+    <string name="sender_mail_toast">发件人邮箱:</string>
+    <string name="receiver_mail_toast">收件人邮箱:</string>
+    <string name="format_incorrect_format">格式不正确</string>
+    <string name="info_incomplete_toast">配置不完整</string>
+    <string name="wifi_fail_toast">设置WIFI失败</string>
+    <string name="send_success_toast">测试结果报表已发送至邮箱:</string>
+    <string name="send_fail_toast">测试结果未成功发送至邮箱，结果保存在:</string>
+
+    <string name="ok">确定</string>
+    <string name="cancel">取消</string>
+    <string name="confirm">确定退出程序？</string>
+    <string name="quite_alert">再点击一次退出应用</string>
+    
+    <string name="about">关于</string>
+    <string name="mail_settings">邮件配置</string>
+    <string name="version_title">版本 </string>
+    <string name="about_emmagee_intro">Emmagee是一个简单易上手的Android性能监测工具，
+        主要用于监控单个App的CPU，内存，流量，电量，电流，帧率以及整体性能状态，
+        同时支持自定义的监控频率以及性能数据的实时显示.</string>
+    <string name="about_team">开发团队：网易(杭州)质量保障部</string>
+    <string name="about_project_address">项目地址：https://github.com/NetEase/Emmagee</string>
+    
+    <string name="top_activity">栈顶Activity名称</string>
+    <string name="csv_encoding">GBK</string>
+    
+    <string name="dalvik_heap">Dalvik heap alloc/size(KB)</string>
+    <string name="native_heap">Native heap alloc/size(KB)</string>
+    
+    <string name="collect_heap">统计Heap数据</string>
+    <string name="root_notification">(需要root)</string>
+    
+    <string name="root_failed_notification">无法获取root权限，请确认手机是否已root</string>
+    <string name="stop_when_exited">应用退出后停止监听</string>
+    
+    <string name="update_list">列表更新成功</string>
+    <string name="nougat_warning">由于Google的限制，Emmagee无法支持7.0及以上版本</string>
+    
+    <string name="wake_lock">屏幕保持常亮</string>
+    <string name="wake_lock_on_toast">WakeLock已开启，屏幕会保持常亮</string>
+    <string name="test_report">测试报告</string>
+</resources>
